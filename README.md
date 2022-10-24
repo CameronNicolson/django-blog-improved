@@ -2,6 +2,8 @@
 
 A blog application, with popular features. Build a blog with Django framework.
 
+![screenshot of blog homepage](docs/_static/screenshot.gif "screenshot of homepage of blog")
+
 ## Table of contents
 1. [Features](#features)
 2. [Prerequisites](#prerequisites)
