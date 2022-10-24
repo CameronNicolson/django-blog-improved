@@ -1,0 +1,15 @@
+- model: taggit.tag
+  pk: 1
+  fields:
+    name: programming
+    slug: programming
+- model: taggit.tag
+  pk: 2
+  fields:
+    name: videos
+    slug: videos
+- model: taggit.tag
+  pk: 3
+  fields:
+    name: stadium
+    slug: stadium

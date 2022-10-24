@@ -1,0 +1,57 @@
+{% extends 'base.html' %} {% block content %}
+
+<div class="govuk-width-container">
+  <div class="govuk-breadcrumbs">
+    <ol class="govuk-breadcrumbs__list">
+      <li class="govuk-breadcrumbs__list-item">
+  <a href="{% url 'home' %}" class="govuk-back-link">Return to home</a>
+      </li>
+    </ol>
+  </div>
+  <main class="govuk-main-wrapper govuk-main-wrapper--l" id="main-content" role="main">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        {% if messages %}
+        <div class="govuk-panel govuk-panel--confirmation">
+          {% for message in messages %}
+            {% if 'transaction_status' in message.tags %}
+            <h1 class="govuk-panel__title">
+              {{ message }}
+            </h1>
+            {% endif %}
+            {% if 'reference' in message.tags %}
+            {% if forloop.first %}
+            <div class="govuk-panel__body">
+              {% endif %}
+             <p>{{ message }}</p>
+              {% if forloop.last %}
+            </div>
+            {% endif %}
+            
+            {% endif %}
+
+          {% endfor %}
+        </div>
+        </div>
+      <div class="govuk-grid-column-two-thirds">
+        <p class="govuk-body">We received the following details:</p>
+        {% for message in messages %}
+          <p class="govuk-body">{{ message }}</p>
+        {% endfor %}
+        <hr class="govuk-section-break govuk-section-break--m">
+        {% for message in messages %}
+        {% if 'additional_action' in message.tags %}
+          <h2 class="govuk-heading-m">What happens next</h2>
+        {% endif %}
+        {% endfor %}
+        {% for message in messages %}
+          {% if 'additional_action' in message.tags %}
+            <p class="govuk-body">{{ message }}</p>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+      </div>
+    </div>
+  </main>
+</div>
+{% endblock content %}

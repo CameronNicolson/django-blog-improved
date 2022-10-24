@@ -1,0 +1,14 @@
+- name: authorship
+  description: user with access to create/edit posts
+  model: auth.user
+  pk: 1
+  fields: 
+    username: alice
+    # password = hashed "alice"
+    password: "argon2$argon2id$v=19$m=102400,t=2,p=8$TkczZDRaZmFhQ0R4S0JiRHljM1R2eQ$RRWv5A9dNUAMQzlmZ7aLlfRFtOWxOSof1z95Sxdodk8" 
+    email: alice@email.local
+    is_active: true
+    is_staff: true
+    is_superuser: True
+    first_name: Alice
+    last_name: Smith

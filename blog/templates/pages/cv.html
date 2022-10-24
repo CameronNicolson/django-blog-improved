@@ -1,0 +1,107 @@
+{% extends "base.html" %} {% load static %} {% load blog_tags %}
+{% block title %}My Critical Vitae{% endblock %}
+{% block headcss %}
+<link rel="stylesheet" href="{% static 'css/spongy-frontend-1.0.0.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/spongy-publishing-components-1.0.0.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/cv.css' %}">
+{% endblock headcss %}
+{% block content %}
+<div class="govuk-phase-banner govuk-width-container">
+  <p class="govuk-phase-banner__content">
+    <strong class="govuk-tag govuk-phase-banner__content__tag">
+      example
+    </strong>
+    <span class="govuk-phase-banner__text">
+      The details are fake.
+    </span>
+  </p>
+</div>
+<main id="main-content" class="govuk-width-container govuk-main-wrapper" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-third">
+          <div class="gem-c-image-card ">
+            <div class="gem-c-image-card__text-wrapper">
+              <div class="gem-c-image-card__header-and-context-wrapper">
+                  <h3 class="gem-c-image-card__title govuk-heading-xl">
+                    Curriculum vitae
+        </h3>        
+              </div>
+              
+            </div>
+            <figure class="gem-c-image-card__image-wrapper"><img class="gem-c-image-card__image Resume__photo" alt="Abstract photo of computer file" title="CV Icon" loading="auto" src="{% static 'img/ic_launcher-playstore.png' %}" width="124" height="124"></figure>
+          </div>
+            <br>
+        </div>
+        <div class="govuk-grid-column-two-thirds">
+        <section class="Resume__intro">
+        <p class="govuk-body">{% lorem 1 %} </p>
+        <div class="Resume__links">
+          {% contact_us email="work@youremail.local" %} 
+        </div>
+    </section>
+        </div>
+    </div>
+
+<table class="govuk-table">
+  <caption class="govuk-table__caption govuk-table__caption--m">My career highlights</caption>
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th scope="col" class="govuk-table__header">Highlights</th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell">CEO at Company Ltd</td>
+    </tr>
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell">Graduate from a top business school with really good grades</td>
+    </tr>
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell">Awarded best civialian for volunteering work</td>
+    </tr>
+      <tr class="govuk-table__row">
+      <td class="govuk-table__cell">Contributed to free and open source software </td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="Resume">
+    <div class="Resume__links Resume__links--print"> 
+      {% contact_us "email" "mailto" %}
+    </div>
+    <section class="Resume__section">
+        <h2 class="govuk-body govuk-!-font-size-27">Skills</h2>
+        <div>
+            <h3 class="govuk-body govuk-!-font-size-16">Technology</h3>
+            <p class="govuk-body"> C++, Python, HTML, CSS, JavaScript </p>
+            <h3 class="govuk-body govuk-!-font-size-16">Other skills</h3>
+            <p class="govuk-body">Specifications (tech-writer and passionate), hiring/team building, workplace safety (minorly involved in W3C Commitee), agile practices (informed).</p>
+        </div>
+    </section>
+    <section class="Resume__section">
+    <h2 class="govuk-body govuk-!-font-size-27">Experience</h2>
+    <div>
+        <h3 class="govuk-body govuk-!-font-size-16">Web Developer @ SpongyCake <span>Berlin, 2021–present</span></h3> <ul class="govuk-list govuk-list--bullet"> <li>Growing the web team from 2 engineers to dozens to support Gorillas fast and wide expansion plans.</li> <li>Building the <a href="https://example.local" class="govuk-link">SpongyCake</a> website as well as the underlying CMS, promoting the brand and letting editors own the content.</li> <li>Advising on the architecture of other newly built web platforms so they can stand the test of time and support Gorillas objectives.</li> </ul> 
+        <h3 class="govuk-body govuk-!-font-size-16">Web Tech Lead @ N26 GmbH <span>Edinburgh, 2018–2020</span></h3> <ul class="govuk-list govuk-list--bullet"> <li>Grew the web team from 1 to 20+ engineers, now in 4 different offices over the world.</li> <li>Built a culture of feedback, inclusion and respect, now powering a very diverse and high-performing team.</li> <li>Designed and implemented a test automation strategy and deployment pipeline to release multiple projects on a daily basis.</li> </ul> </div> </section>
+         <section class="Resume__section">
+           <h2 class="govuk-body govuk-!-font-size-27">Projects</h2> 
+           <div> 
+            <h3 class="govuk-body govuk-!-font-size-16">Notable open-source projects</h3>
+             <ul class="govuk-list govuk-list--bullet">
+               <li>
+                <a class="govuk-link" href="https://github.com/vector-im/element-web" rel="noopener noreferrer" target="_blank">Element Web</a>, secure messaging webapp built on the Matrix protocol. 
+               </li> 
+                <li>
+                  <a href="https://kde.org/plasma-desktop" rel="noopener noreferrer" class="govuk-link" target="_blank">KDE Plasma Desktop</a>, Desktop environment and window manager based on X11 and Wayland.</li> 
+                  <li><a href="https://sassdoc.com" class="govuk-link" rel="noopener noreferrer" target="_blank">SassDoc</a>, a documentation system for Sass similar to JSDoc for JavaScript.</li> 
+                  <li class="no-print">Find more <a href="/projects" class="govuk-link">open-source contributions from me</a></li> 
+                </ul> </div> </section> <section class="Resume__section"> <h2 class="govuk-body govuk-!-font-size-27">Achievements</h2> <div> <h3 class="govuk-body govuk-!-font-size-16">Publications</h3> 
+                  <ul class="govuk-list"> 
+                  <li><a href="#" rel="noopener noreferrer" target="_blank" class="govuk-link">21st Century Computing</a> (<span role="img" aria-label="copyright" title="copyright">©</span> 1991, Scientific America)</li>
+                   <li><a href="#" rel="noopener noreferrer" target="_blank" class="govuk-link">Python Tips and Tricks</a> (<span role="img" aria-label="copyright" title="copyright">©</span> 2022, Sponge)</li> </ul> <h3 class="govuk-body govuk-!-font-size-16">Honor &amp; Awards</h3> <ul class="govuk-list"> <li>Best Expert in Web Technologies</li> <li>Most Chilled of the Year 2022</li> </ul> </div> </section> 
+        <section class="Resume__section"> 
+          <h2 class="govuk-body govuk-!-font-size-27">Hobbies</h2> 
+          <div> 
+            <p class="govuk-body"> Playing pool, hanging out with my dogs and cats, writing novels, cooking, and the occasional side project that never gets finished. <span role="img" aria-label="grinning face with sweat" title="grinning face with sweat">😅</span> </p> </div> </section> </div>
+</main>
+    {% endblock content %}

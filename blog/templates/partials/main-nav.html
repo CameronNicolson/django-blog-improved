@@ -1,0 +1,12 @@
+<nav aria-label="Menu" class="govuk-header__navigation">
+    <button type="button" class="govuk-header__menu-button govuk-js-header-toggle" aria-controls="navigation" aria-label="Show or hide menu">Menu</button>
+    <ul id="navigation" class="govuk-header__navigation-list">
+    {% for page in pages %}
+        <li class="govuk-header__navigation-item {% if request_url_name == page.PATTERN_NAME %} govuk-header__navigation-item--active{% endif %}">
+        <a class="govuk-header__link" href="{{ page.URL }}">
+          {{ page.TITLE }}
+        </a>
+      </li>
+     {% endfor %}
+    </ul>
+</nav>

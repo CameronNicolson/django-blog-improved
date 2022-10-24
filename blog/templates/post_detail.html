@@ -1,0 +1,60 @@
+{% extends 'base.html' %} {% block content %}
+{% load static %}
+{% load crispy_forms_gds %}
+{% block headcss %}
+<link rel="stylesheet" href="{% static 'css/spongy-frontend-1.0.0.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/spongy-publishing-components-1.0.0.min.css' %}">
+{% endblock headcss %}
+  <div class="govuk-width-container">
+    {% breadcrumbs crumbs %}
+      <main class="govspeak govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+
+    <span class="govuk-caption-l">{{ post.category }}</span>
+
+    <h1 class="govuk-heading-xl">{% block title %} {{ post.title }} {% endblock title %}</h1>
+
+    <p class="govuk-body-l">{{ post.headline }}</p>
+
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+
+    <p class="govuk-body govuk-!-font-size-16 govuk-!-margin-bottom-1">
+        Published {{ post.created_on|date:"d F, Y" }}
+    </p>
+
+    <p class="govuk-body govuk-!-font-size-16 govuk-!-margin-bottom-4">
+      From:
+      {% if author_profile.website %} 
+        <a class="govuk-link" href="{{ author_profile.website }}">{{ post.author }}</a> 
+      {% else %}
+        {{ post.author }}
+      {% endif %}
+    </p>
+
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+    {% autoescape off %}
+      {{ post.content }}
+    {% endautoescape %}
+    <div class="application-notice info-notice">
+      <p class="govuk-body">If you have any questions, you can <a href="{% url 'contact' %}" class="govuk-link govuk-link--no-visited-state">get in touch with us</a>.</p>
+    </div>
+    <hr class="govuk-section-break govuk-section-break--visible govuk-section-break--xl">
+    {% if post.associated_git_repository %}
+    <a href="{{ git }}" class="govuk-link govuk-link--muted">
+      Edit this information?
+    </a>
+    {% endif %}
+    <div class="stat-headline">
+      {% for tag in post.tags.all %}
+        {{tag}}
+      {% endfor %}
+      <p>Published
+      <em></em>{{ post.created_on|date:"d F, Y" }}
+      </p>
+    </div>
+  </div>
+</div>
+        </main>
+      </div>
+{% endblock content %}

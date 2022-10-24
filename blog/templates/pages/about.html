@@ -1,0 +1,150 @@
+{% extends "base.html" %} 
+{% load static %}
+        {% block headcss %}
+        <link rel="stylesheet" href="{% static 'css/spongy-frontend-1.0.0.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/spongy-publishing-components-1.0.0.min.css' %}">
+        {% endblock headcss %}
+        {% load crispy_forms_gds %}
+{% block content %}
+  <div class="govuk-width-container ">
+    {% breadcrumbs crumbs %}
+      <main id="main-content" role="main">
+          <header class="govuk-grid-row">
+              <div class="govuk-grid-column-two-thirds">
+
+<div class="gem-c-title govuk-!-margin-top-8 govuk-!-margin-bottom-8">
+      <span class="govuk-caption-xl gem-c-title__context">
+    Software Developer
+  </span>
+
+
+  <h1 class="gem-c-title__text govuk-heading-xl">
+    Django Bloggs
+  </h1>
+</div>
+  </div>
+</header>
+          <div class="govuk-grid-row">
+                <div class="govuk-grid-column-one-third ">
+                  <div class="gem-c-image-card ">
+                  <div class="gem-c-image-card__text-wrapper">
+                 
+                  </div>
+
+                    <figure class="gem-c-image-card__image-wrapper"><img class="gem-c-image-card__image" title="Headshot of Richard Stallman in Svalbard, wearing a snowmobile suit."  alt="Portrait of Richard Stallman in Svalbard, wearing a snowmobile suit." loading="auto" src="{% static 'img/richard-stallman.jpg' %}" width="300" height="200">
+                    <figcaption><p class="gem-c-image-card__context">Your photo</p></figcaption>
+                    </figure>
+                  </div>
+                  <div>
+                    <nav class="gem-c-contents-list" aria-label="Contents" role="navigation">
+                      <h2 class="gem-c-contents-list__title">
+                        Contents
+                  </h2>
+                      <ol class="gem-c-contents-list__list">
+                          <li class="gem-c-contents-list__list-item gem-c-contents-list__list-item--dashed">
+                            <a class="gem-c-contents-list__link govuk-link govuk-link--no-underline" href="#biography">Biography</a>
+                          </li>
+                          <li class="gem-c-contents-list__list-item gem-c-contents-list__list-item--dashed">
+                            <a class="gem-c-contents-list__link govuk-link govuk-link--no-underline" href="#role">Role</a>
+                  
+                          </li>
+                          <li class="gem-c-contents-list__list-item gem-c-contents-list__list-item--dashed">
+                            <a class="gem-c-contents-list__link govuk-link govuk-link--no-underline" href="#pc-setup">PC Setup ~what I run</a>
+                          </li>
+                      </ol>
+                  </nav>
+                  </div>
+                </div>
+  <div class="govuk-grid-column-two-thirds">
+    <h2 class="govuk-heading-m" id="biography">Biography</h2>
+    <p class="govuk-body-l">I am a software developer with an interest in Python and Free Software.</p>
+    <p class="govuk-body">{% lorem 1 %}</p>
+    <h2 class="govuk-heading-s">Programming Career</h2>
+    <p class="govuk-body">I am a freelancer programmer, offering Software consultancy.</p>
+    <h2 class="govuk-heading-m" id="role">Founder of Peartree Productions</h2>
+    <p class="govuk-body">A director's responsibilities are:</p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>delivery deployment</li>
+      <li>stream processing</li>
+      <li>digital transformation</li>
+      <li>project planning</li>
+      <li>financial balancing</li>
+      <li>asset management</li>
+      <li>location maintaince</li>
+      <li>recruitment</li>
+    </ul>
+    <h2 class="govuk-heading-s">Previous Roles</h2>
+    <p class="govuk-body">I was the cheif editor at Django Newspaper.</p>
+    <h2 class="govuk-heading-m" id="pc-setup">PC Setup ~what I use</h2>
+    <p class="govuk-body">My setup includes a desktop PC and a laptop for travels.</p>
+    <table class="govuk-table">
+      <caption class="govuk-table__caption govuk-table__caption--s">Desktop PC</caption>
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header"></th>
+          <th scope="col" class="govuk-table__header"></th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Host</th>
+          <td class="govuk-table__cell">Custom build</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">OS</th>
+          <td class="govuk-table__cell">Trisquel GNU/Linux</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">CPU</th>
+          <td class="govuk-table__cell">AMD threadripper</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">GPU</th>
+          <td class="govuk-table__cell">AMD Radeon 3070</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Memory</th>
+          <td class="govuk-table__cell">16GiB</td>
+        </tr>
+      </tbody>
+    </table>
+    <table class="govuk-table">
+      <caption class="govuk-table__caption govuk-table__caption--s">Laptop</caption>
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header"></th>
+          <th scope="col" class="govuk-table__header"></th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Host</th>
+          <td class="govuk-table__cell">Thinkpad T430</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">OS</th>
+          <td class="govuk-table__cell">Fedora i3 Spin</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">CPU</th>
+          <td class="govuk-table__cell">8th Gen Intel i3</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">GPU</th>
+          <td class="govuk-table__cell">Onboard Intel graphicss</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Memory</th>
+          <td class="govuk-table__cell">4GiB</td>
+        </tr>
+      </tbody>
+    </table>
+    <footer>
+      <small>
+        Figure "Your Photo", photograph by Håkon Wium Lie, <a rel="license" class="govuk-footer__link" href="https://creativecommons.org/licenses/by/2.0/">released under CC BY</a>
+      </small>
+    </footer>
+  </div>
+      </main>
+  </div>
+{% endblock content %}

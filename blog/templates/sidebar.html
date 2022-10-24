@@ -1,0 +1,19 @@
+{% block sidebar %}
+    <!-- Sidebar Widgets Column -->
+    <aside class="sidebar" >
+        <h3 class="govuk-heading-s">Ways to subscribe</h3>
+        <ul class="govuk-list govuk-list--spaced">
+  <li>
+    <a class="govuk-link govuk-link--no-visited-state govuk-link--no-underline" href="{% url 'rss_feed' %}">
+        RSS Feed
+    </a>
+  </li>
+  <li>
+    <a class="govuk-link govuk-link--no-visited-state govuk-link--no-underline" href="{% url 'atom_feed' %}">
+        Atom Feed
+    </a>
+  </li>
+</ul>
+    </aside>
+
+{% endblock sidebar %}

@@ -1,0 +1,18 @@
+- model: blog.media 
+  pk: 1
+  fields:
+    title: Python Logo
+    mediatype: IMG
+    url: https://wikiless.org/media/wikipedia/commons/thumb/f/f8/Python_logo_and_wordmark.svg/640px-Python_logo_and_wordmark.svg.png
+- model: blog.media 
+  pk: 2
+  fields:
+    title: Evening view across Carlton Hill towards the Castle
+    mediatype: IMG
+    url: https://wikiless.org/media/wikipedia/commons/thumb/7/79/Evening_view_across_Carlton_Hill_towards_the_Castle_%2813164472813%29.jpg/1280px-Evening_view_across_Carlton_Hill_towards_the_Castle_%2813164472813%29.jpg
+- model: blog.media 
+  pk: 3
+  fields:
+    title: Panathinaiko Stadion
+    mediatype: IMG
+    url: https://wikiless.org/media/wikipedia/commons/thumb/6/6a/Panathinaiko-Stadion_2014-5.JPG/640px-Panathinaiko-Stadion_2014-5.JPG

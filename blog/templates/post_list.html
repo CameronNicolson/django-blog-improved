@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% load static %}
+{% load blog_tags %}
+{% block headcss %}
+<link rel="stylesheet" href="{% static 'css/spongy-frontend-1.0.0.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/spongy-publishing-components-1.0.0.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/base.css' %}">
+{% endblock headcss %}
+
+{% block content %}
+<div class="govuk-width-container">
+  <div class="govuk-breadcrumbs">
+    <ol class="govuk-breadcrumbs__list">
+      <li class="govuk-breadcrumbs__list-item">
+        <a href="{% url 'home' %}" class="govuk-back-link">Back to home</a>
+      </li>
+    </ol>
+  </div>
+  <main id="main-content" role="main">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+    <div class="gem-c-title govuk-!-margin-top-8 govuk-!-margin-bottom-8">
+        <h1 class="gem-c-title__text govuk-heading-xl">{{ search_title }}</h1>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="govuk-width-container">
+  <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-third">
+          <h3 class="govuk-heading govuk-heading-s">Topic</h3>
+          <ul class="govuk-list">
+            {% for tag in tags %}
+              {% if tag.name == filter_categories %}
+              <li class="list-item--disabled">
+                {{ tag|capfirst }}
+              </li>
+              {% else %}
+              <li>
+                <a class="govuk-link govuk-link--no-underline govuk-link--no-visited-state" href="{% url 'search' %}?cat={{ tag }}">{{ tag|capfirst }}</a>
+              </li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+    </div>
+    <div class="govuk-grid-column-two-thirds">
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+        <h2 class="govuk-heading-s govuk-visually-hidden">
+          {{ total_post_count }}
+          search result{{ total_post_count|pluralize }} 
+          </h2>
+          <p class="govuk-body">{{ total_post_count }} {{ page.paginator.count }} 
+            search result{{ total_post_count|pluralize }} {% if filter_categories %} about <strong>{{ filter_categories }}</strong> {% endif %} </p>
+          </div>
+          <div class="govuk-grid-column-one-third">
+            <ul class="gem-c-subscription-links__list gem-c-subscription-links__list--small">     
+              <li class="gem-c-subscription-links__list-item gem-c-subscription-links__list-item--small">
+                <a class="govuk-link govuk-link--no-underline gem-c-subscription-links__item  gem-c-subscription-links__item--link govuk-link--no-visited-state" href="{% url 'rss_feed' %}">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" class="gem-c-subscription-links__icon" focusable="false" fill="currentColor" aria-hidden="true"><path d="M1.996 11A2 2 0 0 0 0 12.993c0 1.101.895 1.99 1.996 1.99 1.106 0 2-.889 2-1.99a2 2 0 0 0-2-1.993zM.002 5.097V7.97c1.872 0 3.632.733 4.958 2.059A6.984 6.984 0 0 1 7.015 15h2.888c0-5.461-4.443-9.903-9.9-9.903zM.006 0v2.876c6.676 0 12.11 5.44 12.11 12.124H15C15 6.731 8.273 0 .006 0z"></path>
+                  </svg>Subscribe to feed
+      </a>
+              </li>
+          </ul>
+          </div>
+      </div>
+        <hr class="govuk-section-break govuk-section-break--s">
+        {% if object_list %}
+        <ul class="gem-c-document-list">
+        {% for post in object_list %}
+              <li class="gem-c-document-list__item">
+                    <h3 class="govuk-heading-s govuk-!-margin-bottom-2">
+                      <a class="gem-c-document-list__item-title govuk-link" href="{% url 'post_detail' post.slug  %}">
+                          {{ post.title }}
+                      </a>
+                    </h3>
+                    <p class="gem-c-document-list__item-description">
+                      {{ post.headline }}
+                    </p>
+                      <ul class="gem-c-document-list__item-metadata">
+                              <li class="gem-c-document-list__attribute">
+                                <time datetime="{{ post.created_on|date:'Y-m-d' }}">{{ post.updated_on|date:'d F Y'}} </time>
+                              </li>
+                              <li class="gem-c-document-list__attribute">
+                                {{ post.category }}
+                            </li>
+                      </ul>
+                </li>
+        {% endfor %}
+        </ul>
+        {% else %}
+         <h3 class="govuk-heading-s govuk-!-margin-bottom-2">Nothing to show</h3>
+         <p class="govuk-body">{% if filter_categories %} you searched for "{{ filter_categories }}" {% endif %}</p>
+        {% endif %}
+        <nav class="govuk-pagination govuk-pagination--block" role="navigation" aria-label="results">
+        {% if page_obj.has_previous %}
+        <div class="govuk-pagination__prev">
+          <a class="govuk-link govuk-pagination__link" href="?page={{ page_obj.previous_page_number }}{% if query %}&cat={{ query }}{% endif %}" rel="prev">
+            <svg class="govuk-pagination__icon govuk-pagination__icon--prev" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
+              <path d="m6.5938-0.0078125-6.7266 6.7266 6.7441 6.4062 1.377-1.449-4.1856-3.9768h12.896v-2h-12.984l4.2931-4.293-1.414-1.414z"></path>
+            </svg>
+            <span class="govuk-pagination__link-title">Previous</span><span class="govuk-visually-hidden">:</span>
+            <span class="govuk-pagination__link-label">{{ page_obj.previous_page_number }} of {{ page_obj.paginator.num_pages }}</span></a>
+        </div>
+        {% endif %}
+        {% if page_obj.has_next %}
+      <div class="govuk-pagination__next">
+        <a class="govuk-link govuk-pagination__link" href="?page={{ page_obj.next_page_number }}{% if query %}&cat={{ query }}{% endif %}" rel="next"> <svg class="govuk-pagination__icon govuk-pagination__icon--next" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
+            <path d="m8.107-0.0078125-1.4136 1.414 4.2926 4.293h-12.986v2h12.896l-4.1855 3.9766 1.377 1.4492 6.7441-6.4062-6.7246-6.7266z"></path>
+          </svg> <span class="govuk-pagination__link-title">Next</span><span class="govuk-visually-hidden">:</span>
+          <span class="govuk-pagination__link-label">{{ page_obj.next_page_number }} of {{ page_obj.paginator.num_pages }}</span></a>
+      </div>
+        {% endif %}
+      </nav>
+
+    </div>
+    </div>
+  </main>
+</div>
+{% endblock content%}
