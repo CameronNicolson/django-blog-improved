@@ -5,10 +5,14 @@ A blog application, with popular features. Build a blog with Django framework.
 ![screenshot of blog homepage](docs/_static/screenshot.gif "screenshot of homepage of blog")
 
 ## Table of contents
+
+### Introduction
 1. [Features](#features)
 2. [Prerequisites](#prerequisites)
+### Installation
 3. [Install](#install)
 4. [Testing](#testing)
+### Develoeprs
 5. [Getting Involved](#getting-involved)
 6. [Notes](#notes)
 7. [License](#license)
@@ -75,6 +79,9 @@ You can make your own or use this command:
 ```
 python -c 'from django.core.management.utils import get_random_secret_key; \
             print(get_random_secret_key())'
+```
+```
+sed -i 's/SECRET_KEY =/SECRET_KEY = "above output inside double speech marks"/g' config/settings.py
 ```
 ### Step 3: Connect a database
 ```
