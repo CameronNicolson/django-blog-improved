@@ -210,6 +210,8 @@ Not sure? check out djangogirls’ <a class="reference external" href="https://t
 </pre></div>
 </div>
 <p>Then transfer the output into <code class="docutils literal notranslate"><span class="pre">config/settings.py</span></code>. For example:</p>
+<p>If the install is happening on a *nix machine, <strong>optional</strong> <code class="docutils literal notranslate"><span class="pre">sed</span> <span class="pre">-i</span> <span class="pre">'s/SECRET_KEY</span> <span class="pre">=/SECRET_KEY</span> <span class="pre">=</span> <span class="pre">&quot;replace</span> <span class="pre">with</span> <span class="pre">your</span> <span class="pre">code&quot;/g'</span> <span class="pre">config/settings.py</span></code> will edit the line for you.</p>
+<p>Your settings now should look similar to the example below.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SECRET_kEY</span> <span class="o">=</span> <span class="s2">&quot;+mh)7c$31h4rp=dkdo!not-copy/this(%q&amp;p^gb*)em%k#-$=06=zs(*&quot;</span>
 </pre></div>
 </div>
