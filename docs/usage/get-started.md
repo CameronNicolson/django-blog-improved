@@ -99,9 +99,16 @@ python -c 'from django.core.management.utils import get_random_secret_key; \
             print(get_random_secret_key())'
 ```
 Then transfer the output into `config/settings.py`. For example:
+
+If the install is happening on a *nix machine, __optional__ `sed -i 's/SECRET_KEY =/SECRET_KEY = "replace with your code"/g' config/settings.py` will edit the line for you.
+
+Your settings now should look similar to the example below.
+
 ```
 SECRET_kEY = "+mh)7c$31h4rp=dkdo!not-copy/this(%q&p^gb*)em%k#-$=06=zs(*"
 ```
+
+ 
 
 ### Step 3: Connect a database
 
