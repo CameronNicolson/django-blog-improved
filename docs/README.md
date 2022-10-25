@@ -27,3 +27,14 @@ pip install -r requirements.txt
 ```
 make html
 ``` 
+## Host on Codeberg Pages 
+
+This instruction is specific [Codeberg](https://codeberg.org)'s configuration. Codeberg hosts your files by looking for a directory called `pages`.
+
+Sphinx likes to place html inside `_build`, this is not ideal for Codeberg. But we can change this behavior with the following, make sure you are in the root of docs.
+
+```
+sphinx-build . pages
+```
+
+[Read more about Codeberg Pages on their website](https://codeberg.page/)
