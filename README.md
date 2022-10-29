@@ -1,5 +1,5 @@
 # Django Blog Improved
-![Chat on Matrix](docs/_static/chat-on-matrix.svg "screenshot of homepage of blog")
+![Chat on Matrix](docs/_static/chat-on-matrix.svg "Chat on Matrix")
 
 A blog application, with popular features. Build a blog with Django framework.
 
