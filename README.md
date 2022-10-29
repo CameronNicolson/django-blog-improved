@@ -1,4 +1,5 @@
 # Django Blog Improved
+![Chat on Matrix](docs/_static/chat-on-matrix.svg "screenshot of homepage of blog")
 
 A blog application, with popular features. Build a blog with Django framework.
 
@@ -54,7 +55,7 @@ python --version; pip --version
 When successful, you are ready for the install guides.
 
 ## Install 
-This section contains install instructions. Check out the [detailed docs for more](https://spongycake.codeberg.page/django-blog-improved/@master/docs/pages/get-started.html#installation).
+This section contains install instructions. Check out the [detailed docs for more](https://spongycake.codeberg.page/django-blog-improved/@master/docs/pages/usage/get-started.html#installation).
 ### Download
 Gain a copy of the project.
 ```
@@ -85,9 +86,9 @@ sed -i 's/SECRET_KEY =/SECRET_KEY = "above output inside double speech marks"/g'
 ```
 ### Step 3: Connect a database
 ```
-python manage.py makemigrations \
+python manage.py makemigrations blog \
 
-python manage.py migrate 
+python manage.py migrate blog
 ```
 SQLite is the default. Please read the official Django [documentation about databases](https://docs.djangoproject.com/en/4.1/ref/databases/).
 
@@ -136,13 +137,13 @@ Check out the [get involved section](#getting-involved) to improve the improved.
 ## Getting involved
 I personally enjoy software that has a collective effort attached. So please consider sharing your ideas and improvements.
 
-Discussion in [#djangoblog:one.ems.host: ![#djangoblog:one.ems.host](https://img.shields.io/matrix/djangoblog:one.ems.host)](https://matrix.to/#/#djangoblog:one.ems.host)
+Discussion in Matrix [#djangoblog:one.ems.host](https://matrix.to/#/#djangoblog:one.ems.host).
 
 ### How to contribute?
 
 The challenge is to bring Django Blog Improved into a state where end-users  are protected from learning python and can pick-up and use easily.
 
-Look at the [roadmap](#next-up) above, essentially that is my Todo / hopeful wishes.
+Look at the [roadmap kanban](https://codeberg.org/spongycake/django-blog-improved/projects), essentially that is my Todo / hopeful wishes.
 
 You are invited to assign yourself to a task. We can use the project board to organise ourselves.
 
@@ -152,14 +153,14 @@ Upon receiving your shared code. You retain your own copyright to all code submi
 
 This is typical practice, perhaps obvious to some, but I want to emphasis that -- anyone wanting to help will be treated with utmost respect.
 
-# Notes
+## Notes
 
-## Rigid Styles
+### Rigid Styles
 The style sheets & JavaScript elements are "hard-linked" to Spongy Frontend. 
 
 In other words, if you wish for Twitter Bootstrap, you will need to apply extra work to incorporate that design.
 
-## Commenting system
+### Commenting system
 You cannot comment on posts. Why? Though, the code remains inside the program (you are free to enable) it is unreachable upon install. 
 
 Think of the risks; the current comment system is simple and holds no protection, akin to paper armour. Spam and bots could exploit this situation.
@@ -174,7 +175,7 @@ All files are copyright of 2022 SpongyCake, unless stated otherwise.
 
 Django Blog Improved is released under AGPLv3. 
 
-We conventionally placed the license in a file called LICENSE.txt. 
+We conventionally placed the license in a file called [LICENSE.txt](./LICENSE.txt). 
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
