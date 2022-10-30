@@ -1,5 +1,5 @@
 # Django Blog Improved
-![Chat on Matrix](docs/_static/chat-on-matrix.svg "Chat on Matrix")
+[![Chat on Matrix](docs/_static/chat-on-matrix.svg "Chat on Matrix")](https://matrix.to/#/#djangoblog:one.ems.host)
 
 A blog application, with popular features. Build a blog with Django framework.
 
@@ -7,16 +7,16 @@ A blog application, with popular features. Build a blog with Django framework.
 
 ## Table of contents
 
-### Introduction
-1. [Features](#features)
-2. [Prerequisites](#prerequisites)
-### Installation
-3. [Install](#install)
-4. [Testing](#testing)
-### Develoeprs
-5. [Getting Involved](#getting-involved)
-6. [Notes](#notes)
-7. [License](#license)
+* Introduction
+  * [Features](#features)
+  * [Prerequisites](#prerequisites)
+* Installation
+  * [Install](#install)
+  * [Testing](#testing)
+* Contribute
+  * [Getting Involved](#getting-involved)
+  * [Notes](#notes)
+  * [License](#license)
 
 ## Features 
 
@@ -121,18 +121,6 @@ Browse a testserver with our test data applied.
 python manage.py testserver blog/fixtures/*.yaml
 ```
 If a test fails, please consider [reporting the issue](https://codeberg.org/spongycake/django-blog-improved/issues) on the project's bug tracker. The next step is to press `New Issue` after loading the webpage.
-
-## Roadmap
-
-**Author Profiles** - Build public profiles and see details about your blogging activity. Desirable if you are a team of writers working together
-
-**Gallery** - handle images, videos and text documents presented as a gallery. Embed galleries easily with a simple shortcut
-
-**Media Upload** - handle file uploads, copy to an external cloud storage, such as S3 Bucket, or store locally
-
-**More HTML theme choices** - Presentation choice would allow site builders to choose between different web libraries (Bootstrap Twitter, Material Design Lite), or supply their custom styles instead. Remove the need of heavy template editing. Crispy Forms handles this concept well and would be our spiritual guide in this to remedy this 
-
-Check out the [get involved section](#getting-involved) to improve the improved.
 
 ## Getting involved
 I personally enjoy software that has a collective effort attached. So please consider sharing your ideas and improvements.
