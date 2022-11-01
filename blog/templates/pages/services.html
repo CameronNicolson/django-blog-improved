@@ -3,26 +3,23 @@
 {% load crispy_forms_gds %}
 {% block content %}
 <div class="govuk-width-container">
-    <div class="govuk-grid-row">
+{% breadcrumbs crumbs %}
+</div>
+
+<main class="govuk-main-wrapper" id="main-content" role="main"> 
+<div class="govuk-width-container govuk-!-margin-bottom-8">
+	<div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
-        {% breadcrumbs crumbs %}
         <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">Services</h1>
-      </div>
-    </div>
-  </div>
-  <div class="govuk-width-container">
-    <div class="govuk-grid-row app-covid-banner-bottom">
-      <div class="govuk-grid-column-two-thirds">
         <h2 class="govuk-heading-m">We provide a range of services</h2>
         <p class="govuk-body">Our staff work 24/7 365 days a year.</p>
         <p class="govuk-body">Small and medium-sized enterprises to Fortune 500.</p>
         <p class="govuk-body">9 in 10 people said our service met their fullest satisfaction. With prices competively compared with the industry watchdog standards.</p>
-        <a class="govuk-link govuk-link--inverse app-cta-link" href="">Find out what the rules are</a>
       </div>
     </div>
-  </div>
+</div>
 <div class="govuk-width-container">
-    <div class="govuk-grid-row">
+<div class="govuk-grid-row">
       <div class="govuk-grid-column-one-third">
         <div class="app-danger-box">
           <h2 class="govuk-heading-m">Find out why we are rated the best</h2>
@@ -116,5 +113,6 @@
         </div>
       </div>
     </div>
-  </div>
+</main>
+</div>
 {% endblock content %}
