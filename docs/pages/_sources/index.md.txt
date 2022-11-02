@@ -28,4 +28,5 @@ overview/features
 :hidden:
 :maxdepth: 2
 usage/get-started
+usage/navigation
 ```
