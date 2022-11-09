@@ -1,7 +1,8 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
-from django.views.generic import ListView, TemplateView
+from django.views.generic import DetailView, ListView, TemplateView
+from django.views.generic.detail import SingleObjectMixin
 from django.urls import reverse
 from .forms import CommentForm
 from .models import Post, PostViaGit, PostRedirect, User, UserProfile
@@ -9,13 +10,13 @@ from taggit.models import Tag
 from django.db.models.base import ModelBase
 from django.db.models import Q, QuerySet
 
+import operator
+
 def filter_classes(queryset, model_list):
     filtered_list = []
     for obj in queryset:
         for model in model_list:
-            if isinstance(obj, model):
-                continue
-            else:
+            if not isinstance(obj, model):
                 filtered_list.append(obj)
     return filtered_list
 
@@ -56,7 +57,7 @@ class PostList(ListView):
             cats = self.request.GET.get("cat").split(",")
             # remove whitespaces enteries
             cats = [cat for cat in cats if cat != ""]
-            # only get posts if parameters are detected
+            # only filter by category if string parameters are detected
             if len(cats) > 0:
                 # get posts with a matching category
                 all_posts = Post.objects.filter(status=1, category__name__in=cats).select_subclasses(PostRedirect)
@@ -101,42 +102,30 @@ def get_comments(request, post):
         comment_form = CommentForm()
     return {"all_active": comments, "comment_form": comment_form, "new_comment": new_comment}
 
-class PostView(TemplateView):
-    template_name = "post_detail.html"
+class PublicPostMixin(object):
+    def get_queryset(self): 
+        return Post.objects.filter(status=1)
 
+class PostView(DetailView, PublicPostMixin, SingleObjectMixin):
+    template_name = "post_detail.html"
+    model = Post
+    
     def get_context_data(self, **kwargs):
         context = super(PostView, self).get_context_data(**kwargs)
-        post = get_object_or_404(Post, slug=context["slug"])
-        context["post"] = post
+        post = self.get_object()
         # get comments
         comments = get_comments(self.request, post)
         context["comments"] = comments["all_active"]
         context["new_comment"] = comments["new_comment"]
         context["comment_form"] = comments["comment_form"]
         context["crumbs"] = [("Home", reverse("home"),),("Posts", reverse("post_list"),),(post.title, None,)]
-        if post.collabaration_mode == Post.CollabrationMode.YES:
-            post = get_object_or_404(PostViaGit, slug=post.slug)
+        if operator.eq(post.collabaration_mode, Post.CollabrationMode.YES):
+            post = get_object_or_404(PostViaGit, post_ptr_id=post.pk)
         try:
-            author_profile = UserProfile.objects.get(id=post.author.id)
+            author_profile = UserProfile.objects.get(pk=post.author.id)
             context["author_profile"] = author_profile
         except ObjectDoesNotExist:
-            context["author_profile"] = {}        
+            context["author_profile"] = {}
+        context["post"] = post
         return context
 
-def post_detail(request, slug):
-    template_name = "post_detail.html"
-    post = get_object_or_404(Post, slug=slug)
-    git = post.__class__.__name__
-    comments = get_comments(request, post)
-
-    return render(
-        request,
-        template_name,
-        {
-            "post": post,
-            "git": git,
-            "comments": comments["all_active"],
-            "new_comment": comments["new_comment"],
-            "comment_form": comments["comment_form"],
-        },
-    )

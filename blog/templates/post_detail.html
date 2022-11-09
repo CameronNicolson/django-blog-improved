@@ -41,13 +41,13 @@
     </div>
     <hr class="govuk-section-break govuk-section-break--visible govuk-section-break--xl">
     {% if post.associated_git_repository %}
-    <a href="{{ git }}" class="govuk-link govuk-link--muted">
+    <a href="{{ post.associated_git_repository }}" class="govuk-link govuk-link--muted">
       Edit this information?
     </a>
     {% endif %}
     <div class="stat-headline">
       {% for tag in post.tags.all %}
-        {{tag}}
+        {{ tag }}
       {% endfor %}
       <p>Published
       <em></em>{{ post.created_on|date:"d F, Y" }}

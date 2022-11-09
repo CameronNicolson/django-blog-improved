@@ -72,9 +72,42 @@
     category: 2
     slug: my-videos
     cover_art: 2
+- name: draft post
+  description: a post in an editing phase and private
+  model: blog.post
+  pk: 6
+  fields:
+    title: Working title
+    content: I am a draft, still working on my ideas
+    author: 1
+    created_on: 2022-05-25T14:02:00.0+00:00
+    updated_on: 2022-05-25T14:02:00.0+00:00
+    status: 0
+    category: 1
+    slug: working-title
+- name: post with code
+  description: Blog post that joins the git repository
+  model: blog.post
+  pk: 7
+  fields:
+    title: My coding project
+    content: The source code is located within the post
+    author: 1
+    created_on: 2022-05-25T14:02:00.0+00:00
+    updated_on: 2022-05-25T14:02:00.0+00:00
+    status: 1
+    category: 1
+    collabaration_mode: 1
+    slug: coding-project
+- name: attach git 
+  model: blog.postviagit
+  pk: 7
+  fields: 
+    collabaration_mode: 1
+    associated_git_repository: https://codeberg.org/spongycake/django-blog-improved
 # redirect links
 - name: video redirect link
   model: blog.postredirect
   pk: 5
   fields:
-    redirect_url: "https://myvideos.local" 
+    redirect_url: "https://myvideos.local"
