@@ -1,5 +1,4 @@
-from django.urls import include, path
-
+from django.urls import include, path, re_path
 from . import views
 from .feeds import AtomSiteNewsFeed, LatestPostsFeed
 

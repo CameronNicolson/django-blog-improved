@@ -109,7 +109,7 @@ class PublicPostMixin(object):
 class PostView(DetailView, PublicPostMixin, SingleObjectMixin):
     template_name = "post_detail.html"
     model = Post
-    
+
     def get_context_data(self, **kwargs):
         context = super(PostView, self).get_context_data(**kwargs)
         post = self.get_object()

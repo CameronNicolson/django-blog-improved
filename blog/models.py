@@ -88,7 +88,7 @@ class Post(models.Model):
     
     def get_post_type(self):
         return self._meta.model_name
-
+    
     def get_absolute_url(self):
         return reverse("post_detail", kwargs={"slug": str(self.slug)})
 
@@ -161,3 +161,4 @@ def create_user_profile(sender, instance, created, **kwargs):
 def update_postredirect_slug(sender, instance, **kwargs):
     instance.slug = "{0}s-redirect".format(slugify(instance.title))
     return instance
+

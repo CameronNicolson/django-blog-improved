@@ -19,6 +19,15 @@ print(ROOT_DIR)
 # SECURITY WARNING: don't run with debug turned on in production
 DEBUG = True
 
+# Trailing URL
+#
+# URLs that fail to match any patterns in URLconf are redirected to
+# the same URL with a slash appended "/".
+# 
+# Note, any reserved URLs may break if you turn this option off.
+APPEND_SLASH = True
+# https://docs.djangoproject.com/en/dev/ref/settings/#append-slash
+
 # Local time zone. Choices are
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # though not all of them may be available with every OS.
@@ -95,6 +104,7 @@ DJANGO_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.sitemaps",
+    "django.contrib.sites",
 ]
 
 THIRD_PARTY_APPS = [
@@ -103,6 +113,7 @@ THIRD_PARTY_APPS = [
     "django_summernote",
     "phonenumber_field",
     "taggit",
+    "redirects",
 ]
 
 LOCAL_APPS = [
@@ -123,6 +134,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "redirects.middleware.RedirectMiddleware",
 ]
 
 # MEDIA
