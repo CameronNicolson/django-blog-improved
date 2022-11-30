@@ -1,3 +1,4 @@
+from django.core.exceptions import PermissionDenied
 from django.test import TestCase, Client, RequestFactory
 from blog.models import Post, User, Tag
 from blog.views import PostList
@@ -26,20 +27,61 @@ class TestPosts(TestCase):
         num_expected_posts_in_fixtures = 5
         self.assertEquals(num_of_posts_in_queryset, num_expected_posts_in_fixtures)
 
-    def test_using_identical_slugs_errors(self):
-        author = User.objects.get(pk=1)
-        category = Tag.objects.get(pk=1)
-        first_post = Post.objects.create(slug="first-post",
-        author=author, category=category, title="First post")
+    def test_post_identical_slug_errors(self):
         # testing it raises exception 
-        with self.assertRaises(IntegrityError):
-            Post.objects.create(slug="first-post",
-            author=author, category=category, title="Second post")
+        with self.assertRaises(IntegrityError) as raised:
+            Post.objects.create(slug="listen-to-your-customers",
+            author=User.objects.get(pk=1), category=Tag.objects.get(pk=1))
+            self.assertEquals(
+                "UNIQUE constraint failed",
+                str(raised.exception)
+            )
 
     def test_get_404_viewing_draft(self):
         client = Client()
         slug = Post.objects.get(pk=6).slug
         response = client.get(reverse("post_detail", kwargs={"slug": slug}))
-        self.assertEquals(response.status_code, 404)
-        self.assertTemplateUsed(response, "404.html")
+        self.assertEquals(
+            response.status_code, 
+            404
+        )
+        self.assertTemplateUsed(
+            response, 
+            "404.html"
+        )
+
+    def test_basic_user_create_post_permissions_denied(self):
+        basic_user = User.objects.get(username="basic")
+        has_perm = basic_user.has_perm('blog.add_post')
+        self.assertEquals(
+            has_perm, 
+            False
+        )
+
+    def test_basic_user_edit_post_permissions_denied(self):
+        basic_user = User.objects.get(username="basic")
+        has_perm = basic_user.has_perm('blog.change_post')
+        self.assertEquals(
+            has_perm, 
+            False
+        )
+
+    def test_basic_user_delete_permissions_denied(self):
+        basic_user = User.objects.get(username="basic")
+        has_perm = basic_user.has_perm('blog.delete_post')
+        self.assertEquals(
+            has_perm, 
+            False
+        )
+
+    def test_basic_user_view_permissions_denied(self):
+        # realise that basic users are denied from viewing
+        # since some posts are considered private,
+        # or not ready for the public sphere
+        basic_user = User.objects.get(username="basic")
+        has_perm = basic_user.has_perm('blog.view_post')
+        self.assertEquals(
+            has_perm, 
+            False
+        )
 
