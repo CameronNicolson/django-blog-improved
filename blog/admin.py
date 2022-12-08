@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django_summernote.admin import SummernoteModelAdmin
+from django.contrib.auth.models import User
+from django.contrib.auth.admin import UserAdmin
 
 from .models import Comment, Post, PostViaGit, PostRedirect, Media, TagGroup, UserProfile
 from taggit.models import Tag
@@ -56,6 +58,13 @@ class MediaAdmin(admin.ModelAdmin):
 class TagGroupAdmin(admin.ModelAdmin):
     pass
 
-@admin.register(UserProfile)
-class UserProfile(admin.ModelAdmin):
-    pass
+class UserProfileAdmin(admin.StackedInline):
+    model = UserProfile
+    max_num = 1
+    can_delete = False
+
+class UserAdmin(UserAdmin):
+    inlines = (UserProfileAdmin,)
+
+admin.site.unregister(User)
+admin.site.register(User, UserAdmin)
