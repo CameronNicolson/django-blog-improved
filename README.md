@@ -34,6 +34,8 @@ A blog application, with popular features. Build a blog with Django framework.
 
 * **Collaboration link** - Enable an edit link that directs to your git server
 
+* **CV template** - Stylish way to show off your work
+
 **And more**
 * Wysiwyg editor 
 * Sitemap
