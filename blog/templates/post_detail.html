@@ -2,12 +2,12 @@
 {% load static %}
 {% load crispy_forms_gds %}
 {% block headcss %}
-<link rel="stylesheet" href="{% static 'css/spongy-frontend-1.0.0.min.css' %}">
 <link rel="stylesheet" href="{% static 'css/spongy-publishing-components-1.0.0.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/spongy-frontend-1.0.0.min.css' %}">
 {% endblock headcss %}
   <div class="govuk-width-container">
     {% breadcrumbs crumbs %}
-      <main class="govspeak govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
+      <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
 
@@ -33,11 +33,19 @@
     </p>
 
     <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+    <div class="gem-c-govspeak-html-publication">
+	    <div class="gem-c-govspeak govspeak">
+		    <h3>what</h3>
+	    <p>hello</p>
     {% autoescape off %}
       {{ post.content }}
     {% endautoescape %}
-    <div class="application-notice info-notice">
+    </div>
+    </div>
+    <div class="govspeak">
+    <div class="info-notice">
       <p class="govuk-body">If you have any questions, you can <a href="{% url 'contact' %}" class="govuk-link govuk-link--no-visited-state">get in touch with us</a>.</p>
+    </div>
     </div>
     <hr class="govuk-section-break govuk-section-break--visible govuk-section-break--xl">
     {% if post.associated_git_repository %}
@@ -45,6 +53,7 @@
       Edit this information?
     </a>
     {% endif %}
+    <div class="govspeak">
     <div class="stat-headline">
       {% for tag in post.tags.all %}
         {{ tag }}
@@ -52,6 +61,7 @@
       <p>Published
       <em></em>{{ post.created_on|date:"d F, Y" }}
       </p>
+    </div>
     </div>
   </div>
 </div>
