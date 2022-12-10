@@ -19,6 +19,9 @@ class UserProfile(models.Model):
     location = models.CharField(max_length=30, blank=True)
     website = models.URLField(blank=True)
 
+    def __str__(self):
+        return "{0} Intimate Details".format(self.user.username).title()
+
 class Media(models.Model):
     class MediaType(models.TextChoices):
         AUDIO = "AUD"
