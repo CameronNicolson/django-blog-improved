@@ -107,9 +107,7 @@ Your settings now should look similar to the example below.
 ```
 SECRET_kEY = "+mh)7c$31h4rp=dkdo!not-copy/this(%q&p^gb*)em%k#-$=06=zs(*"
 ```
-
  
-
 ### Step 3: Connect a database
 
 Databases are meant to store the blog posts, user details, among other things. We need to tell Django which database technology we intend to use.
@@ -152,7 +150,26 @@ Check blog is functioning correctly with:
 ```
 python manage.py test
 ```
-Browse a testserver with our test data applied.
+### Demo site
+
+The demo component gives an impression of what DJ BIM blog can look like after content is supplied.
+
+Start the demo on the development web server. Then locally browse entries of blog posts and media.
+
+```{note}
+Demo looks better with images!
+
+A static files location must be generated in order for the Webserver to know the correct directory to make public to visitors. Directories marked `media` may be available to Django and hidden from visitors. For example, uploaded pictures wait for safety approval before going live.  The development server has a media directory, however we still need a static too. 
+```
+
+Command for static files and sample images:
+
+```
+python manage.py collectstatic
+```
+
+#### Start the demo server
+Start the demo:
 ```
 python manage.py testserver blog/fixtures/*.yaml
 ```
