@@ -118,7 +118,13 @@ Check blog is functioning correctly with:
 ```
 python manage.py test
 ```
-Browse a testserver with our test data applied.
+Browse a testserver with mock articles and pages.
+
+```
+python manage.py collectstatic
+# use to pull the demo images
+```
+Start the server:
 ```
 python manage.py testserver blog/fixtures/*.yaml
 ```
