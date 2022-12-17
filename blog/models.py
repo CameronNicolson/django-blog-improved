@@ -13,6 +13,21 @@ from model_utils.models import StatusModel
 from taggit.managers import TaggableManager
 from taggit.models import TaggedItemBase
 
+def set_upload_directory(instance, filename):
+    updir = "" # upload directory string
+    match instance.mediatype:
+        case Media.MediaType.AUDIO:
+            updir += "/audio/"
+        case Media.MediaType.VIDEO:
+            updir += "/vid/"
+        case Media.MediaType.IMAGE:
+            updir += "/img/"
+        case Media.MediaType.DOCUMENT:
+            updir += "/documents/"
+        case _:
+            updir += "/"
+    return "{0}/{1}".format(updir, filename)
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     bio = models.TextField(max_length=500, blank=True)
@@ -27,11 +42,12 @@ class Media(models.Model):
         AUDIO = "AUD"
         VIDEO = "VID"
         IMAGE = "IMG"
+        DOCUMENT = "DOC"
 
     title = models.TextField(max_length=250, blank=True)
-    url = models.TextField()
+    file = models.FileField(blank=True)
     mediatype = models.CharField(max_length=3,choices=MediaType.choices)
-
+    
     class Meta: 
         verbose_name_plural = "media"
 
