@@ -56,8 +56,10 @@ deployment/.envs/production/.prod.db
 # Django stuff:
 staticfiles/
 frontend/staticfiles/
-media/
-mediafiles/
+**media/*
+**mediafiles/
+# make an exception for fixtures and testing 
+!**media/fixtures/
 cache/
 **/migrations/*
 # Sphinx documentation
