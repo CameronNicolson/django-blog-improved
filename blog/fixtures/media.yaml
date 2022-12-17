@@ -1,18 +1,18 @@
 - model: blog.media 
   pk: 1
   fields:
-    title: Python Logo
+    title: Django Con Europe 2022
     mediatype: IMG
-    url: https://wikiless.org/media/wikipedia/commons/thumb/f/f8/Python_logo_and_wordmark.svg/640px-Python_logo_and_wordmark.svg.png
+    file: fixtures/djangocon.jpg
 - model: blog.media 
   pk: 2
   fields:
-    title: Evening view across Carlton Hill towards the Castle
+    title: Grass
     mediatype: IMG
-    url: https://wikiless.org/media/wikipedia/commons/thumb/7/79/Evening_view_across_Carlton_Hill_towards_the_Castle_%2813164472813%29.jpg/1280px-Evening_view_across_Carlton_Hill_towards_the_Castle_%2813164472813%29.jpg
+    file: fixtures/grass.jpg
 - model: blog.media 
   pk: 3
   fields:
-    title: Panathinaiko Stadion
+    title: Apricot Blossom of Beijing Beigong National Forest Park
     mediatype: IMG
-    url: https://wikiless.org/media/wikipedia/commons/thumb/6/6a/Panathinaiko-Stadion_2014-5.JPG/640px-Panathinaiko-Stadion_2014-5.JPG
+    file: fixtures/blossom.jpg
