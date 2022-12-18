@@ -9,20 +9,18 @@
     {% breadcrumbs crumbs %}
       <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds-from-desktop">
-
+	<div class="govuk-grid-column-two-thirds-from-desktop">
     <span class="govuk-caption-l">{{ post.category }}</span>
-
     <h1 class="govuk-heading-xl">{% block title %} {{ post.title }} {% endblock title %}</h1>
-
     <p class="govuk-body-l">{{ post.headline }}</p>
-
-    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-
+	</div>
+	<div class="govuk-grid-column-full">
+		<hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+	</div>
+	<div class="govuk-grid-column-two-thirds-from-desktop">
     <p class="govuk-body govuk-!-font-size-16 govuk-!-margin-bottom-1">
         Published {{ post.created_on|date:"d F, Y" }}
     </p>
-
     <p class="govuk-body govuk-!-font-size-16 govuk-!-margin-bottom-4">
       From:
       {% if author_profile.website %} 
@@ -31,15 +29,12 @@
         {{ post.author }}
       {% endif %}
     </p>
-
     <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
     <div class="gem-c-govspeak-html-publication">
-	    <div class="gem-c-govspeak govspeak">
-		    <h3>what</h3>
-	    <p>hello</p>
-    {% autoescape off %}
-      {{ post.content }}
-    {% endautoescape %}
+	<div class="gem-c-govspeak govspeak">
+    	{% autoescape off %}
+      	{{ post.content }}
+    	{% endautoescape %}
     </div>
     </div>
     <div class="govspeak">
