@@ -20,37 +20,29 @@
       {% for feature in post_list|featured:"1" %}
       <div class="govuk-panel-feature bg-light-grey govuk-panel--no-centre">
         <div class="govuk-grid-row">
-          <div class="govuk-grid-column-two-thirds">
-              <h2 class="govuk-panel__section-heading">Feature</h2>
+          <div class="govuk-grid-column-full govuk-panel-feature--header">
+                          <strong class="govuk-tag">
+                            <span title="Category type {{ categor_name }}">Featured</span> 
+                          </strong>
           </div>
       </div>
           <div class="govuk-grid-row">
-            <div class="govuk-grid-column-full">
-              <div class="gem-c-image-card gem-c-image-card--large">
-                <div class="gem-c-image-card__text-wrapper">
-              <div class="gem-c-image-card__header-and-context-wrapper">
-                          <h3 class="govuk-!-font-size-36 feature-story__title">
-                              <a href="{{ feature.get_absolute_url  }}" class="govuk-panel__title govuk-link--no-visited-state feature-story__title-link">{{ feature.title }}</a>
+            <div class="govuk-panel-feature--text">
+                          <h3 class="govuk-!-font-size-36 govuk-panel-feature--text__title">
+                              <a href="{{ feature.get_absolute_url  }}" class="govuk-panel__title govuk-panel-feature--text__link">{{ feature.title }}</a>
                           </h3>
                           <address class="blog-posts__article-author govuk-visually-hidden"><a rel="author" href="/about"> Written by {{ feature.author }}</a></address>
-                          </div>
-                      <div class="gem-c-image-card__description">
-                          <p class="govuk-body">{{ feature.content|safe|slice:":200" }}</p>
-                      </div>
+                          <p class="govuk-panel-feature--text__headline">{{ feature.headline|safe|slice:":200" }}</p>
                   </div>
                     {% with feature.cover_art as cover_art %}
-                      <figure class=" gem-c-image-card__image-wrapper">
-                          <img class="img-fluid" title="{{ cover_art.title }}" alt="{{ cover_art.title }}" width="620" height="412" src="{{ cover_art.url }}" />
-                          <strong class="govuk-tag">
-                            {% with feature.category.name|default:"featured" as category_name %}
-                            <span title="Category type {{ categor_name }}">{{ category_name }}</span> 
-                            {% endwith %}
-                          </strong>
+		    <div class="govuk-panel-feature--image">
+                      <figure class="gem-c-image-card__image-wrapper">
+                          <img class="img-fluid" title="{{ cover_art.title }}" alt="{{ cover_art.title }}" width="620" height="412" src="{{ cover_art.file.url }}" />
+
                       </figure>
+		    </div>
                       {% endwith %}
                       </div>
-          </div>
-          </div>
       </div>
       {% endfor %}
   <section role="feed" class="govuk-!-padding-top-8 govuk-!-padding-bottom-4 blog-posts">
