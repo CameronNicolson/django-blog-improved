@@ -72,7 +72,7 @@
             <h2 class="govuk-visually-hidden">Support links</h2>
         <ul class="govuk-footer__inline-list">
           <li class="govuk-footer__inline-list-item">
-            <a class="govuk-footer__link" href="#1">
+		  <a class="govuk-footer__link" href="{% url 'home' %}">
               Home
             </a>
           </li>
@@ -80,10 +80,20 @@
             <a class="govuk-footer__link" href="{% url 'post_list' %}">
               All Posts
             </a>
-          </li>
-          <li class="govuk-footer__inline-list-item">
+	    </li>
+           <li class="govuk-footer__inline-list-item">
             <a class="govuk-footer__link" href="{% url 'about' %}">
               About
+            </a>
+          </li>
+           <li class="govuk-footer__inline-list-item">
+            <a class="govuk-footer__link" href="{% url 'projects' %}">
+              Projects
+            </a>
+          </li>
+          <li class="govuk-footer__inline-list-item">
+            <a class="govuk-footer__link" href="{% url 'services' %}">
+              Services
             </a>
           </li>
           <li class="govuk-footer__inline-list-item">
