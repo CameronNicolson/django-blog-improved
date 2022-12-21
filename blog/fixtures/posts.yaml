@@ -26,6 +26,7 @@
     status: 1
     category: 1
     slug: 15-tips-for-mission-success
+    cover_art: 4
 - name: quotes post
   description: double speeach mark quotes in title
   model: blog.post

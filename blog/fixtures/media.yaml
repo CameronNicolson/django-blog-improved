@@ -16,3 +16,9 @@
     title: Apricot Blossom of Beijing Beigong National Forest Park
     mediatype: IMG
     file: fixtures/blossom.jpg
+- model: blog.media
+  pk: 4
+  fields:
+    title: Coffee Lover
+    mediatype: IMG
+    file: fixtures/coffee.jpg
