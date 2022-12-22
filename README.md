@@ -170,8 +170,7 @@ Web authors looking for comments and protection should look to "battle-tested" s
 All files are copyright of 2022 SpongyCake, unless stated otherwise.
 
 Django Blog Improved is released under AGPLv3. 
-
-We conventionally placed the license in a file called [LICENSE.txt](./LICENSE.txt). 
+We conventionally placed the license in a file called [LICENSE](./LICENSE).
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
