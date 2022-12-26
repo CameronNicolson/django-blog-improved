@@ -3,8 +3,13 @@ from django.urls import reverse
 from django.conf import settings
 from django.core.cache import cache
 from utils.prettify_url import *
+from django.contrib.sites.shortcuts import get_current_site
 
 thread_lock = threading.Lock()
+
+def site(request):
+    current_site = get_current_site(request)
+    return {"site": {"name": current_site.name, "domain": current_site.domain } }
 
 def get_pages(page_settings=settings.MAIN_NAVIGATION_PAGES):
     links = []
@@ -32,5 +37,4 @@ def navigation(request):
     with thread_lock:
         navigation = cache.get_or_set('navigation', get_pages)
     return {"navigation": navigation, "current_url": request_url_name, "crumbs": crumbs }
-
 

@@ -41,7 +41,12 @@ LOCALE_PATHS = [str(ROOT_DIR / "locale")]
 # SECURITY WARNING: keep the secret key used in production a secret!
 SECRET_KEY = # <place your secret key here>
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1"]
+ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1", "*"]
+
+# https://docs.djangoproject.com/en/dev/ref/contrib/sites/
+# Id is the database ID which stores your default site's details
+# such as domain name and human readable name
+SITE_ID = 1
 
 # DATABASES
 # ------------------------------------------------------------------------------
@@ -93,6 +98,7 @@ DJANGO_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    "django.contrib.sites",
     "django.contrib.staticfiles",
     "django.contrib.sitemaps",
 ]
@@ -150,6 +156,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "blog.context_processors.navigation",
+                "blog.context_processors.site",
             ],
         },
     },
