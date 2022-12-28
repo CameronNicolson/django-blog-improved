@@ -27,6 +27,7 @@ overview/features
 :caption: 'Get Started'
 :hidden:
 :maxdepth: 2
+usage/name-and-branding
 usage/get-started
 usage/navigation
 ```
