@@ -6,7 +6,9 @@
         <a href="/" class="govuk-header__link govuk-header__link--homepage">
           <span class="govuk-header__logotype">
             <span class="govuk-header__logotype-text">
-		    {{ site.name }}
+		    {% if site %} {{ site.name }} {% else %} 
+		    <span style="color: red; font-weight: bolder;">No title<span>
+		    {% endif %}
             </span>
           </span>
         </a>
