@@ -88,25 +88,31 @@
 <h1>Name and branding<a class="headerlink" href="#name-and-branding" title="Permalink to this heading"></a></h1>
 <p>Your website branding such as page titles and copyright signage, all appear with a placeholder - <code class="docutils literal notranslate"><span class="pre">example.com</span></code>.</p>
 <p>These options are customisable from the admin panel, under the banner of our Sites module.</p>
-<p>Site modules direct link <a class="reference external" href="http://127.0.0.1:8000/admin/sites/site/">http://127.0.0.1:8000/admin/sites/site/</a>.</p>
+<p>The items of interest are directly accessible from <a class="reference external" href="http://127.0.0.1:8000/admin/sites/site/">http://127.0.0.1:8000/admin/sites/site/</a>.</p>
 <section id="customise-your-site-title">
 <h2>Customise your site title<a class="headerlink" href="#customise-your-site-title" title="Permalink to this heading"></a></h2>
 <ol class="arabic simple">
 <li><p>Open the admin portal</p></li>
 <li><p>Click through to <strong>Sites</strong> &gt; <strong>example.com</strong></p></li>
-<li><p>Specify your site in the fields</p></li>
+<li><p>Specify your site using the form</p></li>
 <li><p>Finish by <strong>Save</strong></p></li>
 </ol>
-<p>The required fields mean the following:</p>
+<p>The required fields are described as:</p>
 <p><strong>Domain name</strong></p>
 <p>The fully qualified domain name associated with the website. For example, www.example.com.</p>
 <p><strong>Display name</strong></p>
 <p>A human-readable “verbose” name for the website.</p>
+<p><strong>ID</strong></p>
+<p>ID, as an integer, of the current site in the Django site database table.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Django knows the default site for your project from <strong>SITE_ID</strong> settings. So, if you do not specify a site, Django prefers value <code class="docutils literal notranslate"><span class="pre">1</span></code>. Check your settings.py files.</p>
+</div>
 </section>
 <section id="deleting-example-com-entry">
 <h2>Deleting example.com entry<a class="headerlink" href="#deleting-example-com-entry" title="Permalink to this heading"></a></h2>
-<p>Yes, you are free to delete the example object. Beware of the fact that if you have not already updated the default settings then names will disappear.</p>
-<p>You can identify a problem when <strong>“No Title”</strong> error appears on your pages. This error means a Site object does not exist or the SITE_ID is missing.</p>
+<p>Yes, you are free to delete the example object, however, you may encounter unexpected behavior as a result. Prefer editing the example entry instead. If you must delete, look at changing all references in the database and updating your <code class="docutils literal notranslate"><span class="pre">SITE_ID</span></code> settings.</p>
+<p>You can identify a problem when <strong>“No Title”</strong> error appears on your pages. This error means a Site object does not exist and the SITE_ID is missing.</p>
 <p>If you are experiencing a disruption after deleting the example name, you have some options to reverse the error.</p>
 <p>Start by accessing the admin portal:</p>
 <ol class="arabic simple">
@@ -116,15 +122,16 @@
 <li><p>Enter valid display and domain names</p></li>
 <li><p>Save</p></li>
 </ol>
-<p>Use the ID value, it will be assigned upon saving. SITE_ID lives in the <code class="docutils literal notranslate"><span class="pre">settings.py</span></code> file and the original value is <strong>1</strong>. Amend the configuration to reflect whichever ID you have chosen. A server restart is likely after this change.</p>
-<p>Then you should visit your homepage to review the changes and check functionality has returned to normal, with your domain appearing in the title.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">ID</span></code> for each Site will be shown in the first column of the admin list and read-only field inside the form. These <code class="docutils literal notranslate"><span class="pre">ID</span></code> fields are what you need to use as SITE_ID:</p>
+<img alt="Admin homepage, orange arrow denotes where the blog module is resides" class="screenshot" src="../_images/sites-id-admin-preview.png" />
+<p>Once you have found what you are looking for, copy the numeric value into your <code class="docutils literal notranslate"><span class="pre">settings.py</span></code>, the original value is typically <strong>SITE_ID=1</strong>, perform an amendment and restart the server.</p>
 </section>
 <section id="managing-multiple-sites">
 <h2>Managing multiple sites<a class="headerlink" href="#managing-multiple-sites" title="Permalink to this heading"></a></h2>
-<p>When posts are contextual in nature, then the blog relies on the Site module to inform traffic. A single content store can be used on different domains. For example, <code class="docutils literal notranslate"><span class="pre">DjangoNews.com</span></code> publishes content and <code class="docutils literal notranslate"><span class="pre">GamingDjango.com</span></code> uses its content to feature gaming news.</p>
+<p>When posts are contextual in nature, then the blog relies on the Site module to serve different traffic. A single content store can be used on different domains too. For example, <code class="docutils literal notranslate"><span class="pre">DjangoNews.com</span></code>’s database drives <code class="docutils literal notranslate"><span class="pre">GamingDjango.com</span></code> for rows marked gaming.</p>
 <section id="brief-history-of-sites">
 <h3>Brief history of Sites<a class="headerlink" href="#brief-history-of-sites" title="Permalink to this heading"></a></h3>
-<p>Django was originally developed at a newspaper to publish content on multiple domains; using one single content base. There was a desire from the newspaper’s staff to associate articles with multiple sites and avoiding duplication.</p>
+<p>Django was originally developed at a newspaper to publish content on multiple domains; using one single content base. There was a desire from the staff to associate articles with one or more sites and avoid duplication.</p>
 <p>This is where the Sites module comes in. Its purpose is to mark content to be displayed for different domains.</p>
 </section>
 <section id="examples">

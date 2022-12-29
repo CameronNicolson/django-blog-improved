@@ -4,15 +4,15 @@ Your website branding such as page titles and copyright signage, all appear with
 
 These options are customisable from the admin panel, under the banner of our Sites module. 
 
-Site modules direct link [http://127.0.0.1:8000/admin/sites/site/](http://127.0.0.1:8000/admin/sites/site/).
+The items of interest are directly accessible from [http://127.0.0.1:8000/admin/sites/site/](http://127.0.0.1:8000/admin/sites/site/).
 
 ## Customise your site title
 1. Open the admin portal
 2. Click through to **Sites** > **example.com**
-3. Specify your site in the fields 
+3. Specify your site using the form 
 4. Finish by **Save**
 
-The required fields mean the following:
+The required fields are described as:
 
 **Domain name**
 
@@ -22,11 +22,19 @@ The fully qualified domain name associated with the website. For example, www.ex
 
 A human-readable “verbose” name for the website.
 
+**ID**
+
+ID, as an integer, of the current site in the Django site database table.
+
+```{note}
+Django knows the default site for your project from **SITE_ID** settings. So, if you do not specify a site, Django prefers value `1`. Check your settings.py files.
+```
+
 ## Deleting example.com entry
 
-Yes, you are free to delete the example object. Beware of the fact that if you have not already updated the default settings then names will disappear.
+Yes, you are free to delete the example object, however, you may encounter unexpected behavior as a result. Prefer editing the example entry instead. If you must delete, look at changing all references in the database and updating your `SITE_ID` settings.
 
-You can identify a problem when **"No Title"** error appears on your pages. This error means a Site object does not exist or the SITE_ID is missing.
+You can identify a problem when **"No Title"** error appears on your pages. This error means a Site object does not exist and the SITE_ID is missing.
 
 If you are experiencing a disruption after deleting the example name, you have some options to reverse the error.
 
@@ -37,16 +45,19 @@ Start by accessing the admin portal:
 4. Enter valid display and domain names
 5. Save
 
-Use the ID value, it will be assigned upon saving. SITE_ID lives in the `settings.py` file and the original value is **1**. Amend the configuration to reflect whichever ID you have chosen. A server restart is likely after this change.
-
-Then you should visit your homepage to review the changes and check functionality has returned to normal, with your domain appearing in the title.
+The `ID` for each Site will be shown in the first column of the admin list and read-only field inside the form. These `ID` fields are what you need to use as SITE_ID:
+```{image} ../_static/sites-id-admin-preview.png
+:alt: Admin homepage, orange arrow denotes where the blog module is resides
+:class: .screenshot
+```
+Once you have found what you are looking for, copy the numeric value into your `settings.py`, the original value is typically **SITE_ID=1**, perform an amendment and restart the server. 
 
 ## Managing multiple sites 
 
-When posts are contextual in nature, then the blog relies on the Site module to inform traffic. A single content store can be used on different domains. For example, `DjangoNews.com` publishes content and `GamingDjango.com` uses its content to feature gaming news.
+When posts are contextual in nature, then the blog relies on the Site module to serve different traffic. A single content store can be used on different domains too. For example, `DjangoNews.com`'s database drives `GamingDjango.com` for rows marked gaming.
 
 ### Brief history of Sites
-Django was originally developed at a newspaper to publish content on multiple domains; using one single content base. There was a desire from the newspaper's staff to associate articles with multiple sites and avoiding duplication. 
+Django was originally developed at a newspaper to publish content on multiple domains; using one single content base. There was a desire from the staff to associate articles with one or more sites and avoid duplication. 
 
 This is where the Sites module comes in. Its purpose is to mark content to be displayed for different domains.
 
