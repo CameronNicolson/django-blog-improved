@@ -1,4 +1,5 @@
 import copy, re, threading
+from django.apps import apps
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.conf import settings
@@ -8,11 +9,13 @@ from django.contrib.sites.shortcuts import get_current_site
 thread_lock = threading.Lock()
 
 def site(request):
-    try:
-        current_site = get_current_site(request)
-        return {"site": {"name": current_site.name, "domain": current_site.domain } }
-    except ObjectDoesNotExist:
-        return ""
+    if apps.is_installed("django.contrib.sites"):
+        Site = apps.get_model("sites.Site")
+        try:
+            current_site = get_current_site(request)
+            return {"site": {"name": current_site.name, "domain": current_site.domain } }
+        except Site.DoesNotExist:
+            return ""
 
 def get_pages(page_settings=settings.MAIN_NAVIGATION_PAGES):
     links = []
