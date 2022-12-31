@@ -68,8 +68,9 @@ class UserAdmin(UserAdmin):
     inlines = (UserProfileAdmin,)
 
 class SiteAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'domain')
-    readonly_fields = ('id',)
+    list_display = ("id", "name", "domain")
+    list_display_links = ("id", 'name',)
+    readonly_fields = ("id",)
 
 admin.site.unregister(Site)
 admin.site.register(Site, SiteAdmin)
