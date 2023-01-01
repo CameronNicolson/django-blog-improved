@@ -26,7 +26,9 @@ DEBUG = True
 TIME_ZONE = "UTC"
 # https://docs.djangoproject.com/en/dev/ref/settings/#language-code
 LANGUAGE_CODE = "en-us"
-# https://docs.djangoproject.com/en/dev/ref/settings/#site-id
+# https://docs.djangoproject.com/en/dev/ref/contrib/sites/
+# SITE_ID is Site database table Id, which stores your default details
+# such as domain name and brand name
 SITE_ID = 1
 # https://docs.djangoproject.com/en/dev/ref/settings/#use-i18n
 USE_I18N = True
@@ -41,12 +43,7 @@ LOCALE_PATHS = [str(ROOT_DIR / "locale")]
 # SECURITY WARNING: keep the secret key used in production a secret!
 SECRET_KEY = # <place your secret key here>
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1", "*"]
-
-# https://docs.djangoproject.com/en/dev/ref/contrib/sites/
-# Id is the database ID which stores your default site's details
-# such as domain name and human readable name
-SITE_ID = 1
+ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1"]
 
 # DATABASES
 # ------------------------------------------------------------------------------
