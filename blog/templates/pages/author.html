@@ -1,0 +1,13 @@
+<html>
+	<head></head>
+	<body>
+		<h1>Author</h1>
+		{% for user, profile in profile %}
+		{{ user.username }} 
+		{{ user.id }}
+		{{ profile.bio }}
+		<br>
+		{% endfor %}
+</body>
+
+</html>

@@ -1,0 +1,13 @@
+<html>
+	<head></head>
+	<body>
+		<code>custom page</code>
+		<h1> My name is Alice</h1>
+		{% for user, profile in profile %}
+		{{ user.username }} 
+		{{ user.id }}
+		{{ profile.bio }}
+		{% endfor %}
+</body>
+
+</html>

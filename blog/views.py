@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_list_or_404, render
 from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic import DetailView, ListView, TemplateView
@@ -9,6 +9,7 @@ from .models import Post, PostViaGit, PostRedirect, User, UserProfile
 from taggit.models import Tag
 from django.db.models.base import ModelBase
 from django.db.models import Q, QuerySet
+from itertools import chain
 
 import operator
 
@@ -40,6 +41,31 @@ class HomePage(ListView):
 
     class Meta:
         ordering = ["-created_on"]
+
+class AuthorPage(TemplateView):
+    author_template_dir = "pages/authors/"
+    model = UserProfile
+    slug_field = "user"
+ 
+    def get_template_names(self):
+        return [ self.author_template_dir + self.kwargs["name"] + ".html".lower(), 
+                "pages/author.html", 
+        ]        
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs) or {}
+        names_in_url = kwargs["name"].split(',')
+        print(names_in_url)
+        users = get_list_or_404(User, username__in=names_in_url)
+        profiles = get_list_or_404(UserProfile, user__in=users)
+
+        def create_user_list(lista, listb):
+            for user, profile in zip(lista, listb):
+                yield from ((user, profile,),)
+
+        context["profile"] = list(create_user_list(users, profiles))
+        print(context["profile"])
+        return context
 
 
 class PostList(ListView):
