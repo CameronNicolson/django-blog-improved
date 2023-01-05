@@ -28,11 +28,22 @@ def set_upload_directory(instance, filename):
             updir += "/"
     return "{0}/{1}".format(updir, filename)
 
+class Status(models.IntegerChoices):
+    DRAFT = 0
+    PUBLISH = 1
+    PRIVATE = 2
+    UNLISTED = 3
+   
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     bio = models.TextField(max_length=500, blank=True)
     location = models.CharField(max_length=30, blank=True)
     website = models.URLField(blank=True)
+
+    status = models.IntegerField(
+        choices=Status.choices, 
+        default=Status.PRIVATE
+    )
 
     def __str__(self):
         return "{0} Intimate Details".format(self.user.username).title()
@@ -62,10 +73,6 @@ class TaggedPost(TaggedItemBase):
 
 class Post(models.Model):
     objects = InheritanceManager()
-
-    class Status(models.IntegerChoices):
-        DRAFT = 0
-        PUBLISH = 1
     
     status = models.IntegerField(
         choices=Status.choices, 
