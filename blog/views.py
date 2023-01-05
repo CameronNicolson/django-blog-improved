@@ -35,6 +35,11 @@ def list_to_queryset(model, data):
     pk_list = [obj.pk for obj in data]
     return model.objects.filter(pk__in=pk_list)
 
+class PublicStatusMixin(object):
+    def get_queryset(self): 
+        qs = super().get_queryset()
+        return qs.filter(status=1)
+
 class HomePage(ListView):
     queryset = Post.objects.filter(status=1).select_subclasses()
     template_name = "index.html"
@@ -42,11 +47,20 @@ class HomePage(ListView):
     class Meta:
         ordering = ["-created_on"]
 
-class AuthorPage(TemplateView):
+class AuthorPage(PublicStatusMixin, ListView):
     author_template_dir = "pages/authors/"
     model = UserProfile
     slug_field = "user"
- 
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        names_in_url = self.kwargs["name"].split(',')
+        qs = qs.filter(user__username__in=names_in_url)
+        if qs.values_list("id").count() < len(names_in_url):
+            raise Http404
+        print(qs.values_list("id"))
+        return qs
+
     def get_template_names(self):
         return [ self.author_template_dir + self.kwargs["name"] + ".html".lower(), 
                 "pages/author.html", 
@@ -54,16 +68,14 @@ class AuthorPage(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs) or {}
-        names_in_url = kwargs["name"].split(',')
-        print(names_in_url)
+        names_in_url = self.kwargs["name"].split(',')
         users = get_list_or_404(User, username__in=names_in_url)
-        profiles = get_list_or_404(UserProfile, user__in=users)
 
         def create_user_list(lista, listb):
             for user, profile in zip(lista, listb):
                 yield from ((user, profile,),)
 
-        context["profile"] = list(create_user_list(users, profiles))
+        context["profile"] = list(create_user_list(users, self.get_queryset()))
         print(context["profile"])
         return context
 
@@ -128,11 +140,7 @@ def get_comments(request, post):
         comment_form = CommentForm()
     return {"all_active": comments, "comment_form": comment_form, "new_comment": new_comment}
 
-class PublicPostMixin(object):
-    def get_queryset(self): 
-        return Post.objects.filter(status=1)
-
-class PostView(DetailView, PublicPostMixin, SingleObjectMixin):
+class PostView(DetailView, PublicStatusMixin, SingleObjectMixin):
     template_name = "post_detail.html"
     model = Post
     
