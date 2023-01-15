@@ -73,6 +73,7 @@ class AuthorPage(PublicStatusMixin, ListView):
 
         def create_user_list(lista, listb):
             for user, profile in zip(lista, listb):
+                user.username = user.username.capitalize()
                 yield from ((user, profile,),)
 
         context["profile"] = list(create_user_list(users, self.get_queryset()))
