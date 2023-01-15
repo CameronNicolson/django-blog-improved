@@ -3,6 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
+from blog.conf import USER_PUBLIC_PROFILE
 from taggit.managers import TaggableManager
 from taggit.models import Tag
 from phonenumber_field.modelfields import PhoneNumberField
@@ -12,6 +13,11 @@ from model_utils.managers import InheritanceManager
 from model_utils.models import StatusModel
 from taggit.managers import TaggableManager
 from taggit.models import TaggedItemBase
+
+def user_profile_choice_code(public_status):
+    if public_status:
+        return 1
+    return 2
 
 def set_upload_directory(instance, filename):
     updir = "" # upload directory string
@@ -33,20 +39,6 @@ class Status(models.IntegerChoices):
     PUBLISH = 1
     PRIVATE = 2
     UNLISTED = 3
-   
-class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    bio = models.TextField(max_length=500, blank=True)
-    location = models.CharField(max_length=30, blank=True)
-    website = models.URLField(blank=True)
-
-    status = models.IntegerField(
-        choices=Status.choices, 
-        default=Status.PRIVATE
-    )
-
-    def __str__(self):
-        return "{0} Intimate Details".format(self.user.username).title()
 
 class Media(models.Model):
     class MediaType(models.TextChoices):
@@ -57,13 +49,30 @@ class Media(models.Model):
 
     title = models.TextField(max_length=250, blank=True)
     file = models.FileField(blank=True)
-    mediatype = models.CharField(max_length=3,choices=MediaType.choices)
+    mediatype = models.CharField(max_length=3, choices=MediaType.choices)
+    upload_user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     
     class Meta: 
         verbose_name_plural = "media"
 
     def __str__(self):
         return "Media {} {}".format(self.mediatype, self.title)
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    bio = models.TextField(max_length=500, blank=True)
+    location = models.CharField(max_length=30, blank=True)
+    website = models.URLField(blank=True)
+
+    avatar = models.ForeignKey(Media, on_delete=models.SET_NULL, blank=True, null=True)
+
+    status = models.IntegerField(
+        choices=Status.choices, 
+        default=user_profile_choice_code(USER_PUBLIC_PROFILE)
+    )
+
+    def __str__(self):
+        return "{0} Intimate Details".format(self.user.username).title()
 
 class TagGroup(models.Model):
     tags = TaggableManager()

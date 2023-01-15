@@ -4,21 +4,25 @@
     title: Django Con Europe 2022
     mediatype: IMG
     file: fixtures/djangocon.jpg
+    upload_user: 1
 - model: blog.media 
   pk: 2
   fields:
     title: Grass
     mediatype: IMG
     file: fixtures/grass.jpg
+    upload_user: 1
 - model: blog.media 
   pk: 3
   fields:
     title: Apricot Blossom of Beijing Beigong National Forest Park
     mediatype: IMG
     file: fixtures/blossom.jpg
+    upload_user: 1
 - model: blog.media
   pk: 4
   fields:
     title: Coffee Lover
     mediatype: IMG
     file: fixtures/coffee.jpg
+    upload_user: 1
