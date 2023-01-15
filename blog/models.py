@@ -68,8 +68,10 @@ class UserProfile(models.Model):
 
     status = models.IntegerField(
         choices=Status.choices, 
-        default=user_profile_choice_code(USER_PUBLIC_PROFILE)
-    )
+        default=user_profile_choice_code(
+                USER_PUBLIC_PROFILE
+            )
+        )
 
     def __str__(self):
         return "{0} Intimate Details".format(self.user.username).title()
