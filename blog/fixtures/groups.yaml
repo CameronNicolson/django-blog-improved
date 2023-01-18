@@ -1,0 +1,10 @@
+- name: author group
+  model: auth.group
+  pk: 1
+  fields:
+    name: author 
+    permissions: 
+      - 49
+      - 50
+      - 52
+      - 64
