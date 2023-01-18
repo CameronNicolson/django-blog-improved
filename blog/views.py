@@ -50,10 +50,14 @@ class HomePage(ListView):
 class AuthorPage(PublicStatusMixin, ListView):
     author_template_dir = "pages/authors/"
     model = UserProfile
-    slug_field = "user"
 
     def get_queryset(self):
         qs = super().get_queryset()
+        print("this was in qs")
+        print(qs)
+        qs = qs.filter(user__groups__name__contains=self.kwargs["group"])
+        print("after group")
+        print(qs)
         names_in_url = self.kwargs["name"].split(',')
         qs = qs.filter(user__username__in=names_in_url)
         if qs.values_list("id").count() < len(names_in_url):
