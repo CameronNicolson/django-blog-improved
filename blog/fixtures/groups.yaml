@@ -13,15 +13,18 @@
   pk: 2
   fields: 
     name: membership
-- name: public author group
-  model: blog.groupstatus
-  pk: 1
+
+- name: public author
+  model: blog.bloggroup
+  pk: 3
   fields:
-    group: 1
+    group_ptr_id: 1
     status: 1
-- name: private membership group
-  model: blog.groupstatus
-  pk: 2
+
+- name: private author
+  model: blog.bloggroup
+  pk: 3
   fields:
-    group: 2
+    group_ptr_id: 2
     status: 2
+

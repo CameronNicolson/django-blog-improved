@@ -40,9 +40,11 @@ class Status(models.IntegerChoices):
     PRIVATE = 2
     UNLISTED = 3
 
-class GroupStatus(models.Model):
-    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+class BlogGroup(Group):
     status = models.IntegerField(choices=Status.choices, default=Status.PRIVATE) 
+
+    class Meta: 
+        verbose_name_plural = "groups"
 
 class Media(models.Model):
     class MediaType(models.TextChoices):

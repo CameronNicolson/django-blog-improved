@@ -1,8 +1,7 @@
 from django.apps import apps
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group
 from django.test import TestCase, Client
-from blog.models import User, UserProfile
+from blog.models import BlogGroup, User, UserProfile
 from django.urls import reverse
 from django.test.utils import override_settings
 from django.conf import settings
@@ -37,7 +36,7 @@ class TestProfiles(TestCase):
                 password="password123",
         )
         user.save()
-        group = Group.objects.get(name="author")
+        group = BlogGroup.objects.get(name="author")
         group.user_set.add(user)
         profile = UserProfile.objects.get(user=user)
         # status code *1* represents public
@@ -131,7 +130,7 @@ class TestProfiles(TestCase):
     def test_authorpage_multiple_authors_200(self):
         basic = get_user_model().objects.get(username="basic")
         journalist = get_user_model().objects.get(username="journalist")
-        author_group, created = Group.objects.get_or_create(name="author")
+        author_group, created = BlogGroup.objects.get_or_create(name="author")
         author_group.user_set.add(basic)
         author_group.user_set.add(journalist)
         
@@ -150,7 +149,7 @@ class TestProfiles(TestCase):
     def test_authorpage_multiple_authors_404(self):
         basic = get_user_model().objects.get(username="basic")
         journalist = get_user_model().objects.get(username="journalist")
-        author_group, created = Group.objects.get_or_create(name="author")
+        author_group, created = BlogGroup.objects.get_or_create(name="author")
         author_group.user_set.add(basic)
         author_group.user_set.add(journalist)
         journalist_profile = UserProfile.objects.get(user=journalist)
