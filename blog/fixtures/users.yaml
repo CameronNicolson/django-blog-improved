@@ -22,6 +22,8 @@
     # password = basic
     password: "argon2$argon2id$v=19$m=102400,t=2,p=8$bEIyYk1sMjNLM0JTTld4ejI1cEFiYw$DitHRIMpiknE5bzusZEHT1ha1QPJva+fdkfxMh0Svdo"
     email: basicuser@email.local
+    groups: 
+      - 2 
     is_active: true
     first_name: Terry
     last_name: Jones
