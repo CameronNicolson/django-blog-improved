@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.sites.models import Site
 
-from .models import Comment, Post, PostViaGit, PostRedirect, Media, TagGroup, UserProfile
+from .models import Comment, GroupStatus, Post, PostViaGit, PostRedirect, Media, TagGroup, UserProfile
 from taggit.models import Tag
 
 @admin.register(Post)
@@ -76,3 +76,4 @@ admin.site.unregister(Site)
 admin.site.register(Site, SiteAdmin)
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
+admin.site.register(GroupStatus)
