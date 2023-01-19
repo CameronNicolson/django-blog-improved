@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import Group, User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.urls import reverse
@@ -39,6 +39,10 @@ class Status(models.IntegerChoices):
     PUBLISH = 1
     PRIVATE = 2
     UNLISTED = 3
+
+class GroupStatus(models.Model):
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    status = models.IntegerField(choices=Status.choices, default=Status.PRIVATE) 
 
 class Media(models.Model):
     class MediaType(models.TextChoices):
