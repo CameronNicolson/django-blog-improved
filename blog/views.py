@@ -1,11 +1,12 @@
-from django.shortcuts import get_list_or_404, render
+from django.shortcuts import get_list_or_404, get_object_or_404, render
 from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.detail import SingleObjectMixin
 from django.urls import reverse
+from django.contrib.auth.models import User, Group
 from .forms import CommentForm
-from .models import Post, PostViaGit, PostRedirect, User, UserProfile
+from .models import GroupStatus, Post, PostViaGit, PostRedirect, UserProfile
 from taggit.models import Tag
 from django.db.models.base import ModelBase
 from django.db.models import Q, QuerySet
@@ -49,20 +50,24 @@ class HomePage(ListView):
 
 class AuthorPage(PublicStatusMixin, ListView):
     author_template_dir = "pages/authors/"
-    model = UserProfile
+    model = GroupStatus
 
     def get_queryset(self):
         qs = super().get_queryset()
         print("this was in qs")
         print(qs)
-        qs = qs.filter(user__groups__name__contains=self.kwargs["group"])
+        qs = get_object_or_404(qs, group__name__contains=self.kwargs["group"])
         print("after group")
         print(qs)
         names_in_url = self.kwargs["name"].split(',')
-        qs = qs.filter(user__username__in=names_in_url)
-        if qs.values_list("id").count() < len(names_in_url):
-            raise Http404
-        print(qs.values_list("id"))
+        qs = qs.group.user_set.all()
+        print("waaaa")
+        print(qs)
+        qs = qs.filter(username__in=names_in_url)
+        print("what we have users")
+        print(qs)
+        qs = get_list_or_404(UserProfile, user__in=qs, status=1)
+        print(qs)
         return qs
 
     def get_template_names(self):
@@ -73,6 +78,10 @@ class AuthorPage(PublicStatusMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs) or {}
         names_in_url = self.kwargs["name"].split(',')
+
+        if len(self.get_queryset()) < len(names_in_url):
+            raise Http404
+
         users = get_list_or_404(User, username__in=names_in_url)
 
         def create_user_list(lista, listb):
@@ -81,6 +90,7 @@ class AuthorPage(PublicStatusMixin, ListView):
                 yield from ((user, profile,),)
 
         context["profile"] = list(create_user_list(users, self.get_queryset()))
+        context["group"] = Group.objects.get(name=self.kwargs["group"])
         print(context["profile"])
         return context
 
