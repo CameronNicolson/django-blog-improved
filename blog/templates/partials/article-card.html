@@ -5,7 +5,7 @@
               <a class="gem-c-image-card__title-link govuk-link" href="{{ post.get_absolute_url }}">{{ post.title }}</a>
 </h2>        <p class="gem-c-image-card__context"><time datetime="{{ post.created_on|date:'Y-m-d' }}">{{ post.created_on|date:'d F Y'}} </time><span aria-hidden="true"> — </span>{{ post.category.name }}</p>
       </div>
-      <div class="gem-c-image-card__description">{{ post.content.first }}</div>
+      <div class="gem-c-image-card__description">{{ post.headline }}</div>
     </div>
     <figure class="gem-c-image-card__image-wrapper article-figure">
     {% if post.cover_art %}
