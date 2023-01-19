@@ -8,3 +8,20 @@
       - 50
       - 52
       - 64
+- name: private members group
+  model: auth.group
+  pk: 2
+  fields: 
+    name: membership
+- name: public author group
+  model: blog.groupstatus
+  pk: 1
+  fields:
+    group: 1
+    status: 1
+- name: private membership group
+  model: blog.groupstatus
+  pk: 2
+  fields:
+    group: 2
+    status: 2
