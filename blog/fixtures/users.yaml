@@ -4,7 +4,7 @@
   pk: 1
   fields: 
     username: alice
-    # password = hashed "alice"
+    # password = alice
     password: "argon2$argon2id$v=19$m=102400,t=2,p=8$TkczZDRaZmFhQ0R4S0JiRHljM1R2eQ$RRWv5A9dNUAMQzlmZ7aLlfRFtOWxOSof1z95Sxdodk8" 
     email: alice@email.local
     is_active: true
@@ -12,15 +12,34 @@
     is_superuser: True
     first_name: Alice
     last_name: Smith
+    date_joined: 2023-01-01T08:16:59.844560+00:00
 - name: basic user
   description: user with basic permissions
   model: auth.user
   pk: 2
   fields: 
     username: basic
-    # password = hashed "basic"
+    # password = basic
     password: "argon2$argon2id$v=19$m=102400,t=2,p=8$bEIyYk1sMjNLM0JTTld4ejI1cEFiYw$DitHRIMpiknE5bzusZEHT1ha1QPJva+fdkfxMh0Svdo"
     email: basicuser@email.local
+    groups: 
+      - 2 
     is_active: true
     first_name: Terry
     last_name: Jones
+    date_joined: 2023-09-01T08:16:59.844560+00:00
+- name: author user
+  description: user assigned to author group
+  model: auth.user
+  pk: 3
+  fields: 
+    username: journalist
+    # password = journalist
+    password: "argon2$argon2id$v=19$m=102400,t=2,p=8$VldOd01pUjFJNmRFaFZSbkd2S2xZdQ$gYcGa3Iy6sglcyk3gAUtf9exYl6ydPRyWEZT7LFmWKE"  
+    email: journalist@email.local
+    groups: 
+      - 1
+    is_active: true
+    first_name: Tom
+    last_name: Petty
+    date_joined: 2023-01-12T10:16:59.844560+00:00

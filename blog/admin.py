@@ -1,10 +1,10 @@
 from django.contrib import admin
 from django_summernote.admin import SummernoteModelAdmin
-from django.contrib.auth.models import User
+from django.contrib.auth.models import Group, User
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.sites.models import Site
 
-from .models import Comment, Post, PostViaGit, PostRedirect, Media, TagGroup, UserProfile
+from .models import Comment, BlogGroup, Post, PostViaGit, PostRedirect, Media, TagGroup, UserProfile
 from taggit.models import Tag
 
 @admin.register(Post)
@@ -65,7 +65,7 @@ class UserProfileAdmin(admin.StackedInline):
     can_delete = False
 
 class UserAdmin(UserAdmin):
-    inlines = (UserProfileAdmin,)
+    inlines = [UserProfileAdmin,]
 
 class SiteAdmin(admin.ModelAdmin):
     list_display = ("id", "name", "domain")
@@ -76,3 +76,5 @@ admin.site.unregister(Site)
 admin.site.register(Site, SiteAdmin)
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
+admin.site.unregister(Group)
+admin.site.register(BlogGroup)

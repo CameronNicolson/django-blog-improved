@@ -1,13 +1,15 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_list_or_404, get_object_or_404, render
 from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.detail import SingleObjectMixin
 from django.urls import reverse
-from .models import Post, PostViaGit, PostRedirect, User, UserProfile
+from django.contrib.auth.models import User
+from .models import BlogGroup, Post, PostViaGit, PostRedirect, UserProfile
 from taggit.models import Tag
 from django.db.models.base import ModelBase
 from django.db.models import Q, QuerySet
+from itertools import chain
 
 import operator
 
@@ -33,6 +35,10 @@ def list_to_queryset(model, data):
     pk_list = [obj.pk for obj in data]
     return model.objects.filter(pk__in=pk_list)
 
+class PublicStatusMixin(object):
+    def get_queryset(self): 
+        qs = super().get_queryset()
+        return qs.filter(status=1)
 
 class HomePage(ListView):
     queryset = Post.objects.filter(status=1).select_subclasses()
@@ -40,6 +46,52 @@ class HomePage(ListView):
 
     class Meta:
         ordering = ["-created_on"]
+
+class AuthorPage(PublicStatusMixin, ListView):
+    author_template_dir = "pages/authors/"
+    model = BlogGroup
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        print("this was in qs")
+        print(qs)
+        qs = get_object_or_404(qs, name__contains=self.kwargs["group"])
+        print("after group")
+        print(qs)
+        names_in_url = self.kwargs["name"].split(',')
+        qs = qs.user_set.all()
+        print("waaaa")
+        print(qs)
+        qs = qs.filter(username__in=names_in_url)
+        print("what we have users")
+        print(qs)
+        qs = get_list_or_404(UserProfile, user__in=qs, status=1)
+        print(qs)
+        return qs
+
+    def get_template_names(self):
+        return [ self.author_template_dir + self.kwargs["name"] + ".html".lower(), 
+                "pages/author.html", 
+        ]        
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs) or {}
+        names_in_url = self.kwargs["name"].split(',')
+
+        if len(self.get_queryset()) < len(names_in_url):
+            raise Http404
+
+        users = get_list_or_404(User, username__in=names_in_url)
+
+        def create_user_list(lista, listb):
+            for user, profile in zip(lista, listb):
+                user.username = user.username.capitalize()
+                yield from ((user, profile,),)
+
+        context["profile"] = list(create_user_list(users, self.get_queryset()))
+        context["group"] = BlogGroup.objects.get(name=self.kwargs["group"])
+        print(context["profile"])
+        return context
 
 
 class PostList(ListView):
@@ -86,12 +138,7 @@ class PostList(ListView):
         return context
 
 
-class PublicPostMixin(object):
-    def get_queryset(self): 
-        return Post.objects.filter(status=1)
-
-
-class PostView(DetailView, PublicPostMixin, SingleObjectMixin):
+class PostView(DetailView, PublicStatusMixin, SingleObjectMixin):
     template_name = "post_detail.html"
     model = Post
     

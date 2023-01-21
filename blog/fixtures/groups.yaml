@@ -1,0 +1,30 @@
+- name: author group
+  model: auth.group
+  pk: 1
+  fields:
+    name: author 
+    permissions: 
+      - 49
+      - 50
+      - 52
+      - 64
+- name: private members group
+  model: auth.group
+  pk: 2
+  fields: 
+    name: membership
+
+- name: public author
+  model: blog.bloggroup
+  pk: 3
+  fields:
+    group_ptr_id: 1
+    status: 1
+
+- name: private author
+  model: blog.bloggroup
+  pk: 3
+  fields:
+    group_ptr_id: 2
+    status: 2
+

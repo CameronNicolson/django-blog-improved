@@ -9,5 +9,6 @@ urlpatterns = [
     path("", views.HomePage.as_view(), name="home"),
     path("index/", views.PostList.as_view(), name="post_list"),
     path("search/", views.PostList.as_view(), name="search"),
+    path("<str:group>/<str:name>", views.AuthorPage.as_view(), name="author"),
     path("<slug:slug>/", views.PostView.as_view(), name="post_detail"),
 ]

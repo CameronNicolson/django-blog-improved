@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="govuk-width-container">
+	<div class="govuk-grid-row">
+<div class="govuk-breadcrumbs">
+    <ol class="govuk-breadcrumbs__list">
+      <li class="govuk-breadcrumbs__list-item">
+        <a href="/" class="govuk-back-link">Back to home</a>
+      </li>
+    </ol>
+  </div>
+	</div>
+</div>
+	<div class="govuk-width-container">
+<header class="govuk-grid-row">
+              <div class="govuk-grid-column-two-thirds">
+
+<div class="gem-c-title govuk-!-margin-top-8 govuk-!-margin-bottom-8">
+      <span class="govuk-caption-xl gem-c-title__context">
+	      {{ group.name }}{{ profile|length|pluralize }}
+  </span>
+  <h1 class="gem-c-title__text govuk-heading-xl">
+	{% for user, profile in profile %}
+{{ forloop.counter|pluralize:"&#8218;"|safe }}
+{{ user.username }}
+	{% endfor %}
+  </h1>
+</div>
+  </div>
+</header>
+<div class="govuk-main-wrapper">
+		<div class="govuk-grid-row">
+<div class="govuk-grid-column-one-third ">
+                  <div class="gem-c-image-card ">
+                  <div class="gem-c-image-card__text-wrapper">
+			  <nav class="gem-c-contents-list" aria-label="Contents" role="navigation">
+                      <h2 class="gem-c-contents-list__title">
+                        Contents
+                  </h2>	
+			{% if profile|length > 1 %}		
+		{% for user, profile in profile %}
+			<ol class="gem-c-contents-list__list">
+			      <li class="gem-c-contents-list__list-item gem-c-contents-list__list-item--dashed">
+				      <a class="gem-c-contents-list__link govuk-link govuk-link--no-underline" href="#{{user.username|lower}}">{{ user.username }}</a>
+            <ol class="gem-c-contents-list__nested-list">
+		    <li class="gem-c-contents-list__list-item gem-c-contents-list__list-item--dashed">
+			    <a class="gem-c-contents-list__link govuk-link govuk-link--no-underline" href="#bio-{{user.username|lower}}">Biography</a>
+                          </li>
+			  {% if profile.location %}
+		    <li class="gem-c-contents-list__list-item gem-c-contents-list__list-item--dashed">
+                            <a class="gem-c-contents-list__link govuk-link govuk-link--no-underline" href="#location">Location</a> 
+                          </li>
+			  {% endif %}
+			  {% if profile.website %}
+                          <li class="gem-c-contents-list__list-item gem-c-contents-list__list-item--dashed">
+                            <a class="gem-c-contents-list__link govuk-link govuk-link--no-underline" href="#social">Social</a>
+                          </li>
+			  {% endif %}
+	    </ol>
+			      </li>
+			  {% endfor %}
+			      </li>
+		{% else %}
+		{% for user, profile in profile %}
+		  <ol class="gem-c-contents-list__list">
+			      <li class="gem-c-contents-list__list-item gem-c-contents-list__list-item--dashed">
+				      <a class="gem-c-contents-list__link govuk-link govuk-link--no-underline" href="#bio-{{ user.username|lower }}">Biography</a>
+                          </li>
+			  {% if profile.location %}
+                          <li class="gem-c-contents-list__list-item gem-c-contents-list__list-item--dashed">
+                            <a class="gem-c-contents-list__link govuk-link govuk-link--no-underline" href="#location">Location</a> 
+                          </li>
+			  {% endif %}
+			  {% if profile.website %}
+                          <li class="gem-c-contents-list__list-item gem-c-contents-list__list-item--dashed">
+                            <a class="gem-c-contents-list__link govuk-link govuk-link--no-underline" href="#social">Social</a>
+                          </li>
+			  {% endif %}
+                      </ol>
+		      {% endfor %}
+		      {% endif %}
+                  </nav>
+                  </div>
+		{% for user, profile in profile %}
+		{% if profile.avatar %}
+		  <figure class="gem-c-image-card__image-wrapper"><img class="gem-c-image-card__image" title="Headshot of Richard Stallman in Svalbard, wearing a snowmobile suit." alt="{{ user.username }}'s profile image" loading="auto" src="{{ profile.avatar.url }}" width="300" height="200">
+                    <figcaption><p class="gem-c-image-card__context">Your photo</p></figcaption>
+                    </figure>
+		    {% endif %}
+		    {% endfor %}
+                  </div>
+                </div>
+		<div class="govuk-grid-column-two-thirds">
+		{% for user, profile in profile %}
+		<h3 class="govuk-heading-m" id="{{ user.username|lower }}"> {{ user.username }} </h3>
+		<h4 class="govuk-body-l" id="bio-{{user.username|lower }}">Biography</h4>
+		{% if profile.bio %}
+		{{ profile.bio }}
+		{% else %}
+		<p class="govuk-body"> {{ user.username }} is part of the {{ group.name }} group, here at {{ site.name }}. They began their account on the {{ user.date_joined|date:"jS F, Y" }}.</p>
+		{% endif %}
+		{% endfor %}
+		    </div>
+</div>
+	</div>
+</div>
+
+{% endblock content %}

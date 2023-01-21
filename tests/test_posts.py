@@ -7,7 +7,7 @@ from django.db import IntegrityError
 
 
 class TestPosts(TestCase):
-    fixtures = ["users.yaml", "media.yaml", "tags.yaml", "posts.yaml"]
+    fixtures = ["groups.yaml", "users.yaml", "media.yaml", "tags.yaml", "posts.yaml"]
 
     def setup(self):
         pass
