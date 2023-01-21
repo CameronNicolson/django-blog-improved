@@ -6,6 +6,7 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 """
 
 import os
+import dj_database_url
 from pathlib import Path
 
 ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent
@@ -17,7 +18,7 @@ print(ROOT_DIR)
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#debug
 # SECURITY WARNING: don't run with debug turned on in production
-DEBUG = True
+DEBUG = os.getenv('DJANGO_DEBUG') != 'FALSE'
 
 # Local time zone. Choices are
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -41,19 +42,30 @@ LOCALE_PATHS = [str(ROOT_DIR / "locale")]
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
 # SECURITY WARNING: keep the secret key used in production a secret!
-SECRET_KEY = # <place your secret key here>
+if DEBUG:
+    SECRET_KEY = # <place your secret key here>
+    print("DEBUG activated")
+else:
+    SECRET_KEY = # <place your secret key here>
+
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1"]
 
 # DATABASES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": "db.sqlite3",
-    }
-}
+
+POSTGRES_DB = os.getenv("DATABASE_NAME", "django_blog")
+POSTGRES_HOST = os.getenv("DATABASE_HOST", "localhost")
+POSTGRES_PASSWORD = os.getenv("DATABASE_PASSWORD", "")
+POSTGRES_PORT = os.getenv("DATABASE_PORT", "5432")
+POSTGRES_USER = os.getenv("DATABASE_USER", "postgres")
+
+DATABASES = {}
+DATABASES["default"] = dj_database_url.config(
+    default=f"postgres://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
+)
+
 # https://docs.djangoproject.com/en/stable/ref/settings/#std:setting-DEFAULT_AUTO_FIELD
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 

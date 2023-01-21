@@ -50,7 +50,7 @@ coverage.xml
 # Translations
 *.mo
 *.pot
-
+*.env
 deployment/.envs/production/.production.env
 deployment/.envs/production/.prod.db
 # Django stuff:

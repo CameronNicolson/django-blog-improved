@@ -1,0 +1,11 @@
+# This is a __SAMPLE__ file
+# copy this file's contents into .env and amend as required
+
+export DJANGO_DEBUG = "TRUE"
+
+export DATABASE_NAME = ""
+export DATABASE_HOST = ""
+export DATABASE_PASSWORD = ""
+export DATABASE_PORT = ""
+export DATABASE_USER = ""
+
