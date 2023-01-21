@@ -100,7 +100,7 @@ python -c 'from django.core.management.utils import get_random_secret_key; \
 ```
 Then transfer the output into `config/settings.py`. For example:
 
-If the install is happening on a *nix machine, __optional__ `sed -i 's/SECRET_KEY =/SECRET_KEY = "replace with your code"/g' config/settings.py` will edit the line for you.
+If the install is happening on a *nix machine, __optional__ `sed -i '1,/SECRET_KEY =/s/SECRET_KEY =/SECRET_KEY = "<paste-key-here>"/' config/settings.py` will edit the line for you.
 
 Your settings now should look similar to the example below.
 
@@ -231,3 +231,48 @@ Redirect is useful for linking to resources other than a typical blog post. Redi
 
 For example, let's say you want to promote your YouTube channel. You create a post redirect "My first video". After publish, a user clicking is taken to YouTube.com. 
 
+### Profile Page
+
+In general, registered users are treated to an unique webpage and URL. URLs contain the group name, and the account username. Depending on the privacy settings for each account, some groups and users may be absent. 
+
+The following syntax is used.
+http(s)://site.xz/[group]/[username]
+
+For example, with a group named editor, and a username Snowden:
+```
+https://site.xz/editor/snowden
+```
+
+#### Assigning Users a Profile
+
+1. Assign registered accounts to a group
+2. The group management status needs to specify **Public** 
+3. Similarly the user must adjust personal settings to public also 
+
+When these steps are in place, the profile is live for everyone to view. 
+
+#### Customisation
+
+Some users may wish to add extra details to their bio, via the admin portal this is possible. 
+
+In admin, find the user field and press edit. Everything under "Intimate user details" is directly related to the profile page. 
+
+##### Custom Templates and HTML
+When the basic author template is inadequate then consider uploading a custom template. 
+
+To do so, prepare a HTML document and title it **username.html**. Replace username with the actual corresponding username. For example `snowden.html`. Next, upload the file inside the authors folder.
+
+The template file hierarchy: 
+
+```
+├── fixtures
+├── media
+├── static
+├── templates
+│   │  
+│   ├── pages
+│   │   └── authors
+│   │       └── snowden.html
+│   └  partials
+└── templatetags
+```

@@ -21,7 +21,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Navigation" href="navigation.html" />
-    <link rel="prev" title="Features" href="../overview/features.html" /> 
+    <link rel="prev" title="Name and branding" href="name-and-branding.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -45,6 +45,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="name-and-branding.html">Name and branding</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Get Started</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#requirements">Requirements</a></li>
@@ -78,6 +79,11 @@
 <li class="toctree-l4"><a class="reference internal" href="#post-redirect">Post Redirect</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#profile-page">Profile Page</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#assigning-users-a-profile">Assigning Users a Profile</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#customisation">Customisation</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -98,8 +104,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Get Started</li>
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Get Started</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/usage/get-started.md.txt" rel="nofollow"> View page source</a>
       </li>
@@ -136,6 +142,7 @@
 <li><p><a class="reference internal" href="#blog-management" id="id14">Blog management</a></p>
 <ul>
 <li><p><a class="reference internal" href="#creating-posts" id="id15">Creating posts</a></p></li>
+<li><p><a class="reference internal" href="#profile-page" id="id16">Profile Page</a></p></li>
 </ul>
 </li>
 </ul>
@@ -222,7 +229,7 @@ Not sure? check out djangogirls’ <a class="reference external" href="https://t
 </pre></div>
 </div>
 <p>Then transfer the output into <code class="docutils literal notranslate"><span class="pre">config/settings.py</span></code>. For example:</p>
-<p>If the install is happening on a *nix machine, <strong>optional</strong> <code class="docutils literal notranslate"><span class="pre">sed</span> <span class="pre">-i</span> <span class="pre">'s/SECRET_KEY</span> <span class="pre">=/SECRET_KEY</span> <span class="pre">=</span> <span class="pre">&quot;replace</span> <span class="pre">with</span> <span class="pre">your</span> <span class="pre">code&quot;/g'</span> <span class="pre">config/settings.py</span></code> will edit the line for you.</p>
+<p>If the install is happening on a *nix machine, <strong>optional</strong> <code class="docutils literal notranslate"><span class="pre">sed</span> <span class="pre">-i</span> <span class="pre">'1,/SECRET_KEY</span> <span class="pre">=/s/SECRET_KEY</span> <span class="pre">=/SECRET_KEY</span> <span class="pre">=</span> <span class="pre">&quot;&lt;paste-key-here&gt;&quot;/'</span> <span class="pre">config/settings.py</span></code> will edit the line for you.</p>
 <p>Your settings now should look similar to the example below.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SECRET_kEY</span> <span class="o">=</span> <span class="s2">&quot;+mh)7c$31h4rp=dkdo!not-copy/this(%q&amp;p^gb*)em%k#-$=06=zs(*&quot;</span>
 </pre></div>
@@ -329,6 +336,48 @@ Not sure? check out djangogirls’ <a class="reference external" href="https://t
 <p>For example, let’s say you want to promote your YouTube channel. You create a post redirect “My first video”. After publish, a user clicking is taken to YouTube.com.</p>
 </section>
 </section>
+<section id="profile-page">
+<h3><a class="toc-backref" href="#id16">Profile Page</a><a class="headerlink" href="#profile-page" title="Permalink to this heading"></a></h3>
+<p>In general, registered users are treated to an unique webpage and URL. URLs contain the group name, and the account username. Depending on the privacy settings for each account, some groups and users may be absent.</p>
+<p>The following syntax is used.
+http(s)://site.xz/[group]/[username]</p>
+<p>For example, with a group named editor, and a username Snowden:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">site</span><span class="o">.</span><span class="n">xz</span><span class="o">/</span><span class="n">editor</span><span class="o">/</span><span class="n">snowden</span>
+</pre></div>
+</div>
+<section id="assigning-users-a-profile">
+<h4>Assigning Users a Profile<a class="headerlink" href="#assigning-users-a-profile" title="Permalink to this heading"></a></h4>
+<ol class="arabic simple">
+<li><p>Assign registered accounts to a group</p></li>
+<li><p>The group management status needs to specify <strong>Public</strong></p></li>
+<li><p>Similarly the user must adjust personal settings to public also</p></li>
+</ol>
+<p>When these steps are in place, the profile is live for everyone to view.</p>
+</section>
+<section id="customisation">
+<h4>Customisation<a class="headerlink" href="#customisation" title="Permalink to this heading"></a></h4>
+<p>Some users may wish to add extra details to their bio, via the admin portal this is possible.</p>
+<p>In admin, find the user field and press edit. Everything under “Intimate user details” is directly related to the profile page.</p>
+<section id="custom-templates-and-html">
+<h5>Custom Templates and HTML<a class="headerlink" href="#custom-templates-and-html" title="Permalink to this heading"></a></h5>
+<p>When the basic author template is inadequate then consider uploading a custom template.</p>
+<p>To do so, prepare a HTML document and title it <strong>username.html</strong>. Replace username with the actual corresponding username. For example <code class="docutils literal notranslate"><span class="pre">snowden.html</span></code>. Next, upload the file inside the authors folder.</p>
+<p>The template file hierarchy:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>├── fixtures
+├── media
+├── static
+├── templates
+│   │  
+│   ├── pages
+│   │   └── authors
+│   │       └── snowden.html
+│   └  partials
+└── templatetags
+</pre></div>
+</div>
+</section>
+</section>
+</section>
 </section>
 </section>
 
@@ -336,7 +385,7 @@ Not sure? check out djangogirls’ <a class="reference external" href="https://t
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../overview/features.html" class="btn btn-neutral float-left" title="Features" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="name-and-branding.html" class="btn btn-neutral float-left" title="Name and branding" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="navigation.html" class="btn btn-neutral float-right" title="Navigation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
