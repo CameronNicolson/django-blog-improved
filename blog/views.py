@@ -4,7 +4,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.detail import SingleObjectMixin
 from django.urls import reverse
-from .forms import CommentForm
 from .models import Post, PostViaGit, PostRedirect, User, UserProfile
 from taggit.models import Tag
 from django.db.models.base import ModelBase
@@ -33,6 +32,7 @@ def list_to_queryset(model, data):
 
     pk_list = [obj.pk for obj in data]
     return model.objects.filter(pk__in=pk_list)
+
 
 class HomePage(ListView):
     queryset = Post.objects.filter(status=1).select_subclasses()
@@ -85,26 +85,11 @@ class PostList(ListView):
             return context
         return context
 
-def get_comments(request, post):
-    comments = post.comments.filter(active=True).order_by("-created_on")
-    new_comment = None
-    # Comment posted
-    if request.method == "POST":
-        comment_form = CommentForm(data=request.POST)
-        if comment_form.is_valid():
-            # Create Comment object but don't save to database yet
-            new_comment = comment_form.save(commit=False)
-            # Assign the current post to the comment
-            new_comment.post = post
-            # Save the comment to the database
-            new_comment.save()
-    else:
-        comment_form = CommentForm()
-    return {"all_active": comments, "comment_form": comment_form, "new_comment": new_comment}
 
 class PublicPostMixin(object):
     def get_queryset(self): 
         return Post.objects.filter(status=1)
+
 
 class PostView(DetailView, PublicPostMixin, SingleObjectMixin):
     template_name = "post_detail.html"
@@ -113,12 +98,8 @@ class PostView(DetailView, PublicPostMixin, SingleObjectMixin):
     def get_context_data(self, **kwargs):
         context = super(PostView, self).get_context_data(**kwargs)
         post = self.get_object()
-        # get comments
-        comments = get_comments(self.request, post)
-        context["comments"] = comments["all_active"]
-        context["new_comment"] = comments["new_comment"]
-        context["comment_form"] = comments["comment_form"]
         context["crumbs"] = [("Home", reverse("home"),),("Posts", reverse("post_list"),),(post.title, None,)]
+        
         if operator.eq(post.collabaration_mode, Post.CollabrationMode.YES):
             post = get_object_or_404(PostViaGit, post_ptr_id=post.pk)
         try:
