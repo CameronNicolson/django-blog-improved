@@ -149,20 +149,6 @@ Upon receiving your shared code. You retain your own copyright to all code submi
 
 This is typical practice, perhaps obvious to some, but I want to emphasis that -- anyone wanting to help will be treated with utmost respect.
 
-## Notes
-
-### Rigid Styles
-The style sheets & JavaScript elements are "hard-linked" to Spongy Frontend. 
-
-In other words, if you wish for Twitter Bootstrap, you will need to apply extra work to incorporate that design.
-
-### Commenting system
-You cannot comment on posts. Why? Though, the code remains inside the program (you are free to enable) it is unreachable upon install. 
-
-Think of the risks; the current comment system is simple and holds no protection, akin to paper armour. Spam and bots could exploit this situation.
-
-Web authors looking for comments and protection should look to "battle-tested" solutions and deploy them alongside the program.  
-
 # License
 
 ![AGPLv3 Logo](https://www.gnu.org/graphics/agplv3-155x51.png "AGPLv3 Logo")
