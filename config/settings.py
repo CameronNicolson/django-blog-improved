@@ -42,11 +42,11 @@ LOCALE_PATHS = [str(ROOT_DIR / "locale")]
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
 # SECURITY WARNING: keep the secret key used in production a secret!
-if DEBUG:
-    SECRET_KEY = # <place your secret key here>
+if not DEBUG:
+    SECRET_KEY = # <place your secret key here> "" # <place your secret key here>
     print("DEBUG activated")
 else:
-    SECRET_KEY = # <place your secret key here>
+    SECRET_KEY = "testing"
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1"]
@@ -54,16 +54,16 @@ ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1"]
 # DATABASES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
-
-POSTGRES_DB = os.getenv("DATABASE_NAME", "django_blog")
-POSTGRES_HOST = os.getenv("DATABASE_HOST", "localhost")
-POSTGRES_PASSWORD = os.getenv("DATABASE_PASSWORD", "")
-POSTGRES_PORT = os.getenv("DATABASE_PORT", "5432")
-POSTGRES_USER = os.getenv("DATABASE_USER", "postgres")
+DATABASE_ENGINE = os.getenv("BLOG_DATABASE_ENGINE", "sqlite")
+DATABASE_NAME = os.getenv("BLOG_DATABASE_NAME", "db.sqlite3")
+DATABASE_HOST = os.getenv("BLOG_DATABASE_HOST", "localhost")
+DATABASE_PASSWORD = os.getenv("BLOG_DATABASE_PASSWORD", "")
+DATABASE_PORT = os.getenv("BLOG_DATABASE_PORT", "5432")
+DATABASE_USER = os.getenv("BLOG_DATABASE_USER", "django")
 
 DATABASES = {}
 DATABASES["default"] = dj_database_url.config(
-    default=f"postgres://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
+    default=f"{DATABASE_ENGINE}:///{DATABASE_NAME}"
 )
 
 # https://docs.djangoproject.com/en/stable/ref/settings/#std:setting-DEFAULT_AUTO_FIELD
