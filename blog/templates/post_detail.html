@@ -49,11 +49,12 @@
     </a>
     {% endif %}
     <div class="govspeak">
-    <div class="stat-headline">
+      <p class="govuk-body govuk-!-margin-bottom-0">Published:</p>
+    <div class="stat-headline govuk-!-margin-top-0">
       {% for tag in post.tags.all %}
         {{ tag }}
       {% endfor %}
-      <p>Published
+      <p>
       <em></em>{{ post.created_on|date:"d F, Y" }}
       </p>
     </div>
