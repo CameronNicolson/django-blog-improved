@@ -84,7 +84,7 @@ python -c 'from django.core.management.utils import get_random_secret_key; \
             print(get_random_secret_key())'
 ```
 ```
-sed -i 's/SECRET_KEY =/SECRET_KEY = "above output inside double speech marks"/g' config/settings.py
+sed -i '1,/SECRET_KEY =/s/SECRET_KEY =/SECRET_KEY = "<paste-key-here>"/' config/settings.py
 ```
 ### Step 3: Connect a database
 ```
