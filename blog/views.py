@@ -53,20 +53,11 @@ class AuthorPage(PublicStatusMixin, ListView):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        print("this was in qs")
-        print(qs)
         qs = get_object_or_404(qs, name__contains=self.kwargs["group"])
-        print("after group")
-        print(qs)
         names_in_url = self.kwargs["name"].split(',')
         qs = qs.user_set.all()
-        print("waaaa")
-        print(qs)
         qs = qs.filter(username__in=names_in_url)
-        print("what we have users")
-        print(qs)
         qs = get_list_or_404(UserProfile, user__in=qs, status=1)
-        print(qs)
         return qs
 
     def get_template_names(self):
@@ -90,7 +81,6 @@ class AuthorPage(PublicStatusMixin, ListView):
 
         context["profile"] = list(create_user_list(users, self.get_queryset()))
         context["group"] = BlogGroup.objects.get(name=self.kwargs["group"])
-        print(context["profile"])
         return context
 
 
