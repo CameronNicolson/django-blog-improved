@@ -43,7 +43,7 @@ LOCALE_PATHS = [str(ROOT_DIR / "locale")]
 # https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
 # SECURITY WARNING: keep the secret key used in production a secret!
 if not DEBUG:
-    SECRET_KEY = # <place your secret key here> "" # <place your secret key here>
+    SECRET_KEY = ""
     print("DEBUG activated")
 else:
     SECRET_KEY = "testing"
