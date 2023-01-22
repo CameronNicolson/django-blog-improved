@@ -64,17 +64,21 @@ class UserProfileAdmin(admin.StackedInline):
     max_num = 1
     can_delete = False
 
+admin.site.unregister(Site)
+admin.site.unregister(User)
+admin.site.unregister(Group)
+
+@admin.register(User)
 class UserAdmin(UserAdmin):
     inlines = [UserProfileAdmin,]
 
+@admin.register(Site)
 class SiteAdmin(admin.ModelAdmin):
     list_display = ("id", "name", "domain")
     list_display_links = ("id", 'name',)
     readonly_fields = ("id",)
 
-admin.site.unregister(Site)
-admin.site.register(Site, SiteAdmin)
-admin.site.unregister(User)
-admin.site.register(User, UserAdmin)
-admin.site.unregister(Group)
-admin.site.register(BlogGroup)
+@admin.register(BlogGroup)
+class BlogGroupAdmin(admin.ModelAdmin):
+    list_display = ("name","status",)
+
