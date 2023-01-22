@@ -1,5 +1,6 @@
 from django.apps import apps
 from django.contrib.auth import get_user_model
+from django.contrib.sites.shortcuts import get_current_site
 from django.test import TestCase, Client
 from blog.models import BlogGroup, User, UserProfile
 from django.urls import reverse
@@ -170,4 +171,31 @@ class TestProfiles(TestCase):
             "404.html"
         )
 
+    def test_user_profile_default_absolute_url(self):
+        journalist = get_user_model().objects.get(username="journalist")
+        profile = UserProfile.objects.get(user=journalist)
+        client = Client()
+        req = self.client.get('/')
 
+        profile_url = profile.get_absolute_url(req, groupname="author")
+        expected_url = f"{get_current_site(req)}/author/{journalist.username}"
+        self.assertEquals(
+            profile_url, 
+            expected_url
+        )
+
+    def test_user_profile_custom_absolute_url(self):
+        journalist = get_user_model().objects.get(username="journalist")
+        profile = UserProfile.objects.get(user=journalist)
+        # add website to profile
+        custom_url = "https://socialmedia.local"
+        profile.website = custom_url
+        profile.save()
+        client = Client()
+        req = self.client.get('/')
+        profile_url = profile.get_absolute_url(req, groupname="author")
+        expected_url = custom_url
+        self.assertEquals(
+            profile_url, 
+            expected_url
+        )

@@ -1,16 +1,16 @@
 from django.contrib.auth.models import Group, User
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
-from blog.conf import USER_PUBLIC_PROFILE
+from blog.conf import USER_PUBLIC_PROFILE, AUTHOR_DEFAULT_GROUP
 from taggit.managers import TaggableManager
 from taggit.models import Tag
 from phonenumber_field.modelfields import PhoneNumberField
 from django.db.models.signals import pre_save, post_save, pre_init
 from django.dispatch import receiver
 from model_utils.managers import InheritanceManager
-from model_utils.models import StatusModel
 from taggit.managers import TaggableManager
 from taggit.models import TaggedItemBase
 
@@ -40,11 +40,13 @@ class Status(models.IntegerChoices):
     PRIVATE = 2
     UNLISTED = 3
 
+
 class BlogGroup(Group):
     status = models.IntegerField(choices=Status.choices, default=Status.PRIVATE) 
 
     class Meta: 
         verbose_name_plural = "groups"
+
 
 class Media(models.Model):
     class MediaType(models.TextChoices):
@@ -77,7 +79,11 @@ class UserProfile(models.Model):
         default=user_profile_choice_code(
                 USER_PUBLIC_PROFILE
             )
+        
         )
+
+    def get_absolute_url(self, request, groupname=AUTHOR_DEFAULT_GROUP):
+        return self.website or "{0}/{1}/{2}".format(get_current_site(request), groupname, self.user.username)
 
     def __str__(self):
         return "{0} Intimate Details".format(self.user.username).title()
@@ -204,3 +210,4 @@ def create_user_profile(sender, instance, created, **kwargs):
 def update_postredirect_slug(sender, instance, **kwargs):
     instance.slug = "{0}s-redirect".format(slugify(instance.title))
     return instance
+
