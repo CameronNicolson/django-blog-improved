@@ -43,7 +43,7 @@ class TestProfiles(TestCase):
         # status code *1* represents public
         self.assertEquals(profile.status, 1)
         client = Client()
-        response = client.get(reverse("author", kwargs={"group": group.name, "name": user.username}))
+        response = client.get(reverse("user_profile", kwargs={"group": group.name, "name": user.username}))
         self.assertEquals(
             response.status_code,
             200
@@ -136,7 +136,7 @@ class TestProfiles(TestCase):
         author_group.user_set.add(journalist)
         
         client = Client()
-        response = client.get(reverse("author", kwargs={"group": author_group.name, "name": f"{basic.username},{journalist.username}"}))
+        response = client.get(reverse("user_profile", kwargs={"group": author_group.name, "name": f"{basic.username},{journalist.username}"}))
         self.assertEquals(
             response.status_code,
             200
@@ -161,7 +161,7 @@ class TestProfiles(TestCase):
                 2
         )
         client = Client()
-        response = client.get(reverse("author", kwargs={"group": author_group.name, "name": f"{basic.username},{journalist.username}"}))
+        response = client.get(reverse("user_profile", kwargs={"group": author_group.name, "name": f"{basic.username},{journalist.username}"}))
         self.assertEquals(
             response.status_code,
             404
@@ -171,31 +171,4 @@ class TestProfiles(TestCase):
             "404.html"
         )
 
-    def test_user_profile_default_absolute_url(self):
-        journalist = get_user_model().objects.get(username="journalist")
-        profile = UserProfile.objects.get(user=journalist)
-        client = Client()
-        req = self.client.get('/')
 
-        profile_url = profile.get_absolute_url(req, groupname="author")
-        expected_url = f"{get_current_site(req)}/author/{journalist.username}"
-        self.assertEquals(
-            profile_url, 
-            expected_url
-        )
-
-    def test_user_profile_custom_absolute_url(self):
-        journalist = get_user_model().objects.get(username="journalist")
-        profile = UserProfile.objects.get(user=journalist)
-        # add website to profile
-        custom_url = "https://socialmedia.local"
-        profile.website = custom_url
-        profile.save()
-        client = Client()
-        req = self.client.get('/')
-        profile_url = profile.get_absolute_url(req, groupname="author")
-        expected_url = custom_url
-        self.assertEquals(
-            profile_url, 
-            expected_url
-        )

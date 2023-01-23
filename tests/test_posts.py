@@ -1,4 +1,5 @@
 from django.core.exceptions import PermissionDenied
+from django.contrib.auth import get_user_model
 from django.test import TestCase, Client, RequestFactory
 from blog.models import Post, User, Tag
 from blog.views import PostList
@@ -85,3 +86,28 @@ class TestPosts(TestCase):
             False
         )
 
+    def test_author_url_active(self):
+        post = Post.objects.get(slug="this-post-is-featured")
+        journalist = get_user_model().objects.get(username="journalist")
+        self.assertEquals(
+            post.author,
+            journalist
+        )
+        
+        self.assertEquals(
+            post.get_author_url(), 
+            "/author/journalist" 
+        )
+
+    def test_author_url_missing(self):
+        post = Post.objects.get(slug="15-tips-for-mission-success")
+        alice = get_user_model().objects.get(username="alice")
+        self.assertEquals(
+            post.author,
+            alice
+        )
+        
+        self.assertEquals(
+            post.get_author_url(), 
+            None
+        )

@@ -23,10 +23,10 @@
     </p>
     <p class="govuk-body govuk-!-font-size-16 govuk-!-margin-bottom-4">
       From:
-      {% if author_profile.website %} 
-        <a class="govuk-link" href="{{ author_profile.website }}">{{ post.author }}</a> 
+      {% if post.get_author_url %} 
+        <a class="govuk-link" href="{{ post.get_author_url }}">{{ post.author }}</a> 
       {% else %}
-        {{ post.author }}
+        {{ post.author.username }}
       {% endif %}
     </p>
     <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">

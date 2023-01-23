@@ -78,12 +78,8 @@ class UserProfile(models.Model):
         choices=Status.choices, 
         default=user_profile_choice_code(
                 USER_PUBLIC_PROFILE
-            )
-        
+            ) 
         )
-
-    def get_absolute_url(self, request, groupname=AUTHOR_DEFAULT_GROUP):
-        return self.website or "{0}/{1}/{2}".format(get_current_site(request), groupname, self.user.username)
 
     def __str__(self):
         return "{0} Intimate Details".format(self.user.username).title()
@@ -137,6 +133,12 @@ class Post(models.Model):
     
     def get_post_type(self):
         return self._meta.model_name
+
+    def get_author_url(self):
+        isAuthor = User.objects.filter(pk=self.author.id, groups__name=AUTHOR_DEFAULT_GROUP).exists()
+        if isAuthor:
+            return reverse("user_profile", kwargs={"group": str(AUTHOR_DEFAULT_GROUP), "name": str(self.author.username)})
+        return None
 
     def get_absolute_url(self):
         return reverse("post_detail", kwargs={"slug": str(self.slug)})

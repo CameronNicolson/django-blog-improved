@@ -139,11 +139,6 @@ class PostView(DetailView, PublicStatusMixin, SingleObjectMixin):
         
         if operator.eq(post.collabaration_mode, Post.CollabrationMode.YES):
             post = get_object_or_404(PostViaGit, post_ptr_id=post.pk)
-        try:
-            author_profile = UserProfile.objects.get(pk=post.author.id)
-            context["author_profile"] = author_profile
-        except ObjectDoesNotExist:
-            context["author_profile"] = {}
         context["post"] = post
         return context
 
