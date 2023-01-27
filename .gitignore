@@ -58,10 +58,13 @@ staticfiles/
 frontend/staticfiles/
 **media/*
 **mediafiles/
-# make an exception for fixtures and testing 
+# make an exception for: 
+# fixtures and testing 
 !**media/fixtures/
 cache/
 **/migrations/*
+# exception for blog migrations
+!blog_improved/migrations/*
 # Sphinx documentation
 docs/_build/
 db.sqlite3
