@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name="django-blog-improved"
 description="Blog app with breadcrumbs, categories, contact and profiles"
-license={ text="AGPL-3.0" }
+license={ text="GPL-3.0" }
 requires-python = ">=3.6"
 authors = [
   { name = "Spongycake", email = "spongycake@spongycake.org" },
@@ -24,7 +24,7 @@ classifiers = [
   "Operating System :: OS Independent",
   "Topic :: Internet :: WWW/HTTP",
   "Topic :: Software Development :: Libraries :: Python Modules",
-  "License :: FSF Approved :: AGPL-3.0 License",
+  "License :: FSF Approved :: GPL-3.0 License",
 ]
 dependencies = [
   "asgiref==3.4.1",
@@ -57,5 +57,12 @@ examples = [
 Documentation = "https://spongycake.codeberg.page/django-blog-improved/@master/docs/pages"
 Tracker = "https://codeberg.org/spongycake/django-blog-improved/issues"
 Source = "https://codeberg.org/spongycake/django-blog-improved"
+[tool.setuptools.packages.find]
+include = ["blog_improved"]
+exclude = [
+  "docs*",
+  "tests*",
+  "requirements*",
+]
 [tool.setuptools.dynamic]
 version = {attr = "blog_improved.__version__"}
