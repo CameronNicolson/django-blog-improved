@@ -2,7 +2,7 @@ from django.apps import apps
 from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
 from django.test import TestCase, Client
-from blog.models import BlogGroup, User, UserProfile
+from blog_improved.models import BlogGroup, User, UserProfile
 from django.urls import reverse
 from django.test.utils import override_settings
 from django.conf import settings
@@ -14,7 +14,7 @@ class TestProfiles(TestCase):
         pass
 
     def test_status_code_choice(self):
-        from blog.models import user_profile_choice_code
+        from blog_improved.models import user_profile_choice_code
         code = user_profile_choice_code(False)
         self.assertEquals(
                 code, 
@@ -27,7 +27,7 @@ class TestProfiles(TestCase):
         )
 
     def test_new_userprofile_status_public_status(self):
-        from blog.conf import USER_PUBLIC_PROFILE
+        from blog_improved.conf import USER_PUBLIC_PROFILE
         self.assertEquals(
                 USER_PUBLIC_PROFILE,
                 True
@@ -56,10 +56,10 @@ class TestProfiles(TestCase):
     def test_nonstaffer_userprofile_change_denied(self):
         # our resident basic account 
         non_staffer = get_user_model().objects.get(username="basic")
-        app_label = apps.get_app_config('blog').verbose_name.lower()
+        app_label = apps.get_app_config('blog_improved').verbose_name.lower()
         self.assertEquals(
             app_label,
-            "blog"
+            "blog_improved"
         )
         model_name = UserProfile.__name__.lower()
         self.assertEquals(
@@ -83,10 +83,10 @@ class TestProfiles(TestCase):
     def test_nonstaffer_userprofile_view_denied(self):
         # our resident basic account 
         non_staffer = get_user_model().objects.get(username="basic")
-        app_label = apps.get_app_config('blog').verbose_name.lower()
+        app_label = apps.get_app_config('blog_improved').verbose_name.lower()
         self.assertEquals(
             app_label,
-            "blog"
+            "blog_improved"
         )
         model_name = UserProfile.__name__.lower()
         self.assertEquals(
@@ -109,10 +109,10 @@ class TestProfiles(TestCase):
     def test_superuser_can_change_userprofile(self):
          # our resident superuser alice 
         superuser = get_user_model().objects.get(username="alice")
-        app_label = apps.get_app_config('blog').verbose_name.lower()
+        app_label = apps.get_app_config("blog_improved").verbose_name.lower()
         self.assertEquals(
             app_label,
-            "blog"
+            "blog_improved"
         )
         model_name = UserProfile.__name__.lower()
         self.assertEquals(

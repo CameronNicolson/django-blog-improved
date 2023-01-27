@@ -1,7 +1,7 @@
 # Django Blog Improved
 [![Chat on Matrix](docs/_static/chat-on-matrix.svg "Chat on Matrix")](https://matrix.to/#/#djangoblog:one.ems.host)
 
-A blog application, with popular features. Build a blog with Django framework.
+A django app with blogging features. Build a blog with the Django framework.
 
 ![screenshot of blog homepage](docs/_static/screenshot.gif "screenshot of homepage of blog")
 
@@ -15,7 +15,6 @@ A blog application, with popular features. Build a blog with Django framework.
   * [Testing](#testing)
 * Contribute
   * [Getting Involved](#getting-involved)
-  * [Notes](#notes)
   * [License](#license)
 
 ## Features 
@@ -30,11 +29,7 @@ A blog application, with popular features. Build a blog with Django framework.
 
 * **Contact options** - Show/edit contact details across the entire site with one easy template tag
 
-* **Request Callback** - Allow visitors to request a telephone call
-
 * **Collaboration link** - Enable an edit link that directs to your git server
-
-* **CV template** - Stylish way to show off your work
 
 **And more**
 * Wysiwyg editor 
@@ -57,83 +52,46 @@ python --version; pip --version
 When successful, you are ready for the install guides.
 
 ## Install 
+
 This section contains install instructions. Check out the [detailed docs for more](https://spongycake.codeberg.page/django-blog-improved/@master/docs/pages/usage/get-started.html#installation).
-### Download
+
+### Compile from source
 Gain a copy of the project.
 ```
+# download via git
 git clone https://codeberg.org/spongycake/django-blog-improved
-```
-[Direct Download](https://codeberg.org/spongycake/django-blog-improved/archive/master.zip)
 
-
-### Step 1: Gather dependencies 
-```
+# when done, move inside directory
 cd django-blog-improved
-```
- Then run the install command
-```
-pip install -r requirements/base.txt
-```
-### Step 2: Security key 
-Inside `config/settings.py` needs a secret key.
 
-You can make your own or use this command:
-
+# compile source code
+pip install -e .
 ```
-python -c 'from django.core.management.utils import get_random_secret_key; \
-            print(get_random_secret_key())'
-```
-```
-sed -i '1,/SECRET_KEY =/s/SECRET_KEY =/SECRET_KEY = "<paste-key-here>"/' config/settings.py
-```
-### Step 3: Connect a database
-```
-python manage.py makemigrations blog \
-
-python manage.py migrate blog
-```
-SQLite is the default. Please read the official Django [documentation about databases](https://docs.djangoproject.com/en/4.1/ref/databases/).
-
-### Step 4: Start the server
-
-```
-python manage.py runserver
-```
-Point to `http://127.0.0.1:8000` with a Web Browser.
-
-### All Done
-
-Want the next moves? Jump into the [docs](https://spongycake.codeberg.page/django-blog-improved/@master/docs/pages/).
+Or with your web browser -
+[Direct Download from Codeberg.org](https://codeberg.org/spongycake/django-blog-improved/archive/master.zip)
 
 ## Testing
 Install the testing tools using pip: 
 ```
 pip install -r requirements/local.txt
 ```
-Run this script to populate the blog with dummy data. 
+(optional) If you want lorem ipsum text, this script can expand dummy data. 
 ```
 python populate_tests.py
 ```
-Check blog is functioning correctly with:
+Run all blog tests with:
 ```
-python manage.py test
+python -m django test --setting "tests.settings"
 ```
-Browse a testserver with mock articles and pages.
 
-```
-python manage.py collectstatic
-# use to pull the demo images
-```
-Start the server:
-```
-python manage.py testserver blog/fixtures/*.yaml
-```
-If a test fails, please consider [reporting the issue](https://codeberg.org/spongycake/django-blog-improved/issues) on the project's bug tracker. The next step is to press `New Issue` after loading the webpage.
+If a test fails, please consider [reporting the failure](https://codeberg.org/spongycake/django-blog-improved/issues) on the project's issue tracker. 
+
+Want the next moves? Jump into the [docs](https://spongycake.codeberg.page/django-blog-improved/@master/docs/pages/).
 
 ## Getting involved
 I personally enjoy software that has a collective effort attached. So please consider sharing your ideas and improvements.
 
-Discussion in Matrix [#djangoblog:one.ems.host](https://matrix.to/#/#djangoblog:one.ems.host).
+* Discussion in Matrix [#djangoblog:one.ems.host](https://matrix.to/#/#djangoblog:one.ems.host).
 
 ### How to contribute?
 
@@ -151,22 +109,22 @@ This is typical practice, perhaps obvious to some, but I want to emphasis that -
 
 # License
 
-![AGPLv3 Logo](https://www.gnu.org/graphics/agplv3-155x51.png "AGPLv3 Logo")
+![GPLv3 Logo](https://www.gnu.org/graphics/gplv3-with-text-136x68.png "AGPLv3 Logo")
 
-All files are copyright of 2022 SpongyCake, unless stated otherwise.
+All files are copyright of 2023 Spongycake, unless stated otherwise.
 
-Django Blog Improved is released under AGPLv3. 
+Django Blog Improved is released under GPLv3. 
 We conventionally placed the license in a file called [LICENSE](./LICENSE).
 
 This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as published by
+it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
+GNU General Public License for more details.
 
-You should have received a copy of the GNU Affero General Public License
+You should have received a copy of the GNU General Public License
 along with this program. If not, see [https://www.gnu.org/licenses/](https://www.gnu.org/licenses/).

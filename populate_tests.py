@@ -16,7 +16,7 @@ from django.utils.lorem_ipsum import paragraphs
 from pathlib import Path
 import re
 
-post_fixtures = Path.cwd() / "blog" / "fixtures" / "posts.yaml"
+post_fixtures = Path.cwd() / "tests" / "fixtures" / "posts.yaml"
 
 def insert_dummy_text_to_file(path):
 

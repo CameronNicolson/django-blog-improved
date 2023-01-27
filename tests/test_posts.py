@@ -1,8 +1,8 @@
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth import get_user_model
 from django.test import TestCase, Client, RequestFactory
-from blog.models import Post, User, Tag
-from blog.views import PostList
+from blog_improved.models import Post, User, Tag
+from blog_improved.views import PostList
 from django.urls import reverse
 from django.db import IntegrityError
 
