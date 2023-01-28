@@ -2,3 +2,10 @@ include blog_improved/templates/*.html
 include blog_improved/templates/partials/*.html
 include blog_improved/templates/pages/*.html
 include blog_improved/templates/authors/*.html
+include blog_improved/static/js/*.js
+include blog_improved/static/css/*.css
+include blog_improved/static/img/*.png
+include blog_improved/static/img/*.jpg
+include blog_improved/static/img/*.ico
+include blog_improved/static/font/NotoSans-Bold.ttf  
+include blog_improved/static/font/NotoSans-Regular.ttf
