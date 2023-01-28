@@ -1,1 +1,4 @@
-include blog_improved/templates/**.html
+include blog_improved/templates/*.html
+include blog_improved/templates/partials/*.html
+include blog_improved/templates/pages/*.html
+include blog_improved/templates/authors/*.html
