@@ -12,11 +12,21 @@ def set_dynamic_settings(settings):
     that have been specified.
     """
 
-    print(settings)
-    try:
-        settings["INSTALLED_APPS"]
-    except ValueError:
-        pass
-    else:
-        print("hello HELLO \n \n")
-        print(settings["INSTALLED_APPS"])
+    blog_dependencies = [
+        "redirects",
+        "crispy_forms",
+        "crispy_forms_gds",
+        "phonenumber_field",
+        "taggit",
+        "blog_improved",
+    ]
+
+    for app in blog_dependencies:
+        if app not in settings["INSTALLED_APPS"]:
+            try:
+                __import__(app)
+            except ImportError:
+                pass
+            else:
+                settings["INSTALLED_APPS"].append(app)
+

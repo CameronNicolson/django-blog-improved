@@ -1,5 +1,7 @@
 from pathlib import Path
 
+DEBUG = True
+
 TEST_ROOT = Path(__file__).parent
 
 SECRET_KEY = "django-blog-improved"
@@ -25,12 +27,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.sessions",
     "django.contrib.sites",
-    "redirects",
-    "crispy_forms",
-    "crispy_forms_gds",
-    "phonenumber_field",
-    "taggit",
-    "blog_improved", 
 ]
 
 
