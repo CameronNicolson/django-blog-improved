@@ -1,0 +1,33 @@
+{% load blog_tags %}
+{% for feature in post_list|featured:p %}
+      <div class="govuk-panel-feature bg-light-grey govuk-panel--no-centre">
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-full govuk-panel-feature--header">
+                          <strong class="govuk-tag">
+                            <span title="Category type {{ categor_name }}">Featured</span> 
+                          </strong>
+			  <h3 class="govuk-panel-feature--text__title visible-tablet">
+                              <a href="{{ feature.get_absolute_url  }}" class="govuk-panel__title govuk-panel-feature--text__link">{{ feature.title }}</a>
+			  </h3>
+          </div>
+      </div>
+          <div class="govuk-grid-row">
+                    {% with feature.cover_art as cover_art %}
+		    <div class="govuk-panel-feature--image">
+                      <figure class="govuk-panel-feature--image-wrapper">
+                          <img class="img-fluid" title="{{ cover_art.title }}" alt="{{ cover_art.title }}" width="620" height="412" src="{{ cover_art.file.url }}" />
+                      </figure>
+		    </div>
+                      {% endwith %}
+            <div class="govuk-panel-feature--text">
+                          <h3 class="govuk-panel-feature--text__title visible-desktop">
+                              <a href="{{ feature.get_absolute_url  }}" class="govuk-panel__title govuk-panel-feature--text__link">{{ feature.title }}</a>
+                          </h3>
+                          <address class="blog-posts__article-author govuk-visually-hidden"><a rel="author" href="/about"> Written by {{ feature.author }}</a></address>
+                          <p class="govuk-panel-feature--text__headline">{{ feature.headline|safe|slice:":200" }}</p>
+                  </div>
+                      </div>
+      </div>
+      {% endfor %}
+      <hr class="govuk-section-break govuk-section-break--xl govuk-section-break--visible">
+ 
