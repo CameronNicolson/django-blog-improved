@@ -22,7 +22,7 @@ def total_post_count(status_choice=None):
     return Post.objects.filter(**status).count()
 
 @register.filter
-def featured(queryset, limit=None, invert=False):
+def featured(queryset, limit=6, invert=False):
     if type(queryset) is QuerySet or type(queryset) is InheritanceQuerySet:
         if queryset.model is Post:
             pure_list = []
