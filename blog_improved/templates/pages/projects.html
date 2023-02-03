@@ -1,10 +1,10 @@
 {% extends "base.html" %} 
 {% load static %}
-{% block headcss %}
+{% block extrahead %}
 <!-- CSS Goes here -->
 <link rel="stylesheet" href="{% static 'css/spongy-frontend-1.0.0.min.css' %}">
 <link rel="stylesheet" href="{% static 'css/spongy-publishing-components-1.0.0.min.css' %}">
-{% endblock headcss %}
+{% endblock extrahead %}
 {% load crispy_forms_gds %}
 {% block brand_bar %}{% endblock brand_bar %}
 {% block content %}

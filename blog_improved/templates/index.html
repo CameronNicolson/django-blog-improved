@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% load static %}
 {% load blog_tags %}
-        {% block headcss %}
-        <link rel="stylesheet" href="{% static 'css/spongy-frontend-1.0.0.min.css' %}">
-        <link rel="stylesheet" href="{% static 'css/spongy-publishing-components-1.0.0.min.css' %}">
-        <link rel="stylesheet" href="{% static 'css/base.css' %}">
-        {% endblock headcss %}
+{% block extrahead %}
+<link rel="stylesheet" href="{% static 'css/spongy-frontend-1.0.0.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/spongy-publishing-components-1.0.0.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/base.css' %}">
+{% endblock extrahead %}
 {% block content %}
   <div class="govuk-width-container">
     <main class="govuk-main-wrapper" style="padding-top: 10px;" id="main-content" role="main">

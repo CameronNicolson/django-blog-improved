@@ -1,10 +1,10 @@
 {% extends "base.html" %} {% load static %} {% load blog_tags %}
 {% block title %}My Critical Vitae{% endblock %}
-{% block headcss %}
+{% block extrahead %}
 <link rel="stylesheet" href="{% static 'css/spongy-frontend-1.0.0.min.css' %}">
 <link rel="stylesheet" href="{% static 'css/spongy-publishing-components-1.0.0.min.css' %}">
-        <link rel="stylesheet" href="{% static 'css/cv.css' %}">
-{% endblock headcss %}
+<link rel="stylesheet" href="{% static 'css/cv.css' %}">
+{% endblock extrahead %}
 {% block content %}
 <div class="govuk-phase-banner govuk-width-container">
   <p class="govuk-phase-banner__content">
