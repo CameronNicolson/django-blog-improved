@@ -62,7 +62,7 @@ def contact_us(choice=False, url=False, mailto=False, **kwargs):
         return obfuscate_mailto(url, mail=mailto, text=contact, css_class=mailto_css)
     return obfuscate(contact)
 
-@register.inclusion_tag("partials/main-nav.html", takes_context=True)
+@register.inclusion_tag("blog_improved/partials/main-nav.html", takes_context=True)
 def main_nav(context):
     navigation = {}
     current_url = {}
