@@ -42,8 +42,8 @@ class PublicStatusMixin(object):
         return qs.filter(status=1)
 
 class HomePage(ListView):
+    template_name="blog_improved/pages/homepage.html"
     queryset = Post.objects.filter(status=1).select_subclasses()
-    template_name = "index.html"
 
     class Meta:
         ordering = ["-created_on"]
@@ -86,7 +86,6 @@ class AuthorPage(PublicStatusMixin, ListView):
 
 
 class PostList(ListView):
-    template_name = "post_list.html"
     paginate_by = 22
     
     def get_queryset(self):
@@ -130,7 +129,7 @@ class PostList(ListView):
 
 
 class PostView(DetailView, PublicStatusMixin, SingleObjectMixin):
-    template_name = "post_detail.html"
+    template_name = "blog_improved/post_detail.html"
     model = Post
     
     def get_context_data(self, **kwargs):
