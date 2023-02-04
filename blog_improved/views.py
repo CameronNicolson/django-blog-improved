@@ -49,7 +49,7 @@ class HomePage(ListView):
         ordering = ["-created_on"]
 
 class AuthorPage(PublicStatusMixin, ListView):
-    author_template_dir = "pages/authors/"
+    author_template_dir = "blog_improved/pages/authors/"
     model = BlogGroup
 
     def get_queryset(self):
@@ -63,7 +63,7 @@ class AuthorPage(PublicStatusMixin, ListView):
 
     def get_template_names(self):
         return [ self.author_template_dir + self.kwargs["name"] + ".html".lower(), 
-                "pages/author.html", 
+                "blog_improved/pages/author.html", 
         ]        
 
     def get_context_data(self, **kwargs):
