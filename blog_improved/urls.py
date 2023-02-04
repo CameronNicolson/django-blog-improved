@@ -4,7 +4,7 @@ from . import views
 from .feeds import AtomSiteNewsFeed, LatestPostsFeed
 
 urlpatterns = [
-    path("contact/", TemplateView.as_view(template_name="pages/contact.html"), name="contact"),
+    path("contact/", TemplateView.as_view(template_name="blog_improved/pages/contact.html"), name="contact"),
     path("feed/rss", LatestPostsFeed(), name="rss_feed"),
     path("feed/atom", AtomSiteNewsFeed(), name="atom_feed"),
     path("", views.HomePage.as_view(), name="home"),
