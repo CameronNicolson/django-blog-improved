@@ -1,10 +1,9 @@
-{% load blog_tags %}
-{% for feature in post_list|featured:p %}
-      <div class="govuk-panel-feature bg-light-grey govuk-panel--no-centre">
+{% if feature %}
+<div class="govuk-panel-feature bg-light-grey govuk-panel--no-centre">
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-full govuk-panel-feature--header">
-                          <strong class="govuk-tag">
-                            <span title="Category type {{ categor_name }}">Featured</span> 
+		  <strong class="govuk-tag featured__tag">
+                            <span title="Featured post tag">Featured</span> 
                           </strong>
 			  <h3 class="govuk-panel-feature--text__title visible-tablet">
                               <a href="{{ feature.get_absolute_url  }}" class="govuk-panel__title govuk-panel-feature--text__link">{{ feature.title }}</a>
@@ -28,6 +27,5 @@
                   </div>
                       </div>
       </div>
-      {% endfor %}
       <hr class="govuk-section-break govuk-section-break--xl govuk-section-break--visible">
- 
+{% endif %} 
