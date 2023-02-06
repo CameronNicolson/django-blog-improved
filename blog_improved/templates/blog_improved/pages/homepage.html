@@ -10,7 +10,7 @@
   <div class="govuk-width-container">
     <main class="govuk-main-wrapper" style="padding-top: 10px;" id="main-content" role="main">
    {% include "blog_improved/partials/group-identity-logo.html" %}
-   {% include "blog_improved/partials/feature-panel.html" with p=1 %}
+   {% include "blog_improved/partials/feature-panel.html" with feature=post_list|featured|first %}
    {% include "blog_improved/partials/post-list.html" with show_all=True show_all_text="See all posts" %}
              <section class="contact-section">
                 <div class="govuk-grid-row">
