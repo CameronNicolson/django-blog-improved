@@ -32,7 +32,7 @@ def featured(queryset, limit=6, invert=False):
                 if value.is_featured is not invert:
                     pure_list.append(value)
             return pure_list
-    return
+    return []
 
 @register.filter
 def not_featured(queryset, in_limit=None):
