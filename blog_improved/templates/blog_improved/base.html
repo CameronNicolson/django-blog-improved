@@ -42,7 +42,7 @@
       </div>
     </div>
     <!-- Footer -->
-    {% include "blog_improved/partials/footer.html" %}
+    {% include "blog_improved/partials/footer.html" with pages=navigation %}
  {% block closing_body_scripts %}
     <script src="{% static 'js/spongy-frontend-1.0.0.min.js' %}"></script>
     <script>
