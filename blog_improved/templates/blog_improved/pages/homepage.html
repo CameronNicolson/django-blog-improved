@@ -2,18 +2,105 @@
 {% load static %}
 {% load blog_tags %}
 {% block extrahead %}
+<!-- Stylesheets and presentation -->
 <link rel="stylesheet" href="{% static 'css/spongy-frontend-1.0.0.min.css' %}">
 <link rel="stylesheet" href="{% static 'css/spongy-publishing-components-1.0.0.min.css' %}">
-<link rel="stylesheet" href="{% static 'css/base.css' %}">
+<link rel="stylesheet" href="{% static 'css/nhsuk-frontend.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/blog.css' %}">
+
+<!-- JavaScript libraries and scripting -->
+<script src="{% static 'js/nhsuk.js' %}" defer></script>
+
 {% endblock extrahead %}
 {% block content %}
+<style>
+#desktop-banner {
+  max-width: 1500px;
+  width: 100%;
+  min-height: 1px;
+  margin: 0 auto;
+}
+
+#desktop-banner-hero {
+  position: relative;
+  overflow: visible;
+  max-height: 230px;
+  z-index: 0;
+  height: 300px;
+}
+
+ #desktop-banner-hero img {
+  margin: auto;
+  width: 100%;
+  max-width: none;
+  height: auto;
+  position: relative;
+ }
+
+ #desktop-banner-hero > .image-viewport {
+  position:relative;
+ }
+
+ #desktop-banner-hero > .image-viewport::after {
+	 content: '';
+	 height: auto;
+	 width: 100%;
+
+background: linear-gradient(to bottom, rgba(234, 237, 237, 0) 70%, var(--sf-light-grey));
+
+ 	position: absolute;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	left: 0;
+ }
+
+ @media screen and (orientation: portrait) {
+
+ #desktop-banner-hero > .image-viewport::after {
+	display: none;   
+ }
+}
+
+
+
+
+   .nhsuk-do-dont-list {
+	position: relative;
+   }
+
+
+
+</style>
+	    <div id="desktop-banner">
+		    <div id="desktop-banner-hero">
+			    <div class="image-viewport">
+				    <picture>
+
+			    <source media="(orientation: portrait" srcset="{% static "img/sp-mobile-banner.jpg" %}">
+
+			    <source media="(max-width: 700px" srcset="{% static "img/sp-mobile-banner.jpg" %}">
+					    <img src="{% static "img/sp-banner.jpg" %}" alt="Blog header: Developer. Computer Programming" />
+
+
+				    </picture>
+			    </div>
+		    </div>
+	    </div>
+
+
   <div class="govuk-width-container">
-    <main class="govuk-main-wrapper" style="padding-top: 10px;" id="main-content" role="main">
+    <main class="govuk-main-wrapper" style="padding-top: 0px;" id="main-content" role="main">
    {% include "blog_improved/partials/group-identity-logo.html" %}
    {% include "blog_improved/partials/feature-panel.html" with feature=post_list|featured|first %}
-   {% include "blog_improved/partials/post-list.html" with show_all=True show_all_text="See all posts" %}
+   {% include "blog_improved/partials/post-list.html" with show_all=True show_all_text="See entire post catalogue" %}
+  </div>
+
+	  <div class="govuk-width-container">
+		  <div class="govuk-grid-row">
+			  <div class="govuk-grid-column-full">
+
              <section class="contact-section">
-                <div class="govuk-grid-row">
                     <div class="govuk-grid-column-two-thirds govuk-!-padding-bottom-9">
                     <h2 class="govuk-heading-m contact-section__title govuk-!-padding-top-3 heading-border">Contact</h2>
                     <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
@@ -45,6 +132,7 @@
 </ul>
                     </div>
 </div>
+		  </div>
           </section>
  </main>
   </div><!-- end of container wrapper -->
