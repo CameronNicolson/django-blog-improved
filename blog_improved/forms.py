@@ -1,13 +1,35 @@
 from django import forms
-
-from .models import Comment, Callback
+from taggit.models import Tag
+from .models import Comment, Post, Callback
 
 from crispy_forms_gds.helper import FormHelper
-from crispy_forms_gds.layout import Submit
-from crispy_forms_gds.layout import Button, HTML, Layout, Field, Fieldset
+from crispy_forms_gds.layout import Button, HTML, Layout, Field, Fieldset, Submit
 from phonenumber_field import formfields
 from django.core.exceptions import ValidationError
+from itertools import chain
 
+class FilterForm(forms.Form):
+
+    def __init__(self, category=True, *args, **kwargs):
+        super(FilterForm, self).__init__(*args, **kwargs)
+        self.category = category
+        if self.category:
+            self.add_category_field()
+
+        self.helper = FormHelper()
+        self.helper.layout = Layout("category", 
+                                    Submit("submit", "Apply filter", css_class="govuk-button--secondary"),)
+
+    def add_category_field(self):
+        post_queryset = Post.objects.all().values("category",)
+        tags_qs = Tag.objects.filter(id__in=post_queryset).order_by("name")
+        tags = [(tag.id, tag.name,) for tag in tags_qs]
+        # featured tags - they appear top of the list
+        featured_tags = [("99999", "All Topics",)]
+        self.fields["category"] = forms.ChoiceField(
+        choices=((*featured_tags, *tags)),
+            label="category",
+        ) 
 
 class CommentForm(forms.ModelForm):
     class Meta:

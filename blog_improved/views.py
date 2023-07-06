@@ -1,11 +1,13 @@
 from django.shortcuts import get_list_or_404, get_object_or_404, render
 from django.http import Http404
+from django.shortcuts import redirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.detail import SingleObjectMixin
 from django.urls import reverse
 from django.contrib.auth.models import User
 from .models import BlogGroup, Post, PostViaGit, PostRedirect, UserProfile
+from .forms import FilterForm
 from taggit.models import Tag
 from django.db.models.base import ModelBase
 from django.db.models import Q, QuerySet
@@ -88,6 +90,11 @@ class AuthorPage(PublicStatusMixin, ListView):
 class PostList(ListView):
     paginate_by = 22
     
+    def post(self, request, *args, **kwargs):
+        tag_id = request.POST.get("category")
+        cat = Tag.objects.get(pk=tag_id)
+        return redirect(f"/search?cat={cat}")
+
     def get_queryset(self):
         # show all posts for index pages
         if "/index/" in self.request.path:
@@ -116,11 +123,14 @@ class PostList(ListView):
 
     def get_context_data(self, object_list=None, **kwargs):
         context = super(PostList, self).get_context_data(**kwargs)
+
+        # Include filter form
+        context["filter_form"] = FilterForm(category=True)
         context["tags"] = {post.category for post in context["object_list"]}
         context["total_post_count"] = self.get_queryset().count()
         context["search_title"] = "Posts"
         try: 
-            query = self.request.GET.get("cat")# Query or None
+            query = self.request.GET.get("cat") # Query or None
             context["query"] = query
             context["filter_categories"] = query
         except KeyError:
