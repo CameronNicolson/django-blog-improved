@@ -140,6 +140,7 @@ class Post(models.Model):
             return reverse("user_profile", kwargs={"group": str(AUTHOR_DEFAULT_GROUP), "name": str(self.author.username)})
         return None
 
+    
     def get_absolute_url(self):
         return reverse("post_detail", kwargs={"slug": str(self.slug)})
 

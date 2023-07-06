@@ -141,7 +141,7 @@ class PostList(ListView):
 class PostView(DetailView, PublicStatusMixin, SingleObjectMixin):
     template_name = "blog_improved/post_detail.html"
     model = Post
-    
+
     def get_context_data(self, **kwargs):
         context = super(PostView, self).get_context_data(**kwargs)
         post = self.get_object()

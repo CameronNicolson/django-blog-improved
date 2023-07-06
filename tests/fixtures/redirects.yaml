@@ -1,0 +1,9 @@
+- name: missing page to post redirect 
+  description: old hot dog eating contest page that is offline is redirected to an alive page on the current site
+  model: redirects.redirect
+  pk: 1
+  fields: 
+    site_id: 1
+    old_path: /hot-dog-competition-2019
+    new_path: /this-post-is-featured
+    type_status_code: 301
