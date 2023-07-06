@@ -1,20 +1,21 @@
 {% load cache %}
 {% load blog_tags %}
-<header class="govuk-header" role="banner" data-module="govuk-header">
-    <div class="govuk-header__container govuk-width-container">
-      <div class="govuk-header__logo">
-        <a href="/" class="govuk-header__link govuk-header__link--homepage">
-          <span class="govuk-header__logotype">
-            <span class="govuk-header__logotype-text">
-		    {% if site %} {{ site.name }} {% else %} 
+<header class="nhsuk-header" role="banner">
+  <div class="nhsuk-width-container nhsuk-header__container">
+    <div class="nhsuk-header__logo"><a class="nhsuk-header__link nhsuk-header__link--service " href="/" aria-label="NHS homepage">
+		   <span class="nhsuk-header__service-name">
+        	    {% if site %} {{ site.name }} {% else %} 
 		    <span style="color: red; font-weight: bolder;">No title<span>
 		    {% endif %}
-            </span>
-          </span>
-        </a>
+        </span>
+      </a>
+    </div>
+
+      <div class="nhsuk-header__content" id="content-header">
+        <div class="nhsuk-header__menu nhsuk-header__menu--only">
+          <button class="nhsuk-header__menu-toggle" id="toggle-menu" aria-controls="header-navigation" aria-expanded="false">Menu</button>
+        </div>
       </div>
-         <div class="govuk-header__content">
-          {% main_nav %}
     </div>
-    </div>
-  </header>
+	{% main_nav %}
+    </header>
