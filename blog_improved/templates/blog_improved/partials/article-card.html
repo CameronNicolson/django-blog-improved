@@ -1,17 +1,18 @@
-<article class="gem-c-image-card" role="article">
-    <div class="gem-c-image-card__text-wrapper">
-      <div class="gem-c-image-card__header-and-context-wrapper">
-          <h2 class="gem-c-image-card__title govuk-heading-s">
-              <a class="gem-c-image-card__title-link govuk-link" href="{{ post.get_absolute_url }}">{{ post.title }}</a>
-</h2>        <p class="gem-c-image-card__context"><time datetime="{{ post.created_on|date:'Y-m-d' }}">{{ post.created_on|date:'d F Y'}} </time><span aria-hidden="true"> — </span>{{ post.category.name }}</p>
-      </div>
-      <div class="gem-c-image-card__description">{{ post.headline }}</div>
-    </div>
-    <figure class="gem-c-image-card__image-wrapper article-figure">
+<article class="nhsuk-card nhsuk-card--clickable" role="article">
+
     {% if post.cover_art %}
     {% with cover_art=post.cover_art %}
-      <img class="gem-c-image-card__image" alt="{{ cover_art.title }}" title="{{ cover_art.title }}" loading="auto" src="{{ cover_art.file.url }}" width="300" height="200">
+      <img class="card__img" alt="{{ cover_art.title }}" title="{{ cover_art.title }}" loading="auto" src="{{ cover_art.file.url }}" width="300" height="200">
     {% endwith %}
     {% endif %}
-  </figure>
+
+	<div class="nhsuk-card__content">
+          <h2 class="nhsuk-card__heading nhsuk-heading-m">
+              <a class="nhsuk-card__link" href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+	</h2>  
+	<p class="nhsuk-card__description"><time datetime="{{ post.created_on|date:'Y-m-d' }}">{{ post.created_on|date:'d F Y'}} </time><span aria-hidden="true"> — </span>{{ post.category.name }}</p>
+
+      <p class="nhsuk-card__description">{{ post.headline }}</p>
+      </div>
+
 </article>
