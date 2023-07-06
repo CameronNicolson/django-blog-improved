@@ -4,6 +4,6 @@
   pk: 1
   fields: 
     site_id: 1
-    old_path: /hot-dog-competition-2019
-    new_path: /this-post-is-featured
+    old_path: /hot-dog-competition-2019/
+    new_path: /hot-dog-competition-2024/
     type_status_code: 301

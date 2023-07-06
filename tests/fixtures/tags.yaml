@@ -38,3 +38,8 @@
   fields:
     name: personal skill
     slug: personal-skill
+- model: taggit.tag
+  pk: 9
+  fields:
+    name: event
+    slug: event

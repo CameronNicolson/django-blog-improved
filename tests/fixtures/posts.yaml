@@ -186,3 +186,16 @@
     status: 1
     category: 7
     slug: transport
+- name: pub-hotdog-redirect
+  description: Exists because 301 redirect points to it
+  model: blog_improved.post
+  pk: 15
+  fields:
+    title: Hot Dog Competition 2024
+    content: lorem(1)
+    author: 1
+    created_on: 2023-06-25T08:16:59.844560+00:00
+    updated_on: 2023-06-26T08:18:11.844560+00:00
+    status: 1
+    category: 9
+    slug: hot-dog-competition-2024
