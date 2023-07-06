@@ -13,3 +13,28 @@
   fields:
     name: stadium
     slug: stadium
+- model: taggit.tag
+  pk: 4
+  fields:
+    name: milestones
+    slug: milestones
+- model: taggit.tag
+  pk: 5
+  fields:
+    name: science
+    slug: science
+- model: taggit.tag
+  pk: 6
+  fields:
+    name: self improvement
+    slug: self-improvement
+- model: taggit.tag
+  pk: 7
+  fields:
+    name: transport
+    slug: transport
+- model: taggit.tag
+  pk: 8
+  fields:
+    name: personal skill
+    slug: personal-skill
