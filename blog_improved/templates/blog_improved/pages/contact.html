@@ -1,9 +1,17 @@
 {% extends "blog_improved/base.html" %}
 {% load static %}
 {% load blog_tags %}
+
 {% block extrahead %}
+<!-- Stylesheets and presentation -->
 <link rel="stylesheet" href="{% static 'css/spongy-frontend-1.0.0.min.css' %}">
 <link rel="stylesheet" href="{% static 'css/spongy-publishing-components-1.0.0.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/nhsuk-frontend.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/blog.css' %}">
+
+<!-- JavaScript libraries and scripting -->
+<script src="{% static 'js/nhsuk.js' %}" defer></script>
+
 {% endblock extrahead %}
 {% load crispy_forms_tags crispy_forms_gds %}
 {% block content %}
