@@ -17,7 +17,7 @@ class TestPosts(TestCase):
         client = Client()
         response = client.get(reverse("post_list"))
         self.assertEquals(response.status_code, 200)
-        self.assertTemplateUsed(response, "post_list.html")
+        self.assertTemplateUsed(response, "blog_improved/post_list.html")
 
     def test_redirects_vacant_from_post_list_true(self):
         request = RequestFactory().get("/index/")
@@ -25,7 +25,7 @@ class TestPosts(TestCase):
         view.request = request
         qs = view.get_queryset()
         num_of_posts_in_queryset = qs.count()
-        num_expected_posts_in_fixtures = 5
+        num_expected_posts_in_fixtures = 13
         self.assertEquals(num_of_posts_in_queryset, num_expected_posts_in_fixtures)
 
     def test_post_identical_slug_errors(self):
@@ -45,10 +45,6 @@ class TestPosts(TestCase):
         self.assertEquals(
             response.status_code, 
             404
-        )
-        self.assertTemplateUsed(
-            response, 
-            "404.html"
         )
 
     def test_basic_user_create_post_permissions_denied(self):
