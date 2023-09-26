@@ -3,34 +3,57 @@ from taggit.models import Tag
 from .models import Comment, Post, Callback
 
 from crispy_forms_gds.helper import FormHelper
-from crispy_forms_gds.layout import Button, HTML, Layout, Field, Fieldset, Submit
+from crispy_forms_gds.layout import Accordion, AccordionSection, Button, HTML, Layout, Field, Fieldset, Size, Submit
+from crispy_forms_gds.choices import Choice
 from phonenumber_field import formfields
 from django.core.exceptions import ValidationError
 from itertools import chain
+from django.core.validators import integer_validator
+
 
 class FilterForm(forms.Form):
 
-    def __init__(self, category=True, *args, **kwargs):
-        super(FilterForm, self).__init__(*args, **kwargs)
-        self.category = category
-        if self.category:
-            self.add_category_field()
+    category = forms.MultipleChoiceField(
+        choices=(),
+        widget=forms.CheckboxSelectMultiple,
+        label="Filter by topic",
+        help_text="Select all boxes that interest you.",
+        required="ddfa",
+    )
 
+    def __init__(self, *args, **kwargs):
+        super(FilterForm, self).__init__(*args, **kwargs)
+        category_initial = self.initial.get("category", None)
+        self.add_category_field()
         self.helper = FormHelper()
-        self.helper.layout = Layout("category", 
-                                    Submit("submit", "Apply filter", css_class="govuk-button--secondary"),)
+        if category_initial: 
+            filter_summary = f"{len(category_initial)} selected"
+        else: 
+            filter_summary = ""
+        self.helper.layout = Layout(
+                Accordion(
+                    AccordionSection("Topic", "category", summary=f"{filter_summary}"),
+                ),
+                Submit("submit", "Apply filter", css_class="govuk-button--secondary"),
+        )
 
     def add_category_field(self):
         post_queryset = Post.objects.all().values("category",)
         tags_qs = Tag.objects.filter(id__in=post_queryset).order_by("name")
         tags = [(tag.id, tag.name,) for tag in tags_qs]
         # featured tags - they appear top of the list
-        featured_tags = [("99999", "All Topics",)]
-        self.fields["category"] = forms.ChoiceField(
-        choices=((*featured_tags, *tags)),
-            label="category",
-        ) 
+        topic_choices=(*tags,)
+        self.fields["category"].choices = topic_choices 
+        # custom error msg
+        self.fields["category"].error_messages = {"required": "Selecting at least one option is required"}
 
+    def clean_category(self):
+        cleaned_data = super().clean()
+        category_list = cleaned_data["category"]
+        for cat in category_list:
+            integer_validator(cat)
+        return category_list
+    
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment

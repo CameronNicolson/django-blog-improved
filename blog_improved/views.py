@@ -15,6 +15,11 @@ from itertools import chain
 
 import operator
 
+def page_not_found(request, exception):
+    context = {}
+    response = render(request, "pages/errors/404.html", context=context)
+    response.status_code = 404
+    return response
 
 def filter_classes(queryset, model_list):
     filtered_list = []
@@ -88,12 +93,30 @@ class AuthorPage(PublicStatusMixin, ListView):
 
 
 class PostList(ListView):
-    paginate_by = 22
+    paginate_by = 10
     
     def post(self, request, *args, **kwargs):
-        tag_id = request.POST.get("category")
-        cat = Tag.objects.get(pk=tag_id)
-        return redirect(f"/search?cat={cat}")
+        # category tags passed by POST request
+        form = FilterForm(request.POST)
+        if form.is_valid():
+            cat_list = form.cleaned_data["category"]
+            cats = get_list_or_404(Tag.objects.filter(pk__in=cat_list))
+            cat_list_str = str()
+            for i in range(len(cat_list)):
+                cat_list_str += cats[i].name
+                if i+1 < len(cat_list):
+                    cat_list_str += ","
+            return redirect(f"/search?cat={cat_list_str}")
+        return render(request, "blog_improved/post_list.html", {"filter_form": form})
+
+    def get(self, request, *args, **kwargs):
+        # categories in request string, seperated by comma
+        req_cats = self.request.GET.get("cat") or None
+        if req_cats is not None:
+            self.request.categories = req_cats.split(",")  
+        else:
+            self.request.categories = []
+        return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
         # show all posts for index pages
@@ -102,10 +125,8 @@ class PostList(ListView):
             posts_cleaned = filter_classes(all_posts, (PostRedirect,))
             return list_to_queryset(Post, posts_cleaned)
         try:
-            # categories in request string, seperated by comma
-            cats = self.request.GET.get("cat").split(",")
             # remove whitespaces enteries
-            cats = [cat for cat in cats if cat != ""]
+            cats = [cat for cat in self.request.categories if cat != ""]
             # only filter by category if string parameters are detected
             if len(cats) > 0:
                 # get posts with a matching category
@@ -114,25 +135,30 @@ class PostList(ListView):
                 posts_cleaned = filter_classes(all_posts, (PostRedirect,))
                 # build new queryset with list above
                 return list_to_queryset(Post, posts_cleaned)
-            raise Http404
             return Post.objects.none()
         except AttributeError:
             raise Http404
         return Post.objects.none()
         
 
-    def get_context_data(self, object_list=None, **kwargs):
+    def get_context_data(self, **kwargs):
         context = super(PostList, self).get_context_data(**kwargs)
-
-        # Include filter form
-        context["filter_form"] = FilterForm(category=True)
-        context["tags"] = {post.category for post in context["object_list"]}
+        # Find all tags that were inside the request
+        categories = self.request.categories
+        if len(categories) > 0:
+            cat_ids = []
+            for cat_name in categories:
+                cat_ids.append(str(Tag.objects.get(name=cat_name).pk))
+            # pass all found tags to the FilterForm
+            context["filter_form"] = FilterForm(initial={"category": cat_ids})
+        else: 
+            context["filter_form"] = FilterForm()
         context["total_post_count"] = self.get_queryset().count()
         context["search_title"] = "Posts"
         try: 
-            query = self.request.GET.get("cat") # Query or None
-            context["query"] = query
-            context["filter_categories"] = query
+            context["filter_categories"] = self.request.categories
+            # send query context for the Next/Prev pagination
+            context["query"] = self.request.GET.get("cat")
         except KeyError:
             return context
         return context
