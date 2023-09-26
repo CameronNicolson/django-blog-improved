@@ -18,7 +18,7 @@
     created_on: 2023-01-16T08:16:59.844560+00:00
     updated_on: 2023-01-16T08:16:59.844560+00:00
     status: 1
-    category: 1
+    category: 6
     slug: listen-to-your-customers
     cover_art: 1
 - name: number posts
@@ -33,7 +33,7 @@
     created_on: 2023-01-16T08:16:59.844560+00:00
     updated_on: 2023-01-16T08:16:59.844560+00:00
     status: 1
-    category: 1
+    category: 6
     slug: 15-tips-for-mission-success
     cover_art: 4
 - name: quotes post
@@ -48,7 +48,7 @@
     created_on: 2023-01-16T08:16:59.844560+00:00
     updated_on: 2023-01-16T08:16:59.844560+00:00
     status: 1
-    category: 1
+    category: 10
     slug: django-reinhardt
 - name: featured post
   description: has featured post properties
@@ -63,7 +63,7 @@
     created_on: 2023-01-16T08:16:59.844560+00:00
     updated_on: 2023-01-16T08:16:59.844560+00:00
     status: 1
-    category: 3
+    category: 4
     is_featured: true
     slug: this-post-is-featured
     cover_art: 3
@@ -133,7 +133,7 @@
     updated_on: 2023-01-16T08:16:59.844560+00:00
     status: 1
     category: 4
-    slug: new-best-record
+    slug: new-best-0record
 - name: Misc 1
   description: Generic post 5 paragraphs
   model: blog_improved.post
@@ -199,3 +199,42 @@
     status: 1
     category: 9
     slug: hot-dog-competition-2024
+- name: Longer blog title and url
+  description: This title is 21 words long
+  model: blog_improved.post
+  pk: 16
+  fields: 
+    title: Rundown of the five meaningful attributes that make every good leader into a great leader, discovered by the University of Seattle  
+    content: lorem(4)
+    author: 1
+    created_on: 2023-06-25T08:16:59.844560+00:00
+    updated_on: 2023-06-26T08:18:11.844560+00:00
+    status: 1
+    category: 6
+    slug: rundown-of-the-five-meaningful-attributes-that-make-every-good-leader-into-a-great-leader
+- name: percentage-sign-in-title-and-url
+  description: Percentage symbol used to convery numbers
+  model: blog_improved.post
+  pk: 17
+  fields: 
+    title: 20% of households lack 40% natural light  
+    content: lorem(4)
+    author: 1
+    created_on: 2023-06-25T08:16:59.844560+00:00
+    updated_on: 2023-06-26T08:18:11.844560+00:00
+    status: 1
+    category: 5
+    slug: 20-of-households-study
+- name: speech-marks-in-title
+  description: using speech marks for a personal quote
+  model: blog_improved.post
+  pk: 18
+  fields: 
+    title: black holes described as "harmful" by top scientist 
+    content: lorem(1)
+    author: 2
+    created_on: 2023-06-25T08:16:59.844560+00:00
+    updated_on: 2023-06-26T08:18:11.844560+00:00
+    status: 5
+    category: 9
+    slug: black-holes-quoted-as-harmful
