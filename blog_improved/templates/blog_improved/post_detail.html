@@ -4,21 +4,28 @@
 {% load crispy_forms_gds %}
 {% block extrahead %}
 <link rel="stylesheet" href="{% static 'css/spongy-publishing-components-1.0.0.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/nhsuk-frontend.min.css' %}">
 <link rel="stylesheet" href="{% static 'css/spongy-frontend-1.0.0.min.css' %}">
 {% endblock extrahead %}
   <div class="govuk-width-container">
     {% breadcrumbs crumbs %}
-      <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
+  </div>
+
+	<article class="bg-white" datetime="">
+	      <div class="govuk-width-container">
+      <main class="govuk-main-wrapper" id="main-content" role="main">
 <div class="govuk-grid-row">
-	<div class="govuk-grid-column-two-thirds-from-desktop">
+	<div class="govuk-grid-column-three-quarters-from-desktop">
     <span class="govuk-caption-l">{{ post.category }}</span>
     <h1 class="govuk-heading-xl">{% block title %} {{ post.title }} {% endblock title %}</h1>
     <p class="govuk-body-l">{{ post.headline }}</p>
 	</div>
-	<div class="govuk-grid-column-full">
-		<hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-	</div>
-	<div class="govuk-grid-column-two-thirds-from-desktop">
+</div>
+
+
+<div class="govuk-grid-row">
+	<div class="govuk-grid-column-three-quarters-from-desktop">
+		<hr class="govuk-section-break govuk-section-break--m">
     <p class="govuk-body govuk-!-font-size-16 govuk-!-margin-bottom-1">
         Published {{ post.created_on|date:"d F, Y" }}
     </p>
@@ -31,6 +38,10 @@
       {% endif %}
     </p>
     <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+	</div>
+</div>
+<div class="govuk-grid-row">
+	<div class="govuk-grid-column-full">	
     <div class="gem-c-govspeak-html-publication">
 	<div class="gem-c-govspeak govspeak">
     	{% autoescape off %}
@@ -51,7 +62,7 @@
     {% endif %}
     <div class="govspeak">
       <p class="govuk-body govuk-!-margin-bottom-0">Published:</p>
-    <div class="stat-headline govuk-!-margin-top-0">
+    <div class="stat-headline govuk-!-margin-top-0 govuk-!-margin-bottom-8">
       {% for tag in post.tags.all %}
         {{ tag }}
       {% endfor %}
@@ -59,9 +70,11 @@
       <em></em>{{ post.created_on|date:"d F, Y" }}
       </p>
     </div>
-    </div>
   </div>
+	</div>
 </div>
+	</div>
+	</article>
         </main>
       </div>
 {% endblock content %}
