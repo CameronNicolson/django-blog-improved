@@ -1,15 +1,13 @@
 {% extends "blog_improved/base.html" %}
 {% block content %}
 <div class="govuk-width-container">
-	<div class="govuk-grid-row">
-<div class="govuk-breadcrumbs">
+  <div class="govuk-breadcrumbs">
     <ol class="govuk-breadcrumbs__list">
       <li class="govuk-breadcrumbs__list-item">
-        <a href="/" class="govuk-back-link">Back to home</a>
+        <a href="{% url 'home' %}" class="govuk-back-link">Back to home</a>
       </li>
     </ol>
   </div>
-	</div>
 </div>
 	<div class="govuk-width-container">
 <header class="govuk-grid-row">
