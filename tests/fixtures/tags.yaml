@@ -43,3 +43,8 @@
   fields:
     name: event
     slug: event
+- model: taggit.tag
+  pk: 10
+  fields:
+    name: music
+    slug: music
