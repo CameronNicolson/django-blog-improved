@@ -1,8 +1,37 @@
-{% extends "pages/author.html" %}
+{% extends "blog_improved/pages/author.html" %}
+{% block content %}
 <code>custom page</code>
+<style>
+ main {
+   padding: 30px;
+ }
+ p {
+   max-width: 720px;
+   margin-bottom: 30px;
+ }
+ .important {
+   outline: 2px dotted grey;
+ }
+ .important:before {
+   content: "!";
+   font-size: 32px;
+   font-weight: bold;
+ }
+</style>
+<main role="main">
+
+<p class="important exclam-mar">Note to Admins, please be cautious with this feature. 
+<br>As users with direct control may place malicious hyperlinks and scripts inside these pages.
+<br>The solution is to upload changes on behalf of your users.</p>
 <h1> My name is Alice</h1>
+<p> Alice requested their own a personalised page. This is possible with Django Blog Improved</p>
+<p>By creating a HTML file inside the authors folder. You will be able to add anything you desire. </p>
+<p> The filename you create must match the person's username, for example "alice.html".</p>
+<hr>
 {% for user, profile in profile %}
 {{ user.username }} 
 {{ user.id }}
 {{ profile.bio }}
 {% endfor %}
+</main>
+{% endblock content %}
