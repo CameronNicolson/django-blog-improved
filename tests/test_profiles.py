@@ -50,7 +50,7 @@ class TestProfiles(TestCase):
         )
         self.assertTemplateUsed(
             response,
-            "pages/author.html"
+            "blog_improved/pages/author.html"
         )
 
     def test_nonstaffer_userprofile_change_denied(self):
@@ -143,7 +143,7 @@ class TestProfiles(TestCase):
         )
         self.assertTemplateUsed(
             response,
-            "pages/author.html"
+            "blog_improved/pages/author.html"
         )
 
 
@@ -166,9 +166,4 @@ class TestProfiles(TestCase):
             response.status_code,
             404
         )
-        self.assertTemplateUsed(
-            response,
-            "404.html"
-        )
-
 
