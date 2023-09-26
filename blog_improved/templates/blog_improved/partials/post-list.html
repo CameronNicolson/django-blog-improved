@@ -1,26 +1,34 @@
 {% load blog_tags %}
-<section class="govuk-!-padding-bottom-4 blog-posts" role="feed">
-          <div class="govuk-grid-row">
-                {% for post in post_list %}
-              <div class="govuk-grid-column-one-third">
+<section class="releases-feed govuk-!-padding-bottom-4 blog-posts" role="feed">
+          <div class="image-card-group">
+		<div class="image-card-group__row">
+                {% for post in post_list %}		
+              <div class="image-card-group__item">
                   {% include "blog_improved/partials/article-card.html" with post=post %}
-                  </div>
-                  {% empty %}
+              </div>
+		{% if forloop.counter|divisibleby:3 %}
+	         </div>
+		  {% if not forloop.last %}<div class="image-card-group__row">{% endif %}
+		 {% endif %}
+		 {% empty %}
+		 <div class="govuk-grid-row">
                   <div class="govuk-grid-column-one-half">
                   <p class="govuk-body">No posts found</p>
                   </div>
+		 </div>
                   {% endfor %}
-          </div>
+		  </div>
 	  {% if show_all %}
-          <div class="govuk-width-container">
           <div class="govuk-grid-row">
-              <div class="govuk-!-margin-top-9 govuk-!-text-align-centre">
-<a href="{% url 'post_list' %}" role="button" class="govuk-button govuk-button--secondary govuk-button--start">
-	{{ show_all_text }}
-  <svg class="govuk-button__start-icon" xmlns="http://www.w3.org/2000/svg" width="17.5" height="19" viewBox="0 0 33 40" aria-hidden="true" focusable="false">
-    <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z" />
-  </svg></a>
+              <div class="govuk-!-margin-top-5 govuk-!-margin-bottom-9 govuk-!-text-align-centre">
+	      <div class="gem-c-action-link gem-c-action-link--dark-icon govuk-!-margin-bottom-0">
+            <span class="gem-c-action-link__link-wrapper">
+		    <a class="govuk-link gem-c-action-link__link govuk-link--no-visited-state" href="{% url 'post_list' %}">
+		  {{ show_all_text }}
+	  </a>     
+	    </span>
 	      </div>
-              </div>
+	  </div>
+	  </div>
 	      {% endif %}
   </section>
