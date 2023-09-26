@@ -1,4 +1,22 @@
-     <footer class="govuk-footer" role="contentinfo">
+<footer role="contentinfo">
+  <div class="nhsuk-footer" id="nhsuk-footer">
+    <div class="nhsuk-width-container">
+      <h2 class="nhsuk-u-visually-hidden">Support links</h2>
+      <ul class="nhsuk-footer__list">
+	    {% for page in pages %}
+          <li class="nhsuk-footer__list-item">
+		  <a class="nhsuk-footer__list-item-link" href="{{ page.URL }}">
+		   {{ page.TITLE }}
+            </a>
+          </li> 
+	    {% endfor %}
+      </ul>
+      
+      <p class="nhsuk-footer__copyright">© Spongycake.org copyright</p>
+    </div>
+  </div>
+</footer>
+<!--    <footer class="govuk-footer" role="contentinfo">
     <div class="govuk-width-container">
      <div class="govuk-footer__meta govuk-footer__meta-custom">
         <div class="govuk-footer__meta-item govuk-footer__meta-item--grow">
@@ -37,4 +55,4 @@
       </div> 
 		    </div>
 		    </div> 
-  </footer> 
+		  </footer> -->
