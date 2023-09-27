@@ -8,16 +8,23 @@
               </div>
 		{% if forloop.counter|divisibleby:3 %}
 	         </div>
-		  {% if not forloop.last %}<div class="image-card-group__row">{% endif %}
+		  {% if not forloop.last %}
+		    <div class="image-card-group__row">
+		  {% endif %}
+		    {% else %}
+		  {% if forloop.last %}
+		    </div>
+		    {% endif %}
 		 {% endif %}
-		 {% empty %}
+
+		  {% empty %}
 		 <div class="govuk-grid-row">
                   <div class="govuk-grid-column-one-half">
                   <p class="govuk-body">No posts found</p>
                   </div>
 		 </div>
                   {% endfor %}
-		  </div>
+	  </div>
 	  {% if show_all %}
           <div class="govuk-grid-row">
               <div class="govuk-!-margin-top-5 govuk-!-margin-bottom-9 govuk-!-text-align-centre">
