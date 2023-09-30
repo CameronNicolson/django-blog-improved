@@ -31,14 +31,12 @@
 <div class="govuk-grid-column-one-third ">
                   <div class="gem-c-image-card ">
                   <div class="gem-c-image-card__text-wrapper">
-			  <nav class="gem-c-contents-list" aria-label="Contents" role="navigation">
-                      <h2 class="gem-c-contents-list__title">
-                        Contents
-                  </h2>	
-			{% if profile|length > 1 %}		
+			  <nav class="nhsuk-contents-list" aria-label="Author section" role="navigation">
+                      <h2 class="nhsuk-u-visually-hidden">Author Sections</h2>
+			{% if profile|length > 1 %}
 		{% for user, profile in profile %}
-			<ol class="gem-c-contents-list__list">
-			      <li class="gem-c-contents-list__list-item gem-c-contents-list__list-item--dashed">
+			<ol class="nhsuk-contents-list__list">
+			      <li class="nhsuk-contents-list__item">
 				      <a class="gem-c-contents-list__link govuk-link govuk-link--no-underline" href="#{{user.username|lower}}">{{ user.username }}</a>
             <ol class="gem-c-contents-list__nested-list">
 		    <li class="gem-c-contents-list__list-item gem-c-contents-list__list-item--dashed">
@@ -59,23 +57,21 @@
 			  {% endfor %}
 			      </li>
 		{% else %}
-		{% for user, profile in profile %}
-		  <ol class="gem-c-contents-list__list">
-			      <li class="gem-c-contents-list__list-item gem-c-contents-list__list-item--dashed">
-				      <a class="gem-c-contents-list__link govuk-link govuk-link--no-underline" href="#bio-{{ user.username|lower }}">Biography</a>
+		  <ol class="nhsuk-contents-list__list">
+			      <li class="nhsuk-contents-list__item">
+				      <a class="nhsuk-contents-list__link" href="#bio-{{ profile.0.0.username|lower }}">Biography</a>
                           </li>
-			  {% if profile.location %}
-                          <li class="gem-c-contents-list__list-item gem-c-contents-list__list-item--dashed">
-                            <a class="gem-c-contents-list__link govuk-link govuk-link--no-underline" href="#location">Location</a> 
+			  {% if profile.0.0.location %}
+                          <li class="nhsuk-contents-list__item">
+                            <a class="nhsuk-contents-list__link" href="#location">Location</a> 
                           </li>
 			  {% endif %}
-			  {% if profile.website %}
-                          <li class="gem-c-contents-list__list-item gem-c-contents-list__list-item--dashed">
-                            <a class="gem-c-contents-list__link govuk-link govuk-link--no-underline" href="#social">Social</a>
+			  {% if profile.0.0.website %}
+                          <li class="nhsuk-contents-list__item">
+                            <a class="nhsuk-contents-list__link" href="#social">Social</a>
                           </li>
 			  {% endif %}
                       </ol>
-		      {% endfor %}
 		      {% endif %}
                   </nav>
                   </div>
