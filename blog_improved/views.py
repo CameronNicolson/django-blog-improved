@@ -6,7 +6,7 @@ from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.detail import SingleObjectMixin
 from django.urls import reverse
 from django.contrib.auth.models import User
-from .models import BlogGroup, Post, PostViaGit, PostRedirect, UserProfile
+from .models import BlogGroup, Post, PostViaGit, PostRedirect, UserProfile, Status
 from .forms import FilterForm
 from taggit.models import Tag
 from django.db.models.base import ModelBase
@@ -44,9 +44,12 @@ def list_to_queryset(model, data):
     return model.objects.filter(pk__in=pk_list)
 
 class PublicStatusMixin(object):
-    def get_queryset(self): 
+    target_status = [Status.PUBLISH]
+
+    def get_queryset(self):
         qs = super().get_queryset()
-        return qs.filter(status=1)
+        status_ids = self.target_status
+        return qs.filter(status__in=status_ids)
 
 class HomePage(ListView):
     template_name="blog_improved/pages/homepage.html"
@@ -167,6 +170,7 @@ class PostList(ListView):
 class PostView(DetailView, PublicStatusMixin, SingleObjectMixin):
     template_name = "blog_improved/post_detail.html"
     model = Post
+    target_status = [Status.PUBLISH, Status.UNLISTED]
 
     def get_context_data(self, **kwargs):
         context = super(PostView, self).get_context_data(**kwargs)
