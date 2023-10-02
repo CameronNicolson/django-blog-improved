@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django_summernote.admin import SummernoteModelAdmin
 from django.contrib.auth.models import Group, User
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.sites.models import Site
@@ -11,22 +10,15 @@ from redirects.models import Redirect
 from redirects.admin import RedirectAdmin
 
 @admin.register(Post)
-class PostAdmin(admin.ModelAdmin):
-    list_display = ("title", "slug", "status", "created_on", "tags")
-    list_filter = ("status", "created_on")
-    search_fields = ["title", "content"]
-    prepopulated_fields = {"slug": ("title",)}
-    fields = ("title", "slug", "headline", "content", "author", "category", "tags", "status", "is_featured", "cover_art", "collabaration_mode")
-   
-class PostAdmin(SummernoteModelAdmin):
+class PostAdmin(admin.ModelAdmin): 
+    list_display = ("title", "slug", "status", "created_on", "content",)
     add_form_template = False
-    change_form_template = "admin/post_changeform.html"
+    change_form_template = "blog_improved/admin/post_changeform.html"
 
-    list_display = ("title", "slug", "status", "created_on",)
+    list_display = ("title", "slug", "status", "created_on", "content",)
     list_filter = ("status", "created_on")
     search_fields = ["title", "content"]
     prepopulated_fields = {"slug": ("title",)}
-    summernote_fields = ("content",)
     fields = ("title", "slug", "headline", "content", "author", "category", "tags", "status", "is_featured", "cover_art", "collabaration_mode",)
 
     def get_queryset(self, request):
