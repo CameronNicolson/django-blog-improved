@@ -2,19 +2,7 @@
 
 A free web-based engine for creating and managing blogs.
 
-## Table of contents
-
-* Introduction
-  * [Features](#highlights)
-  * [Prerequisites](#prerequisites)
-* Installation
-  * [Install](#install)
-  * [Testing](#testing)
-* Contribute
-  * [Getting Involved](#getting-involved)
-  * [License](#license)
-
-## Highlights 
+### Highlights 
 * User-friendly interface to upload and manage your blogs
 * Share posts online for the world to see
 * Made to look great on mobile, tablet, and desktops
@@ -22,6 +10,17 @@ A free web-based engine for creating and managing blogs.
 * Minimal Python
 * Django framework support
 * Tech-friendly Docs
+
+## Table of contents
+
+* Introduction
+  * [Prerequisites](#prerequisites)
+* Installation
+  * [Install](#install)
+  * [Testing](#testing)
+* Contribute
+  * [Getting Involved](#getting-involved)
+  * [License](#license)
 
 ## Prerequisites
 Things you will need before you begin. 
