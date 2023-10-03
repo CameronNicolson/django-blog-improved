@@ -1,14 +1,11 @@
 # Django Blog Improved
-[![Chat on Matrix](docs/_static/chat-on-matrix.svg "Chat on Matrix")](https://matrix.to/#/#djangoblog:one.ems.host)
 
-A django app with blogging features. Build a blog with the Django framework.
-
-![screenshot of blog homepage](docs/_static/screenshot.gif "screenshot of homepage of blog")
+A free web-based engine for creating and managing blogs.
 
 ## Table of contents
 
 * Introduction
-  * [Features](#features)
+  * [Features](#highlights)
   * [Prerequisites](#prerequisites)
 * Installation
   * [Install](#install)
@@ -17,25 +14,14 @@ A django app with blogging features. Build a blog with the Django framework.
   * [Getting Involved](#getting-involved)
   * [License](#license)
 
-## Features 
-
-* **Navigation bar** - Auto-generate your site's navigation. It includes an accessory tag called `{{ navigation }}` for granular access
-
-* **Breadcrumbs** - visualise the hierarchical structure of pages with a breadcrumb tag
-
-* **Featured posts** - Enable posts as featured to apply new behaviour and create eye-catching properties
-
-* **Categories** - Comes with a useful system for categorising and filtering content
-
-* **Contact options** - Show/edit contact details across the entire site with one easy template tag
-
-* **Collaboration link** - Enable an edit link that directs to your git server
-
-**And more**
-* Wysiwyg editor 
-* Sitemap
-* ATOM, RSS Feeds
-* Static assets 
+## Highlights 
+* User-friendly interface to upload and manage your blogs
+* Share posts online for the world to see
+* Made to look great on mobile, tablet, and desktops
+* Supports both Non-JavaScript and JavaScript browsers 
+* Minimal Python
+* Django framework support
+* Tech-friendly Docs
 
 ## Prerequisites
 Things you will need before you begin. 
