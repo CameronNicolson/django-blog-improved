@@ -43,14 +43,22 @@ def list_to_queryset(model, data):
     pk_list = [obj.pk for obj in data]
     return model.objects.filter(pk__in=pk_list)
 
+class PublicStatusMixin(object):
+    target_status = [Status.PUBLISH]
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        status_ids = self.target_status
+        return qs.filter(status__in=status_ids)
+
 class HomePage(ListView):
     template_name="blog_improved/pages/homepage.html"
-    queryset = Post.public.all().select_subclasses()
+    queryset = Post.objects.filter(status=1).select_subclasses()
 
     class Meta:
         ordering = ["-created_on"]
 
-class AuthorPage(ListView):
+class AuthorPage(PublicStatusMixin, ListView):
     author_template_dir = "blog_improved/pages/authors/"
     model = BlogGroup
 
@@ -116,7 +124,7 @@ class PostList(ListView):
     def get_queryset(self):
         # show all posts for index pages
         if "/index/" in self.request.path:
-            all_posts = Post.public.all().select_subclasses(PostRedirect)
+            all_posts = Post.objects.filter(status=1).select_subclasses(PostRedirect)
             posts_cleaned = filter_classes(all_posts, (PostRedirect,))
             return list_to_queryset(Post, posts_cleaned)
         try:
@@ -125,7 +133,7 @@ class PostList(ListView):
             # only filter by category if string parameters are detected
             if len(cats) > 0:
                 # get posts with a matching category
-                all_posts = Post.public.filter(category__name__in=cats).select_subclasses(PostRedirect)
+                all_posts = Post.objects.filter(status=1, category__name__in=cats).select_subclasses(PostRedirect)
                 # here we are removing PostRedirect from posts list
                 posts_cleaned = filter_classes(all_posts, (PostRedirect,))
                 # build new queryset with list above
@@ -158,37 +166,18 @@ class PostList(ListView):
             return context
         return context
 
-class AccessStatusMixin(object):
-    def dispatch(self, request, *args, **kwargs):
-        # Get the object whose status you want to check
-        obj = self.get_object()
-        if obj:
-        # Check the status
-            if obj.status == Status.PUBLISH or obj.status == Status.UNLISTED:
-                # Status is public or unlisted, continue with the view
-                return super().dispatch(request, *args, **kwargs)
-        else:
-            raise Http404
 
-class PostView(DetailView, AccessStatusMixin, SingleObjectMixin):
+class PostView(DetailView, PublicStatusMixin, SingleObjectMixin):
     template_name = "blog_improved/post_detail.html"
     model = Post
     target_status = [Status.PUBLISH, Status.UNLISTED]
 
-    def get_object(self, queryset=None):
-        # Get the object using the manager and apply additional filtering
-        try:
-            obj = Post.public.include_unlisted().get(slug=self.kwargs['slug'])
-        except Post.DoesNotExist:
-            obj = None
-        return obj
-    
     def get_context_data(self, **kwargs):
         context = super(PostView, self).get_context_data(**kwargs)
         post = self.get_object()
         context["crumbs"] = [("Home", reverse("home"),),("Posts", reverse("post_list"),),(post.title, None,)]
         
-        if operator.eq(post.collabaration_mode, Post.CollabrationMode.YES):    
+        if operator.eq(post.collabaration_mode, Post.CollabrationMode.YES):
             post = get_object_or_404(PostViaGit, post_ptr_id=post.pk)
         context["post"] = post
         return context
