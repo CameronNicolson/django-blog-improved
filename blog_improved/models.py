@@ -90,6 +90,21 @@ class TagGroup(models.Model):
 class TaggedPost(TaggedItemBase):
     content_object = models.ForeignKey('Post', on_delete=models.CASCADE)
 
+
+class PublicStatusManager(InheritanceManager):
+
+    def include_status(self, status):
+        status_list = [Status.PUBLISH]
+        status_list.append(status)
+        return self.get_queryset(status_list)
+        
+    def include_unlisted(self):
+        return self.include_status(Status.UNLISTED)
+
+    def get_queryset(self, status=[Status.PUBLISH]):
+        return super().get_queryset().filter(status__in=status)
+
+
 class Post(models.Model):
     objects = InheritanceManager()
     
@@ -124,6 +139,8 @@ class Post(models.Model):
     category = models.ForeignKey(Tag, db_column="category", related_name="categories", on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True)
     tags = TaggableManager(through=TaggedPost)
+    # Custom Managers 
+    public = PublicStatusManager()
 
     class Meta:
         ordering = ("-created_on",)
