@@ -5,13 +5,65 @@ from blog_improved.models import Post, User, Tag
 from blog_improved.views import PostList
 from django.urls import reverse
 from django.db import IntegrityError
+from pathlib import Path
+import yaml
 
+DATA_DIR = Path.cwd() / "fixtures"
 
 class TestPosts(TestCase):
     fixtures = ["groups.yaml", "users.yaml", "media.yaml", "tags.yaml", "posts.yaml"]
+    num_of_entries = []
+    post_public_count = 0
+    post_private_count = 0
+    post_unlisted_count = 0
+    post_draft_count = 0
+    post_redirect_count = 0
 
-    def setup(self):
-        pass
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        for file_name in cls.fixtures:
+            file_path = Path(DATA_DIR / file_name)
+            total_entries = cls.count_yaml_entries(file_path)
+            cls.num_of_entries.append(total_entries)
+            if file_path.name is "posts.yaml":
+                statuses = cls.count_num_of_statuses(file_path)
+                cls.post_draft_count, cls.post_public_count, cls.post_private_count, cls.post_unlisted_count, cls.post_redirect_count = statuses 
+
+    def count_yaml_entries(file_path):
+        with open(file_path, 'r') as f:
+            yaml_data = yaml.safe_load(f)
+  
+        num_entries = len(yaml_data)
+        return num_entries
+
+    def count_num_of_statuses(file_path):
+        with open(file_path, 'r') as f:
+            yaml_data = yaml.safe_load(f)
+       
+        post_draft = 0
+        post_public = 0
+        post_private = 0 
+        post_unlisted = 0
+        post_redirect = 0
+        for post in yaml_data:
+            try:
+                if post["model"] == "blog_improved.postredirect":
+                    post_redirect += 1
+                elif post["model"] != "blog_improved.post":
+                    continue
+                if post["fields"]["status"] == 0:
+                    post_draft += 1
+                elif post["fields"]["status"] == 1:
+                    post_public += 1
+                elif post["fields"]["status"] == 2:
+                    post_private += 1
+                elif post["fields"]["status"] == 3:
+                    post_unlisted += 1
+            except KeyError:
+                print("no status field")
+                print(post["fields"])
+        return (post_draft, post_public, post_private, post_unlisted, post_redirect,)
 
     def test_post_list_GET_true(self):
         client = Client()
@@ -25,7 +77,11 @@ class TestPosts(TestCase):
         view.request = request
         qs = view.get_queryset()
         num_of_posts_in_queryset = qs.count()
-        num_expected_posts_in_fixtures = 13
+        public = self.post_public_count
+        redirect = self.post_redirect_count
+        # A post list is:
+        # all posts saved as public minus redirect links
+        num_expected_posts_in_fixtures = public - redirect 
         self.assertEquals(num_of_posts_in_queryset, num_expected_posts_in_fixtures)
 
     def test_post_identical_slug_errors(self):
