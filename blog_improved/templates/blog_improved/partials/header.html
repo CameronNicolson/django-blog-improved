@@ -13,7 +13,10 @@
 
       <div class="nhsuk-header__content" id="content-header">
         <div class="nhsuk-header__menu nhsuk-header__menu--only">
-          <button class="nhsuk-header__menu-toggle" id="toggle-menu" aria-controls="header-navigation" aria-expanded="false">Menu</button>
+           <button class="nhsuk-header__menu-toggle" id="toggle-menu" aria-controls="header-navigation" aria-expanded="false">Menu</button>
+	   <noscript>
+		   <a class="nhsuk-header__menu-toggle--noscript" href="{% url 'browse' %}" aria-controls="header-navigation" aria-expanded="false">Menu</a>
+	   </noscript>
         </div>
       </div>
     </div>
