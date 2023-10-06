@@ -36,7 +36,7 @@
     category: 6
     slug: 15-tips-for-mission-success
     cover_art: 4
-- name: quotes post
+- name: quotes-post
   description: double speeach mark quotes in title
   model: blog_improved.post
   pk: 3
@@ -44,7 +44,6 @@
     title: Django Reinhardt compilation album "Swing Guitars"
     content: lorem(3)
     author: 1
-    status: 1
     created_on: 2023-01-16T08:16:59.844560+00:00
     updated_on: 2023-01-16T08:16:59.844560+00:00
     status: 1
@@ -59,7 +58,6 @@
     headline: An audience with the internet
     content: lorem(1)
     author: 3
-    status: 1
     created_on: 2023-01-16T08:16:59.844560+00:00
     updated_on: 2023-01-16T08:16:59.844560+00:00
     status: 1
@@ -68,7 +66,7 @@
     slug: this-post-is-featured
     cover_art: 3
 - name: video redirect post
-  description: double speeach mark quotes in title
+  description: a post that goes elsewhere from the norm
   model: blog_improved.post
   pk: 5
   fields:
@@ -181,8 +179,8 @@
     title: A long road ahead for public transport
     content: lorem(10)
     author: 1
-    created_on: 2023-06-25T08:16:59.844560+00:00
-    updated_on: 2023-06-26T08:18:11.844560+00:00
+    created_on: 2023-06-25T14:00:00.844560+00:00
+    updated_on: 2023-06-25T14:00:00.844560+00:00
     status: 1
     category: 7
     slug: transport
@@ -220,21 +218,60 @@
     title: 20% of households lack 40% natural light  
     content: lorem(4)
     author: 1
-    created_on: 2023-06-25T08:16:59.844560+00:00
-    updated_on: 2023-06-26T08:18:11.844560+00:00
+    created_on: 2023-08-11T08:16:59.844560+00:00
+    updated_on: 2023-08-11T08:18:11.844560+00:00
     status: 1
     category: 5
     slug: 20-of-households-study
+- name: created-1-hour-before-newest-post-without-redirect
+  description: created_on date is 1 hour before post id=14
+  model: blog_improved.post
+  pk: 18
+  fields: 
+    title: Zero Emission Buses Introduced to City Centre  
+    content: lorem(1)
+    author: 2
+    created_on: 2023-06-25T13:00:00.844560+00:00
+    updated_on: 2023-06-25T13:00:00.844560+00:00
+    status: 1
+    category: 7
+    slug: zero-emission-buses-introduced
 - name: speech-marks-in-title
   description: using speech marks for a personal quote
   model: blog_improved.post
-  pk: 18
+  pk: 20
   fields: 
     title: black holes described as "harmful" by top scientist 
     content: lorem(1)
     author: 2
-    created_on: 2023-06-25T08:16:59.844560+00:00
-    updated_on: 2023-06-26T08:18:11.844560+00:00
-    status: 5
+    created_on: 2023-04-03T08:16:59.844560+00:00
+    updated_on: 2023-04-26T08:18:11.844560+00:00
+    status: 1
     category: 9
     slug: black-holes-quoted-as-harmful
+- name: private-post
+  description: status-is-private
+  model: blog_improved.post
+  pk: 19
+  fields: 
+    title: For staff only, not public! 
+    content: lorem(1)
+    author: 2
+    created_on: 2023-08-17T08:05:30.844560+00:00
+    updated_on: 2023-08-18T08:06:31.844560+00:00
+    status: 2
+    category: 9
+    slug: staff-only
+- name: unlisted-post
+  description: status marked as unlisted
+  model: blog_improved.post
+  pk: 21
+  fields: 
+    title: Preview my post before it goes live 
+    content: lorem(1)
+    author: 2
+    created_on: 2023-09-02T08:12:30.844560+00:00
+    updated_on: 2023-09-03T08:12:31.844560+00:00
+    status: 3
+    category: 5
+    slug: preview-my-post
