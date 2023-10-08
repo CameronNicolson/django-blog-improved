@@ -40,6 +40,19 @@ class Status(models.IntegerChoices):
     PRIVATE = 2
     UNLISTED = 3
 
+    @classmethod
+    def name_to_id(cls, name):
+        if not isinstance(name, str):
+            raise TypeError("Argument 'name' must be a string")
+        if not name:
+            raise ValueError("Argument 'name' cannot be an empty string")
+
+        for choice in cls:
+            if choice.name == name.upper():
+                return choice.value
+        raise ValueError(f"Unknown status with name '{name}'")
+        
+
 
 class BlogGroup(Group):
     status = models.IntegerField(choices=Status.choices, default=Status.PRIVATE) 
