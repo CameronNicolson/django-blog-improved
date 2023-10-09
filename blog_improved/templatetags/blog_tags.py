@@ -6,7 +6,7 @@ from django.utils.safestring import mark_safe
 
 register = template.Library()
 
-from ..models import Post 
+from ..models import Post, Status 
 
 from django.db.models.query import QuerySet
 from model_utils.managers import InheritanceQuerySet
@@ -14,11 +14,37 @@ from model_utils.managers import InheritanceQuerySet
 DEFAULT_POST_STATUS = "PUBLISH"
 
 @register.simple_tag 
-def total_post_count(status_choice=None):
-    status = {}
-    if status_choice:
-        status = {'status': Post.Status[status_choice.upper()]}
+def total_post_count(status_type=DEFAULT_POST_STATUS):
+    """
+    Retrieves the total count of posts with a specified status type.
 
+    This template tag fetches the count of posts with a given status type.
+    The status type is provided as a string, which is then converted to its corresponding
+    integer ID using the 'name_to_id' method of the 'Status' enumeration.
+
+    Args:
+        status_type (str, optional): The status type to filter the posts. Defaults to DEFAULT_POST_STATUS.
+
+    Returns:
+        int: The total count of posts with the specified status.
+
+    Raises:
+        template.TemplateSyntaxError: If there is a syntax error in the template.
+        template.VariableDoesNotExist: If the provided status type is not a valid status.
+
+    Example Usage:
+        {% total_post_count "DRAFT" %}
+        This will return the count of posts with the status "DRAFT".
+    """
+
+    status = {}
+    try:
+        choice = Status.name_to_id(status_type) 
+    except TypeError as e:
+        raise template.TemplateSyntaxError(e)
+    except ValueError as e:
+        raise template.VariableDoesNotExist(f"Value '{status_type}' provided to {total_post_count.__name__} is not a status") 
+    status = {'status': choice}
     return Post.objects.filter(**status).count()
 
 @register.filter
