@@ -43,7 +43,30 @@ def list_to_queryset(model, data):
     pk_list = [obj.pk for obj in data]
     return model.objects.filter(pk__in=pk_list)
 
-class HomePage(ListView):
+# ========== Mixins ==========
+
+class AccessStatusMixin(object):
+    def dispatch(self, request, *args, **kwargs):
+        # Get the object whose status you want to check
+        obj = self.get_object()
+        if obj:
+        # Check the status
+            if obj.status == Status.PUBLISH or obj.status == Status.UNLISTED:
+                # Status is public or unlisted, continue with the view
+                return super().dispatch(request, *args, **kwargs)
+        else:
+            raise Http404
+
+class BaseUrlMixin:
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        print(self.request)
+        context['base_url'] = "{0}://{1}{2}".format(self.request.scheme, self.request.get_host(), self.request.path)
+        return context
+
+# ========== Class Views ==========
+
+class HomePage(BaseUrlMixin, ListView):
     template_name="blog_improved/pages/homepage.html"
     queryset = Post.public.all().select_subclasses()
 
@@ -157,18 +180,6 @@ class PostList(ListView):
         except KeyError:
             return context
         return context
-
-class AccessStatusMixin(object):
-    def dispatch(self, request, *args, **kwargs):
-        # Get the object whose status you want to check
-        obj = self.get_object()
-        if obj:
-        # Check the status
-            if obj.status == Status.PUBLISH or obj.status == Status.UNLISTED:
-                # Status is public or unlisted, continue with the view
-                return super().dispatch(request, *args, **kwargs)
-        else:
-            raise Http404
 
 class PostView(DetailView, AccessStatusMixin, SingleObjectMixin):
     template_name = "blog_improved/post_detail.html"
