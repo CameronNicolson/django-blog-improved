@@ -13,6 +13,37 @@ from model_utils.managers import InheritanceQuerySet
 
 DEFAULT_POST_STATUS = "PUBLISH"
 
+@register.simple_tag(takes_context=True)
+def url_gen(context, slug=None):
+    """
+    Generate a complete URL by combining the base URL from context and a provided slug.
+
+    This template tag takes the incoming context and an optional `slug`. Outputs are 
+    different based on the case provided:
+    1. If baseUrl and slug are both not empty, it concatenates them.
+    2. If baseUrl is empty and slug is provided, it returns slug.
+    3. If both baseUrl and slug are empty, it raises a VariableDoesNotExist exception.
+
+    Args:
+        context (dict): The context dictionary containing variables accessible in the template.
+        slug (str, optional): A string to be appended to the base URL. Defaults to None.
+
+    Raises:
+        template.VariableDoesNotExist: If `slug` is not provided.
+
+    Returns:
+        str: The complete URL.
+    """
+
+    view_base_url = context.get("base_url", None)
+    baseUrl = view_base_url or slug
+    if baseUrl and slug:
+        return f"{baseUrl}{slug}"
+    elif not baseUrl and slug:
+        return slug
+    else:
+        raise template.VariableDoesNotExist(f"{url_gen.__name__} template tag's parameter `slug` cannot be empty") 
+
 @register.simple_tag 
 def total_post_count(status_type=DEFAULT_POST_STATUS):
     """
@@ -47,22 +78,26 @@ def total_post_count(status_type=DEFAULT_POST_STATUS):
     status = {'status': choice}
     return Post.objects.filter(**status).count()
 
-@register.filter
-def featured(queryset, limit=6, invert=False):
+def filter_posts(queryset, size=6, allow_featured=True):
     if type(queryset) is QuerySet or type(queryset) is InheritanceQuerySet:
         if queryset.model is Post:
             pure_list = []
             for value in queryset:
-                if limit != None and len(pure_list) >= int(limit):
+                if size and len(pure_list) >= size:
                     break
-                if value.is_featured is not invert:
+                if value.is_featured is allow_featured:
                     pure_list.append(value)
             return pure_list
     return []
 
 @register.filter
-def not_featured(queryset, in_limit=None):
-    return featured(queryset, limit=in_limit, invert=True)
+def regular(queryset, size=None):
+    return filter_posts(queryset, size=size, allow_featured=False)
+
+@register.filter
+def featured(queryset, size=None):
+    return filter_posts(queryset, size=size, allow_featured=True)
+
 
 @register.simple_tag
 def contact_us(choice=False, url=False, mailto=False, **kwargs):
