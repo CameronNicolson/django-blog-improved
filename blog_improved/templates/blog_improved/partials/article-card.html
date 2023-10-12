@@ -1,8 +1,11 @@
+{% load blog_tags %}
+{% url_gen subpath=post.get_absolute_url as read_more_url %}
+{% with read_more_url=read_more_url|default:post.get_absolute_url %}
 <article class="gem-c-image-card" role="article">
     <div class="gem-c-image-card__text-wrapper">
       <div class="gem-c-image-card__header-and-context-wrapper">
           <h2 class="gem-c-image-card__title">
-              <a class="gem-c-image-card__title-link" href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+		  <a class="gem-c-image-card__title-link" href="{{ read_more_url }}">{{ post.title }}</a>
 </h2>       
           <p class="gem-c-image-card__context"><time datetime="{{ post.created_on|date:'Y-m-d' }}">{{ post.created_on|date:'d F Y'}} </time><span aria-hidden="true"> — </span>{{ post.category.name }}</p>
       </div>
@@ -17,7 +20,8 @@
   </figure>
 </article>
     <div class="read-more-link visible-desktop">
-	    <a class="govuk-link" aria-label="View blog post: {{ post.title }}" href="{{ post.get_absolute_url }} ">Read more 
+	    <a class="govuk-link" aria-label="View blog post: {{ post.title }}" href="{{ read_more_url }}">Read more
                <div class="arrow" aria-hidden="true"></div>
 	    </a>
 	        </div>
+{% endwith %}

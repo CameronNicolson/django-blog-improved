@@ -1,10 +1,13 @@
 {% if feature %}
+{% load blog_tags %}
+{% url_gen subpath=feature.get_absolute_url as read_more_url %}
+{% with read_more_url=read_more_url|default:feature.get_absolute_url %}
 <div class="nhsuk-do-dont-list govuk-panel-feature govuk-panel--no-centre">
   <h3 class="nhsuk-do-dont-list__label">Feature</h3>
 	  <div class="govuk-panel-feature--body">	
       <div class="visible-tablet">
 		    <h3 class="govuk-panel-feature--text__title">
-          <a href="{{ feature.get_absolute_url  }}" class="govuk-panel__title govuk-panel-feature--text__link">{{ feature.title }}</a>
+          <a href="{{ read_more_url }}" class="govuk-panel__title govuk-panel-feature--text__link">{{ feature.title }}</a>
 			    </h3>
         </div>
 
@@ -18,11 +21,12 @@
 
       <div class="govuk-panel-feature--text">
         <h3 class="govuk-panel-feature--text__title visible-desktop">
-          <a href="{{ feature.get_absolute_url  }}" class="govuk-panel__title govuk-panel-feature--text__link">{{ feature.title }}</a>
+          <a href="{{ read_more_url }}" class="govuk-panel__title govuk-panel-feature--text__link">{{ feature.title }}</a>
         </h3>
         <address class="blog-posts__article-author govuk-visually-hidden"><a rel="author" href="/about"> Written by {{ feature.author }}</a></address>
         <p class="govuk-panel-feature--text__headline">{{ feature.headline|safe|slice:":200" }}</p>
       </div>
     </div>
 </div>
+{% endwith %}
 {% endif %} 
