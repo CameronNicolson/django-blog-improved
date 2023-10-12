@@ -4,7 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.conf import settings
 from django.core.cache import cache
-from blog_improved.utils.prettify_url import *
+from blog_improved.utils.urls import prettify_url
 from django.contrib.sites.shortcuts import get_current_site
 thread_lock = threading.Lock()
 
