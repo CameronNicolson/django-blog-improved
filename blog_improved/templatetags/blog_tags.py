@@ -7,42 +7,65 @@ from django.utils.safestring import mark_safe
 register = template.Library()
 
 from ..models import Post, Status 
-
+from blog_improved.utils.urls import starts_with_uri, URLBuilder
 from django.db.models.query import QuerySet
 from model_utils.managers import InheritanceQuerySet
 
 DEFAULT_POST_STATUS = "PUBLISH"
 
 @register.simple_tag(takes_context=True)
-def url_gen(context, slug=None):
+def url_gen(context, subpath="", baseUrl="", trailing_slash=True):
     """
     Generate a complete URL by combining the base URL from context and a provided slug.
 
     This template tag takes the incoming context and an optional `slug`. Outputs are 
     different based on the case provided:
-    1. If baseUrl and slug are both not empty, it concatenates them.
-    2. If baseUrl is empty and slug is provided, it returns slug.
-    3. If both baseUrl and slug are empty, it raises a VariableDoesNotExist exception.
+    1. If subpath is missing, return None.
+    2. If subpath starts with a URI then return None.
+    3. If baseUrl is available, it concatenates baseUrl and subpath.
+    4. If both baseUrl is empty, it returns None.
 
     Args:
         context (dict): The context dictionary containing variables accessible in the template.
         slug (str, optional): A string to be appended to the base URL. Defaults to None.
 
     Raises:
-        template.VariableDoesNotExist: If `slug` is not provided.
+        template.VariableDoesNotExist: If `subpath` is not provided.
 
     Returns:
         str: The complete URL.
-    """
 
-    view_base_url = context.get("base_url", None)
-    baseUrl = view_base_url or slug
-    if baseUrl and slug:
-        return f"{baseUrl}{slug}"
-    elif not baseUrl and slug:
-        return slug
+    Notes:
+        The `starts_with_uri` function is used to determine if `subpath` starts with a URI.
+
+    Example:
+        {% url_gen subpath='/music/bands/neworder/' %}
+    """
+ 
+    if not subpath:
+        raise template.VariableDoesNotExist(f"{url_gen.__name__} template tag's parameter `subpath` cannot be empty") 
+    
+   # subpaths with uri such as http(s), do not require the website's base url 
+    if starts_with_uri(subpath):
+        return None
+
+    if baseUrl == "":
+        base_url = context.get("base_url", None)
+   
+    if base_url:
+        url = URLBuilder(base_url)
+        # foreach item in the subpath then add to url builder
+        # exclude empty strings from subpath list
+        for item in subpath.split("/"): 
+            if item != "":
+                url.add_subpath(item)
+        if trailing_slash:
+            url.add_endslash()
+
+        full_url = url.build()
+        return full_url
     else:
-        raise template.VariableDoesNotExist(f"{url_gen.__name__} template tag's parameter `slug` cannot be empty") 
+        return None
 
 @register.simple_tag 
 def total_post_count(status_type=DEFAULT_POST_STATUS):
