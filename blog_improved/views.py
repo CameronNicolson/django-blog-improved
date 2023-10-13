@@ -6,11 +6,13 @@ from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.detail import SingleObjectMixin
 from django.urls import reverse
 from django.contrib.auth.models import User
+from blog_improved.conf import HOMEPAGE_LATESTPOSTS_SIZE as latest_post_limit
 from .models import BlogGroup, Post, PostViaGit, PostRedirect, UserProfile, Status
 from .forms import FilterForm
 from taggit.models import Tag
 from django.db.models.base import ModelBase
 from django.db.models import Q, QuerySet
+from model_utils.managers import InheritanceManager, InheritanceManagerMixin
 from itertools import chain
 
 import operator
@@ -66,12 +68,26 @@ class BaseUrlMixin:
 
 # ========== Class Views ==========
 
-class HomePage(BaseUrlMixin, ListView):
+class HomePage(BaseUrlMixin, InheritanceManagerMixin, ListView):
     template_name="blog_improved/pages/homepage.html"
-    queryset = Post.public.all().select_subclasses()
+    featured_post_limit = 1
 
-    class Meta:
-        ordering = ["-created_on"]
+    def get_queryset(self, *args, **kwargs):
+        # live posts sorted by created date and public status
+        live = Post.public.all().order_by('-created_on')[:latest_post_limit]
+        # posts with feature state
+        featured = Post.public.filter(is_featured=True).order_by('-created_on')[:self.featured_post_limit]
+
+        # convert querytsets to lists is a workaround
+        # for collecting subclasses of Post
+        live_objects = list(live)
+        featured_objects = list(featured)
+
+        combined_queryset = Post.objects.all().filter(
+            pk__in=set(obj.pk for obj in chain(live_objects, featured_objects))
+        ).select_subclasses()
+
+        return combined_queryset
 
 class AuthorPage(ListView):
     author_template_dir = "blog_improved/pages/authors/"
