@@ -191,6 +191,9 @@ class PostViaGit(Post):
 class PostShoutout(Post):
     redirect_url = models.URLField()
 
+    class Meta:
+        verbose_name_plural = "Post Shoutouts"
+
     def get_absolute_url(self):
         return self.redirect_url
 
