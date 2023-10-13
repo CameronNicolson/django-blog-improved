@@ -3,7 +3,7 @@ from django.contrib.auth.models import Group, User
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.sites.models import Site
 from django.utils.html import format_html
-from .models import Comment, BlogGroup, Post, PostViaGit, PostRedirect, Media, TagGroup, UserProfile
+from .models import Comment, BlogGroup, Post, PostViaGit, PostShoutout, Media, TagGroup, UserProfile
 from taggit.models import Tag
 from django.db.models import Prefetch
 from redirects.models import Redirect
@@ -52,8 +52,8 @@ class PostGitAdmin(PostAdmin):
         return super().get_queryset(request).prefetch_related("tags")
 
 
-@admin.register(PostRedirect)
-class PostRedirectAdmin(PostAdmin):
+@admin.register(PostShoutout)
+class PostShoutoutAdmin(PostAdmin):
     fields = ("title", "headline", "content", "author", "category", "status", "is_featured", "cover_art", "redirect_url")
     prepopulated_fields = {} 
 

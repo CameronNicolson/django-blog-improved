@@ -188,7 +188,7 @@ class PostViaGit(Post):
     def __str__(self):
         return self.title
 
-class PostRedirect(Post):
+class PostShoutout(Post):
     redirect_url = models.URLField()
 
     def get_absolute_url(self):
@@ -239,8 +239,8 @@ def create_user_profile(sender, instance, created, **kwargs):
         new_profile = UserProfile.objects.create(user=instance)
         new_profile.save()
 
-@receiver(pre_save, sender=PostRedirect)
+@receiver(pre_save, sender=PostShoutout)
 def update_postredirect_slug(sender, instance, **kwargs):
-    instance.slug = "{0}s-redirect".format(slugify(instance.title))
+    instance.slug = "{0}s-shoutout".format(slugify(instance.title))
     return instance
 

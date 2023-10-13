@@ -115,7 +115,7 @@
     associated_git_repository: https://codeberg.org/spongycake/django-blog-improved
 # redirect links
 - name: video redirect link
-  model: blog_improved.postredirect
+  model: blog_improved.postshoutout
   pk: 5
   fields:
     redirect_url: "https://myvideos.local"

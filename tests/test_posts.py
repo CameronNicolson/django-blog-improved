@@ -48,7 +48,7 @@ class TestPosts(TestCase):
         post_redirect = 0
         for post in yaml_data:
             try:
-                if post["model"] == "blog_improved.postredirect":
+                if post["model"] == "blog_improved.postshoutout":
                     post_redirect += 1
                 elif post["model"] != "blog_improved.post":
                     continue
