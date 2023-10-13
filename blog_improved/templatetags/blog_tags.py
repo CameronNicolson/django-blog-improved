@@ -6,7 +6,8 @@ from django.utils.safestring import mark_safe
 
 register = template.Library()
 
-from ..models import Post, Status 
+from ..models import Post, Status
+from blog_improved.conf import HOMEPAGE_LATESTPOSTS_SIZE as default_limit
 from blog_improved.utils.urls import starts_with_uri, URLBuilder
 from django.db.models.query import QuerySet
 from model_utils.managers import InheritanceQuerySet
@@ -101,8 +102,8 @@ def total_post_count(status_type=DEFAULT_POST_STATUS):
     status = {'status': choice}
     return Post.objects.filter(**status).count()
 
-def filter_posts(queryset, size=6, allow_featured=True):
-    if type(queryset) is QuerySet or type(queryset) is InheritanceQuerySet:
+def filter_posts(queryset, size=default_limit, allow_featured=True):
+    if isinstance(queryset, QuerySet) or isinstance(queryset, InheritanceQuerySet):
         if queryset.model is Post:
             pure_list = []
             for value in queryset:
