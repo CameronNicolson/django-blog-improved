@@ -7,7 +7,7 @@
           <h2 class="gem-c-image-card__title">
 		  <a class="gem-c-image-card__title-link" href="{{ read_more_url }}">{{ post.title }}</a>
 </h2>       
-          <p class="gem-c-image-card__context"><time datetime="{{ post.created_on|date:'Y-m-d' }}">{{ post.created_on|date:'d F Y'}} </time><span aria-hidden="true"> — </span>{{ post.category.name }}</p>
+          <p class="gem-c-image-card__context"><time datetime="{{ post.published_on|date:'Y-m-d' }}">{{ post.published_on|date:'d F Y'}} </time><span aria-hidden="true"> — </span>{{ post.category.name }}</p>
       </div>
       <div class="gem-c-image-card__description visible-desktop">{{ post.headline }}</div>
     </div>

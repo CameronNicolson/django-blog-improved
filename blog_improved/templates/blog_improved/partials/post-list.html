@@ -2,7 +2,7 @@
 <section class="releases-feed govuk-!-padding-bottom-4 blog-posts" role="feed">
           <div class="image-card-group">
 		<div class="image-card-group__row">
-                {% for post in post_list %}		
+                {% for post in post_list|regular:6 %}		
               <div class="image-card-group__item">
                   {% include "blog_improved/partials/article-card.html" with post=post %}
               </div>
