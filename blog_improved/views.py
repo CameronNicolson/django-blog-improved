@@ -128,6 +128,7 @@ class AuthorPage(ListView):
 
 class PostList(ListView):
     paginate_by = 10
+    template_name = "blog_improved/pages/posts/post_list.html"
     
     def post(self, request, *args, **kwargs):
         # category tags passed by POST request
@@ -153,13 +154,13 @@ class PostList(ListView):
         return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
-        # show all posts for index pages
-        if "/index/" in self.request.path:
+        # if GET is empty then show all posts 
+        if not self.request.GET:
             all_posts = Post.public.all().select_subclasses(PostShoutout)
             posts_cleaned = filter_classes(all_posts, (PostShoutout,))
             return list_to_queryset(Post, posts_cleaned)
         try:
-            # remove whitespaces enteries
+            # get all categories in string
             cats = [cat for cat in self.request.categories if cat != ""]
             # only filter by category if string parameters are detected
             if len(cats) > 0:
@@ -198,7 +199,7 @@ class PostList(ListView):
         return context
 
 class PostView(DetailView, AccessStatusMixin, SingleObjectMixin):
-    template_name = "blog_improved/post_detail.html"
+    template_name = "blog_improved/pages/posts/post_detail.html"
     model = Post
     target_status = [Status.PUBLISH, Status.UNLISTED]
 
