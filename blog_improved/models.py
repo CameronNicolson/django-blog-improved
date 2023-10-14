@@ -154,13 +154,26 @@ class Post(models.Model):
     tags = TaggableManager(through=TaggedPost)
     # Custom Managers 
     public = PublicStatusManager()
+    published_on = models.DateTimeField(blank=True, null=True)
 
     class Meta:
-        ordering = ("-created_on",)
+        ordering = ("-published_on",)
 
     def __str__(self):
         return self.title
-    
+   
+
+    def save(self, *args, **kwargs):
+        if self.pk is None:  # This is a new post being created
+            if self.status == 1:  # Only set publication date if status is 1
+                self.publication_date = timezone.now()
+        else:  # This is an existing post being updated
+            post_before_save = Post.objects.get(pk=self.pk)
+            if original_post.status not in [1, self.status] and self.status == 1:
+                self.publication_date = timezone.now()
+        
+        super().save(*args, **kwargs)
+
     def get_post_type(self):
         return self._meta.model_name
 

@@ -74,9 +74,9 @@ class HomePage(BaseUrlMixin, InheritanceManagerMixin, ListView):
 
     def get_queryset(self, *args, **kwargs):
         # live posts sorted by created date and public status
-        live = Post.public.all().order_by('-created_on')[:latest_post_limit]
+        live = Post.public.all().order_by('-published_on')[:latest_post_limit]
         # posts with feature state
-        featured = Post.public.filter(is_featured=True).order_by('-created_on')[:self.featured_post_limit]
+        featured = Post.public.filter(is_featured=True).order_by('-published_on')[:self.featured_post_limit]
 
         # convert querytsets to lists is a workaround
         # for collecting subclasses of Post
