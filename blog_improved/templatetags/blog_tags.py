@@ -1,5 +1,6 @@
 import re, copy
 from django.conf import settings
+from django.contrib.sites.shortcuts import get_current_site
 from django import template 
 from django.template.defaultfilters import stringfilter
 from django.utils.safestring import mark_safe
@@ -122,29 +123,52 @@ def regular(queryset, size=None):
 def featured(queryset, size=None):
     return filter_posts(queryset, size=size, allow_featured=True)
 
+@register.simple_tag(takes_context=True)
+def contact_list(context, **kwargs):
+    contact_list = list()
+    services = kwargs
+    for service in services:
+        try:
+            contact = {}
+            contact_link = contact_us(context, choice=service)
+            if(contact_link):
+                contact["uri"] = contact_link
+                contact["method_name"] = str(service).capitalize() 
+                contact_list.append(contact)
+        except KeyError:
+            contact = None
+    return contact_list
 
-@register.simple_tag
-def contact_us(choice=False, url=False, mailto=False, **kwargs):
-    if choice == "":
+
+@register.simple_tag(takes_context=True)
+def contact_us(context, choice=None, url=False, mailto=False, using_site=True, **kwargs):
+    if choice == None:
         return None
     choices_as_names = {"email": "DEFAULT_EMAIL", "matrix": "MATRIX_ID"}
     mailto_css = "govuk-link govuk-link--no-visited-state"
+    site_name = get_current_site(context["request"]).name
     if kwargs:
         try:
-            url = kwargs["url"] is True or kwargs["mailto"] is True
+            url = kwargs["url"] is True
         except KeyError:
-            url = False    
+            url = False 
         for key,value in choices_as_names.items():   
             if key in kwargs:
                 contact = kwargs[key]
     if choice:
         try:
             choice_keyword_in_settings = choices_as_names[choice]
-            contact = settings.CONTACT[choice_keyword_in_settings]
-        except AttributeError:
-            contact = "please enter {0} in settings.py".format(choice)
+            contact_list = settings.CONTACT
+            if using_site:
+                contact = contact_list[site_name][choice_keyword_in_settings] 
+            else:
+                contact = contact_list[choice_keyword_in_settings]
+        except KeyError:
+            return None
     if url or mailto:
-        return obfuscate_mailto(url, mail=mailto, text=contact, css_class=mailto_css)
+        if choice == "email":
+            val = contact 
+        return obfuscate_mailto(val, mail=mailto, text=contact, css_class=mailto_css)
     return obfuscate(contact)
 
 @register.inclusion_tag("blog_improved/partials/main-nav.html", takes_context=True)
