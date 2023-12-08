@@ -16,7 +16,7 @@
 	  </div>
 	  <div class="govuk-grid-row">
 		  <div class="govuk-grid-column-full">
-   {% include "blog_improved/partials/post-list.html" with show_all=True show_all_text="View all posts catalogue" %}
+   {% include "blog_improved/partials/fixed-column-post-list.html" with show_all=True show_all_text="View all posts catalogue" %}
   </div>
 	  </div>
 
@@ -27,23 +27,9 @@
                     <div class="govuk-grid-column-two-thirds govuk-!-padding-bottom-9">
                     <h2 class="govuk-heading-m contact-section__title govuk-!-padding-top-3 heading-border">Contact</h2>
                     <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-{% contact_us "email" "mailto" as email %}
-{% if email %} 
-<h3 class="govuk-heading-s">Email</h3>
-<ul class="govuk-list">
-  <li>{% contact_us "email" "mailto" %}</li>
-  <li>I aim to reply within 7-14 days</li>
-</ul>
-{% endif %}
-{% contact_us "matrix" as matrix %}
-{% if matrix %}
-<h3 class="govuk-heading-s ">Matrix</h3>
-<ul class="govuk-list">
-  <li>{% contact_us "matrix" %}</li>
-  <li>Currently respond within 2 days</li>
-</ul>
-{% endif %}
-                    </div>
+		    {% contact_list email=True matrix=True as contacts  %}
+		  {% include "blog_improved/partials/contact-list.html" with contacts=contacts %}
+                   </div>
                     <div class="govuk-grid-column-one-third">
                 <h2 class="govuk-heading-m heading-border govuk-!-padding-top-3">Additional information</h2>
 <ul class="govuk-list govuk-list--spaced">
