@@ -141,9 +141,7 @@ def contact_list(context, **kwargs):
 
 
 @register.simple_tag(takes_context=True)
-def contact_us(context, choice=None, url=False, mailto=False, using_site=True, **kwargs):
-    if choice == None:
-        return None
+def contact_us(context, choice="", url="", mailto="", using_site=True, **kwargs):
     choices_as_names = {"email": "DEFAULT_EMAIL", "matrix": "MATRIX_ID"}
     mailto_css = "govuk-link govuk-link--no-visited-state"
     site_name = get_current_site(context["request"]).name
@@ -151,7 +149,7 @@ def contact_us(context, choice=None, url=False, mailto=False, using_site=True, *
         try:
             url = kwargs["url"] is True
         except KeyError:
-            url = False 
+            url = "" 
         for key,value in choices_as_names.items():   
             if key in kwargs:
                 contact = kwargs[key]
@@ -166,9 +164,9 @@ def contact_us(context, choice=None, url=False, mailto=False, using_site=True, *
         except KeyError:
             return None
     if url or mailto:
-        if choice == "email":
-            val = contact 
-        return obfuscate_mailto(val, mail=mailto, text=contact, css_class=mailto_css)
+        if not choice:
+            contact = url or mailto
+        return obfuscate_mailto(contact, mail=mailto, text=contact, css_class=mailto_css)
     return obfuscate(contact)
 
 @register.inclusion_tag("blog_improved/partials/main-nav.html", takes_context=True)
