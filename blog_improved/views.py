@@ -135,14 +135,19 @@ class PostList(ListView):
         form = FilterForm(request.POST)
         if form.is_valid():
             cat_list = form.cleaned_data["category"]
-            cats = get_list_or_404(Tag.objects.filter(pk__in=cat_list))
-            cat_list_str = str()
-            for i in range(len(cat_list)):
-                cat_list_str += cats[i].name
-                if i+1 < len(cat_list):
-                    cat_list_str += ","
-            return redirect(f"/search?cat={cat_list_str}")
-        return render(request, "blog_improved/post_list.html", {"filter_form": form})
+            return redirect("post_list")
+            if len(cat_list) > 0: 
+                cats = get_list_or_404(Tag.objects.filter(pk__in=cat_list))
+                cat_list_str = str()
+                for i in range(len(cat_list)):
+                    cat_list_str += cats[i].name
+                    if i+1 < len(cat_list):
+                        cat_list_str += ","
+                return redirect(f"/search?cat={cat_list_str}")
+        self.object_list = self.get_queryset()
+        context = self.get_context_data()
+        context["filter_form"] = form
+        return render(request, "blog_improved/pages/posts/post_list.html", context)
 
     def get(self, request, *args, **kwargs):
         # categories in request string, seperated by comma
@@ -155,7 +160,7 @@ class PostList(ListView):
 
     def get_queryset(self):
         # if GET is empty then show all posts 
-        if not self.request.GET:
+        if self.request.POST or not self.request.GET or self.request.GET.get("page"):
             all_posts = Post.public.all().select_subclasses(PostShoutout)
             posts_cleaned = filter_classes(all_posts, (PostShoutout,))
             return list_to_queryset(Post, posts_cleaned)
@@ -177,9 +182,12 @@ class PostList(ListView):
         
 
     def get_context_data(self, **kwargs):
-        context = super(PostList, self).get_context_data(**kwargs)
+        context = {}
         # Find all tags that were inside the request
-        categories = self.request.categories
+        try:
+            categories = self.request.categories 
+        except AttributeError:
+            categories = []
         if len(categories) > 0:
             cat_ids = []
             for cat_name in categories:
@@ -191,12 +199,12 @@ class PostList(ListView):
         context["total_post_count"] = self.get_queryset().count()
         context["search_title"] = "Posts"
         try: 
-            context["filter_categories"] = self.request.categories
+            context["filter_categories"] = categories
             # send query context for the Next/Prev pagination
             context["query"] = self.request.GET.get("cat")
         except KeyError:
             return context
-        return context
+        return super(PostList, self).get_context_data(**context)
 
 class PostView(DetailView, AccessStatusMixin, SingleObjectMixin):
     template_name = "blog_improved/pages/posts/post_detail.html"
