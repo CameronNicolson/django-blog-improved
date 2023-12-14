@@ -18,7 +18,7 @@ class FilterForm(forms.Form):
         widget=forms.CheckboxSelectMultiple,
         label="Filter by topic",
         help_text="Select all boxes that interest you.",
-        required="ddfa",
+        required=False,
     )
 
     def __init__(self, *args, **kwargs):
