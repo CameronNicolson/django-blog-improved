@@ -62,7 +62,6 @@ class AccessStatusMixin(object):
 class BaseUrlMixin:
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        print(self.request)
         context['base_url'] = "{0}://{1}{2}".format(self.request.scheme, self.request.get_host(), self.request.path)
         return context
 
