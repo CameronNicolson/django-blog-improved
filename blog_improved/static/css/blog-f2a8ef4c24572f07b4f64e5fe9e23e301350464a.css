@@ -995,6 +995,77 @@
   box-shadow: 0 0 0 3px rgba(244, 153, 190, 0.8);
 }
 
+.latest-post-signage {
+  font-family: "Noto Sans", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+  font-size: 32px;
+  font-size: 2rem;
+  line-height: 1.09375;
+  margin-bottom: 15px;
+}
+@media print {
+  .latest-post-signage {
+    font-family: sans-serif;
+  }
+}
+@media (min-width: 40.0625em) {
+  .latest-post-signage {
+    font-size: 48px;
+    font-size: 3rem;
+    line-height: 1.0416666667;
+  }
+}
+@media print {
+  .latest-post-signage {
+    font-size: 32pt;
+    line-height: 1.15;
+  }
+}
+.latest-post-signage::before {
+  content: "";
+  /* Empty content, but required for pseudo-element to work */
+  display: inline-block;
+  width: 64px;
+  /* Adjust the width of the image */
+  height: 20px;
+  /* Adjust the height of the image */
+  background-image: url("/static/img/sharparrow.png");
+  /* Replace with the path to your image */
+  background-size: cover;
+  /* Adjust as needed */
+  margin-right: 0px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .latest-post-signage::before {
+    background-image: url("/static/img/sharparrow-x2.png");
+  }
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 3), only screen and (min-resolution: 288dpi), only screen and (min-resolution: 3dppx) {
+  .latest-post-signage::before {
+    background-image: url("/static/img/sharparrow-x3.png");
+  }
+}
+@media (min-width: 40.0625em) {
+  .latest-post-signage {
+    margin-bottom: 15px !important;
+  }
+  .latest-post-signage::before {
+    width: 120px;
+    height: 38px;
+  }
+}
+@media (min-width: 48.0625em) {
+  .latest-post-signage {
+    margin-bottom: 0 !important;
+  }
+  .latest-post-signage::before {
+    width: 98px;
+    height: 30px;
+  }
+}
+
 details > summary::marker {
   font-size: 0px;
   list-style: none;
