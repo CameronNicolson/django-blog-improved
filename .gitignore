@@ -63,8 +63,7 @@ frontend/staticfiles/
 !**media/fixtures/
 cache/
 **/migrations/*
-# exception for blog migrations
-!blog_improved/migrations/*
+**migrations
 # Sphinx documentation
 docs/_build/
 db.sqlite3
