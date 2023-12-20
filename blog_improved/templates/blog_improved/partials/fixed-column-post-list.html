@@ -3,9 +3,10 @@
 <section class="releases-feed govuk-!-padding-bottom-4 blog-posts" role="feed">
 {% if post_list_heading %}
 <h1 class="latest-post-signage"> 
-	{{ post_list_heading }} 
+  {{ post_list_heading }} 
 </h2>
 {% endif %}
+{% if post_list %}
           <div class="image-card-group">
 		<div class="image-card-group__row">
                 {% for post in post_list|regular:6 %}		
@@ -22,23 +23,23 @@
 		    </div>
 		    {% endif %}
 		 {% endif %}
-
-		  {% empty %}
+         {% endfor %}
+	  </div>
+	      {% else %}
 		 <div class="govuk-grid-row">
                   <div class="govuk-grid-column-one-half">
+			  <div class="releases-feed__no-posts--warn">
                   <p class="govuk-body">No posts found</p>
+			  </div>
                   </div>
 		 </div>
-                  {% endfor %}
-	  </div>
+		 {% endif %}  
 	  {% if action_link %}
           <div class="govuk-grid-row">
               <div class="govuk-!-margin-top-5 govuk-!-margin-bottom-9 govuk-!-text-align-centre">
 	      <div class="gem-c-action-link gem-c-action-link--dark-icon govuk-!-margin-bottom-0">
             <span class="gem-c-action-link__link-wrapper">
-		    <a class="govuk-link gem-c-action-link__link govuk-link--no-visited-state" href="{% url action_link %}">
-		{% if action_link_text %}
-		  {{ action_link_text }}
+		    <a class="govuk-link gem-c-action-link__link govuk-link--no-visited-state" href="{% url action_link %}">{% if action_link_text %} {{ action_link_text }}
 		  {% else %}
 		  See all posts 
 		  {% endif %}
@@ -48,5 +49,4 @@
 	  </div>
 	  </div>
 	      {% endif %}
-	      <hr class="govuk-section-break govuk-section-break--visible">
   </section>
