@@ -68,7 +68,7 @@ class BaseUrlMixin:
 # ========== Class Views ==========
 
 class HomePage(BaseUrlMixin, InheritanceManagerMixin, ListView):
-    template_name="blog_improved/pages/homepage.html"
+    template_name = "blog_improved/pages/homepage.html"
     featured_post_limit = 1
 
     def get_queryset(self, *args, **kwargs):
