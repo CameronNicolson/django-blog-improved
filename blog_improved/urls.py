@@ -1,7 +1,7 @@
 from django.urls import include, path
 from django.views.generic.base import TemplateView
-from . import views
-from .feeds import AtomSiteNewsFeed, LatestPostsFeed
+from blog_improved import views
+from blog_improved.feeds import AtomSiteNewsFeed, LatestPostsFeed
 
 urlpatterns = [
     path("contact/", TemplateView.as_view(template_name="blog_improved/pages/contact.html"), name="contact"),
