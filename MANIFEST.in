@@ -1,7 +1,7 @@
 include blog_improved/templates/*.html
 include blog_improved/templates/blog_improved/*.html
 include blog_improved/templates/blog_improved/partials/*.html
-include blog_improved/templates/blog_improved/pages/*.html
+include blog_improved/templates/blog_improved/pages/**/*.html
 include blog_improved/templates/blog_improved/authors/*.html
 include blog_improved/static/js/*.js
 include blog_improved/static/css/*.css
