@@ -3,7 +3,7 @@ from django.contrib.auth.models import Group, User
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.sites.models import Site
 from django.utils.html import format_html
-from .models import Comment, BlogGroup, Post, PostViaGit, PostShoutout, Media, TagGroup, UserProfile
+from .models import Comment, BlogGroup, Post, PostViaGit, PostShoutout, Media, TagGroup, UserProfile, SiteSettings
 from taggit.models import Tag
 from django.db.models import Prefetch
 from redirects.models import Redirect
@@ -89,11 +89,15 @@ admin.site.unregister(Group)
 class UserAdmin(UserAdmin):
     inlines = [UserProfileAdmin,]
 
+class SiteSettingsAdmin(admin.StackedInline):
+    model = SiteSettings
+
 @admin.register(Site)
 class SiteAdmin(admin.ModelAdmin):
     list_display = ("id", "name", "domain")
     list_display_links = ("id", 'name',)
     readonly_fields = ("id",)
+    inlines = [SiteSettingsAdmin]
 
 @admin.register(BlogGroup)
 class BlogGroupAdmin(admin.ModelAdmin):
