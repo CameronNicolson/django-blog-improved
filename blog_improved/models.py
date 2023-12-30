@@ -1,4 +1,8 @@
 from django.contrib.auth.models import Group, User
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.sites.models import Site
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
@@ -259,4 +263,22 @@ def create_user_profile(sender, instance, created, **kwargs):
 def update_postredirect_slug(sender, instance, **kwargs):
     instance.slug = "{0}s-shoutout".format(slugify(instance.title))
     return instance
+
+class Contact(models.Model):
+    name = models.CharField(max_length=200, blank=False)
+    notes = models.TextField(blank=True, null=True)
+    site = models.ForeignKey(Site, on_delete=models.CASCADE)
+    # Below are the mandatory fields for generic relation
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey("content_type", "object_id")
+
+class EmailAddress(models.Model):
+    contact = GenericRelation("Contact")
+    email_address = models.EmailField() 
+
+class SiteSettings(models.Model):
+    site = models.OneToOneField(Site, on_delete=models.CASCADE)
+    default_contacts = models.ForeignKey(
+            "Contact", on_delete=models.CASCADE, null=True, blank=True)
 
