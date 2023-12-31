@@ -1,0 +1,23 @@
+- model: blog_improved.emailaddress
+  pk: 1
+  fields:
+    email_address: customer@support.local
+- model: blog_improved.emailaddress
+  pk: 2
+  fields:
+    email_address: contact@me.local
+- model: blog_improved.contact
+  pk: 2
+  fields:
+    name: "John Doe"
+    notes: "Some notes"
+    site: 1
+    content_type: 14
+    object_id: 2
+- name: regular-site-settings
+  description: site settings
+  model: blog_improved.sitesettings
+  pk: 1
+  fields: 
+    site: 1
+    default_contacts: 2
