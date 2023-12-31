@@ -1,5 +1,4 @@
 import re, copy
-from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.shortcuts import get_current_site
@@ -157,7 +156,7 @@ def contact_us(context, choice="", url="", mailto="", using_site=True, **kwargs)
                 contact = kwargs[key]
     if choice:
         try:
-            settings = SiteSettings.objects.get(site=curr_site) or None
+            settings = SiteSettings.objects.get(site=curr_site)
             contact = settings.default_contacts
             if settings == None:
                 raise ObjectDoesNotExist
