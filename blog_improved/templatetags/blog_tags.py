@@ -1,5 +1,7 @@
 import re, copy
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.shortcuts import get_current_site
 from django import template 
 from django.template.defaultfilters import stringfilter
@@ -7,7 +9,7 @@ from django.utils.safestring import mark_safe
 
 register = template.Library()
 
-from ..models import Post, Status
+from blog_improved.models import Contact, Post, Status, SiteSettings
 from blog_improved.conf import HOMEPAGE_LATESTPOSTS_SIZE as default_limit
 from blog_improved.utils.urls import starts_with_uri, URLBuilder
 from django.db.models.query import QuerySet
@@ -142,9 +144,9 @@ def contact_list(context, **kwargs):
 
 @register.simple_tag(takes_context=True)
 def contact_us(context, choice="", url="", mailto="", using_site=True, **kwargs):
-    choices_as_names = {"email": "DEFAULT_EMAIL", "matrix": "MATRIX_ID"}
+    choices_as_names = {"email": "emailaddress"}
     mailto_css = "govuk-link govuk-link--no-visited-state"
-    site_name = get_current_site(context["request"]).name
+    curr_site = get_current_site(context["request"])
     if kwargs:
         try:
             url = kwargs["url"] is True
@@ -155,13 +157,20 @@ def contact_us(context, choice="", url="", mailto="", using_site=True, **kwargs)
                 contact = kwargs[key]
     if choice:
         try:
-            choice_keyword_in_settings = choices_as_names[choice]
-            contact_list = settings.CONTACT
-            if using_site:
-                contact = contact_list[site_name][choice_keyword_in_settings] 
-            else:
-                contact = contact_list[choice_keyword_in_settings]
-        except KeyError:
+            settings = SiteSettings.objects.get(site=curr_site) or None
+            contact = settings.default_contacts
+            if settings == None:
+                raise ObjectDoesNotExist
+            try:
+                related_type = choices_as_names[choice]
+            except ObjectDoesNotExist:
+                raise ObjectDoesNotExist
+            content_type_queryset = ContentType.objects.get(app_label="blog_improved", model=related_type)
+            relation = content_type_queryset.get_object_for_this_type(contact=contact) or None
+            contact = relation.getAddressAsString()
+            if not relation:
+                raise ObjectDoesNotExist
+        except (KeyError, ObjectDoesNotExist) as e:
             return None
     if url or mailto:
         if not choice:
