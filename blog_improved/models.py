@@ -277,6 +277,9 @@ class EmailAddress(models.Model):
     contact = GenericRelation("Contact")
     email_address = models.EmailField() 
 
+    def getAddressAsString(self):
+        return str(self.email_address)
+
 class SiteSettings(models.Model):
     site = models.OneToOneField(Site, on_delete=models.CASCADE)
     default_contacts = models.ForeignKey(
