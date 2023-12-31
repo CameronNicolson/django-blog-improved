@@ -3,11 +3,15 @@ from django.contrib.auth.models import Group, User
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.sites.models import Site
 from django.utils.html import format_html
-from .models import Comment, BlogGroup, Post, PostViaGit, PostShoutout, Media, TagGroup, UserProfile, SiteSettings
+from .models import BlogGroup, Contact, Comment, EmailAddress, Post, PostViaGit, PostShoutout, Media, TagGroup, UserProfile, SiteSettings
 from taggit.models import Tag
 from django.db.models import Prefetch
 from redirects.models import Redirect
 from redirects.admin import RedirectAdmin
+
+
+admin.site.register(Contact)
+admin.site.register(EmailAddress) 
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin): 
