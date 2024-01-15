@@ -37,6 +37,7 @@ dependencies = [
   "django-phonenumber-field==6.1.0",
   "django-polymorphic==3.1.0",
   "django-taggit==3.0.0",
+  "django-inlinecss @ git+https://github.com/blocher/django-inlinecss@django4",
   "phonenumberslite==8.12.48",
   "pycodestyle==2.8.0",
   "sqlparse==0.4.2",

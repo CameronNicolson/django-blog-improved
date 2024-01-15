@@ -1,14 +1,28 @@
 {% extends "blog_improved/base.html" %}
 {% load static %}
 {% load blog_tags %}
+{% load inlinecss %}
 {% block content %}
+{% inlinecss "css/homepage.css" %}
+<section class="hero-image nhsuk-hero nhsuk-hero--image nhsuk-hero--image-description">	
+<div class="blog-hero nhsuk-hero__overlay">
+  <!-- "Blue Skies" Photo by Pixabay from Pexels: https://www.pexels.com/photo/blue-skies-53594/ is licensed under CC0 1.0 https://creativecommons.org/publicdomain/zero/1.0 -->
+  <div class="container">
+    <div class="row">
+      <div class="col-two-thirds">
+        <div class="blog-hero-content nhsuk-hero-content">
+		<h1 class="h1 blog-hero-content--title">Hi there! Welcome</h1>
+          <p class="lead">This is a blog that will blow your socks off. Everyday. All day!</p>
+          <span class="nhsuk-hero__arrow" aria-hidden="true"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
     <main class="govuk-main-wrapper" style="padding-top: 0px;" id="main-content" role="main">
   <div class="govuk-width-container">
-	  <div class="govuk-grid-row">
-		  <div class="govuk-grid-column-full">
-   {% include "blog_improved/partials/group-identity-logo.html" %}
-		  </div>
-	  </div>
+	  <section class="homepage__posts">
 	  <div class="govuk-grid-row">
 		  <div class="govuk-grid-column-full">
    {% include "blog_improved/partials/feature-panel.html" with feature=post_list|featured|first %}
@@ -19,7 +33,7 @@
    {% include "blog_improved/partials/fixed-column-post-list.html" with action_link="post_list" action_link_text="View entire archive" post_list_heading="Latest posts" %}
   </div>
 	  </div>
-
+	  </section>
 		  <div class="govuk-grid-row">
 			  <div class="govuk-grid-column-full">
              <section class="contact-section">
@@ -47,4 +61,5 @@
 
   </div><!-- end of container wrapper -->
 
+{% endinlinecss %}
 {% endblock content %}
