@@ -2,7 +2,7 @@
 {% load cache %}
 {% load static %}
 {% load blog_tags %}
-<html lang="en" class="govuk-template">
+<html lang="en" class="blog-template">
     <head>
       <meta charset="utf-8">
       <meta name="description" content="This is the web log. We mostly talk about tech.">
@@ -11,10 +11,10 @@
       <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}" />
       {% block extrahead %}
       <!-- CSS Goes here -->
-      <link rel="stylesheet" href="{% static 'css/spongy-frontend-1.0.2.min.css' %}">
-      <link rel="stylesheet" href="{% static 'css/spongy-publishing-components-1.0.2.min.css' %}">
-      <link rel="stylesheet" href="{% static 'css/spongy-nhsuk-frontend-1.0.2.min.css' %}">
-      <link rel="stylesheet" href="{% static 'css/blog-f2a8ef4c24572f07b4f64e5fe9e23e301350464a.css' %}"> 
+      <link rel="stylesheet" href="{% static 'css/spongy-frontend-1.0.3.min.css' %}">
+      <link rel="stylesheet" href="{% static 'css/spongy-publishing-components-1.0.3.min.css' %}">
+      <link rel="stylesheet" href="{% static 'css/spongy-nhsuk-frontend-1.0.3.min.css' %}">
+      <link rel="stylesheet" href="{% static 'css/blog-6e206ccd59812e9e5c65c7f880a25bf4467e742f2cc297b0462cfd281a6f353.css' %}"> 
 
       <script src="{% static 'js/nhsuk.js' %}" defer></script>
       {% endblock extrahead %}
@@ -23,7 +23,7 @@
       <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     </head>
-    <body class="blog__body">
+    <body class="blog-template__body">
   <script>
     // @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&dn=expat.txt The MIT License
     document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');
@@ -48,7 +48,7 @@
     <!-- Footer -->
     {% include "blog_improved/partials/footer.html" with pages=navigation %}
  {% block closing_body_scripts %}
-    <script src="{% static 'js/spongy-frontend-1.0.0.min.js' %}"></script>
+    <script src="{% static 'js/spongy-frontend-1.0.3.min.js' %}"></script>
     <script>
       window.SpongyFrontend.initAll()
     </script>
