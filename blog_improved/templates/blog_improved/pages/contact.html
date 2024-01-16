@@ -23,7 +23,7 @@
 					</div>
 				  </div>
 				  {% endif %}
-                {% error_summary form %}
+				  {% error_summary form %}
 				<div class="gem-c-cards">
 					<h2 class="gem-c-cards__heading govuk-heading-m">
 					  All enquiries
@@ -50,6 +50,7 @@
 				</div>
 			<hr class="govuk-section-break govuk-section-break--xl">
 			  <section id="send-a-secure-message">
+				  {{ form }}
 			  <p class="govuk-body">If you want to encrypt your mail, you can get the GPG key through the link below.</p>
 			  <details class="govuk-details" data-module="govuk-details">
 				<summary class="govuk-details__summary">
