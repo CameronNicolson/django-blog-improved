@@ -8,7 +8,8 @@ from django.db import IntegrityError
 from pathlib import Path
 import yaml
 
-DATA_DIR = Path.cwd() / "fixtures"
+DATA_DIR = Path.cwd() / "tests" / "fixtures"
+
 
 class TestPosts(TestCase):
     fixtures = ["groups.yaml", "users.yaml", "media.yaml", "tags.yaml", "posts.yaml"]
@@ -22,11 +23,12 @@ class TestPosts(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.FIXTURES_ROOT = Path(__file__).resolve().parent / "fixtures"
         for file_name in cls.fixtures:
             file_path = Path(DATA_DIR / file_name)
             total_entries = cls.count_yaml_entries(file_path)
             cls.num_of_entries.append(total_entries)
-            if file_path.name is "posts.yaml":
+            if file_path.name == "posts.yaml":
                 statuses = cls.count_num_of_statuses(file_path)
                 cls.post_draft_count, cls.post_public_count, cls.post_private_count, cls.post_unlisted_count, cls.post_redirect_count = statuses 
 
@@ -68,11 +70,11 @@ class TestPosts(TestCase):
     def test_post_list_GET_true(self):
         client = Client()
         response = client.get(reverse("post_list"))
-        self.assertEquals(response.status_code, 200)
-        self.assertTemplateUsed(response, "blog_improved/post_list.html")
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "blog_improved/pages/posts/post_list.html")
 
     def test_redirects_vacant_from_post_list_true(self):
-        request = RequestFactory().get("/index/")
+        request = RequestFactory().get("all-posts/")
         view = PostList()
         view.request = request
         qs = view.get_queryset()
@@ -82,14 +84,14 @@ class TestPosts(TestCase):
         # A post list is:
         # all posts saved as public minus redirect links
         num_expected_posts_in_fixtures = public - redirect 
-        self.assertEquals(num_of_posts_in_queryset, num_expected_posts_in_fixtures)
+        self.assertEqual(num_of_posts_in_queryset, num_expected_posts_in_fixtures)
 
     def test_post_identical_slug_errors(self):
         # testing it raises exception 
         with self.assertRaises(IntegrityError) as raised:
             Post.objects.create(slug="listen-to-your-customers",
             author=User.objects.get(pk=1), category=Tag.objects.get(pk=1))
-            self.assertEquals(
+            self.assertEqual(
                 "UNIQUE constraint failed",
                 str(raised.exception)
             )
@@ -98,7 +100,7 @@ class TestPosts(TestCase):
         client = Client()
         slug = Post.objects.get(pk=6).slug
         response = client.get(reverse("post_detail", kwargs={"slug": slug}))
-        self.assertEquals(
+        self.assertEqual(
             response.status_code, 
             404
         )
@@ -106,7 +108,7 @@ class TestPosts(TestCase):
     def test_basic_user_create_post_permissions_denied(self):
         basic_user = User.objects.get(username="basic")
         has_perm = basic_user.has_perm('blog.add_post')
-        self.assertEquals(
+        self.assertEqual(
             has_perm, 
             False
         )
@@ -114,7 +116,7 @@ class TestPosts(TestCase):
     def test_basic_user_edit_post_permissions_denied(self):
         basic_user = User.objects.get(username="basic")
         has_perm = basic_user.has_perm('blog.change_post')
-        self.assertEquals(
+        self.assertEqual(
             has_perm, 
             False
         )
@@ -122,7 +124,7 @@ class TestPosts(TestCase):
     def test_basic_user_delete_permissions_denied(self):
         basic_user = User.objects.get(username="basic")
         has_perm = basic_user.has_perm('blog.delete_post')
-        self.assertEquals(
+        self.assertEqual(
             has_perm, 
             False
         )
@@ -133,7 +135,7 @@ class TestPosts(TestCase):
         # or not ready for the public sphere
         basic_user = User.objects.get(username="basic")
         has_perm = basic_user.has_perm('blog.view_post')
-        self.assertEquals(
+        self.assertEqual(
             has_perm, 
             False
         )
@@ -141,12 +143,12 @@ class TestPosts(TestCase):
     def test_author_url_active(self):
         post = Post.objects.get(slug="this-post-is-featured")
         journalist = get_user_model().objects.get(username="journalist")
-        self.assertEquals(
+        self.assertEqual(
             post.author,
             journalist
         )
         
-        self.assertEquals(
+        self.assertEqual(
             post.get_author_url(), 
             "/author/journalist" 
         )
@@ -154,12 +156,12 @@ class TestPosts(TestCase):
     def test_author_url_missing(self):
         post = Post.objects.get(slug="15-tips-for-mission-success")
         alice = get_user_model().objects.get(username="alice")
-        self.assertEquals(
+        self.assertEqual(
             post.author,
             alice
         )
         
-        self.assertEquals(
+        self.assertEqual(
             post.get_author_url(), 
             None
         )

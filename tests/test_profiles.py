@@ -16,19 +16,19 @@ class TestProfiles(TestCase):
     def test_status_code_choice(self):
         from blog_improved.models import user_profile_choice_code
         code = user_profile_choice_code(False)
-        self.assertEquals(
+        self.assertEqual(
                 code, 
                 2
         )
         code = user_profile_choice_code(True)
-        self.assertEquals(
+        self.assertEqual(
                 code, 
                 1
         )
 
     def test_new_userprofile_status_public_status(self):
         from blog_improved.conf import USER_PUBLIC_PROFILE
-        self.assertEquals(
+        self.assertEqual(
                 USER_PUBLIC_PROFILE,
                 True
         )
@@ -41,10 +41,10 @@ class TestProfiles(TestCase):
         group.user_set.add(user)
         profile = UserProfile.objects.get(user=user)
         # status code *1* represents public
-        self.assertEquals(profile.status, 1)
+        self.assertEqual(profile.status, 1)
         client = Client()
         response = client.get(reverse("user_profile", kwargs={"group": group.name, "name": user.username}))
-        self.assertEquals(
+        self.assertEqual(
             response.status_code,
             200
         )
@@ -57,25 +57,25 @@ class TestProfiles(TestCase):
         # our resident basic account 
         non_staffer = get_user_model().objects.get(username="basic")
         app_label = apps.get_app_config('blog_improved').verbose_name.lower()
-        self.assertEquals(
+        self.assertEqual(
             app_label,
             "blog_improved"
         )
         model_name = UserProfile.__name__.lower()
-        self.assertEquals(
+        self.assertEqual(
             model_name,
             "userprofile"
         ) 
-        self.assertEquals(
+        self.assertEqual(
             non_staffer.is_superuser,
             False
         )
-        self.assertEquals(
+        self.assertEqual(
             non_staffer.is_staff,
             False
         )
 
-        self.assertEquals(
+        self.assertEqual(
             non_staffer.has_perm(f"{app_label}.change_{model_name}"),
             False
         )
@@ -84,24 +84,24 @@ class TestProfiles(TestCase):
         # our resident basic account 
         non_staffer = get_user_model().objects.get(username="basic")
         app_label = apps.get_app_config('blog_improved').verbose_name.lower()
-        self.assertEquals(
+        self.assertEqual(
             app_label,
             "blog_improved"
         )
         model_name = UserProfile.__name__.lower()
-        self.assertEquals(
+        self.assertEqual(
             model_name,
             "userprofile"
         ) 
-        self.assertEquals(
+        self.assertEqual(
             non_staffer.is_superuser,
             False
         )
-        self.assertEquals(
+        self.assertEqual(
             non_staffer.is_staff,
             False
         )
-        self.assertEquals(
+        self.assertEqual(
             non_staffer.has_perm(f"{app_label}.view_{model_name}"),
             False
         )
@@ -110,20 +110,20 @@ class TestProfiles(TestCase):
          # our resident superuser alice 
         superuser = get_user_model().objects.get(username="alice")
         app_label = apps.get_app_config("blog_improved").verbose_name.lower()
-        self.assertEquals(
+        self.assertEqual(
             app_label,
             "blog_improved"
         )
         model_name = UserProfile.__name__.lower()
-        self.assertEquals(
+        self.assertEqual(
             model_name,
             "userprofile"
         ) 
-        self.assertEquals(
+        self.assertEqual(
             superuser.is_superuser,
             True
         ) 
-        self.assertEquals(
+        self.assertEqual(
             superuser.has_perm(f"{app_label}.change_{model_name}"),
             True
         )
@@ -137,7 +137,7 @@ class TestProfiles(TestCase):
         
         client = Client()
         response = client.get(reverse("user_profile", kwargs={"group": author_group.name, "name": f"{basic.username},{journalist.username}"}))
-        self.assertEquals(
+        self.assertEqual(
             response.status_code,
             200
         )
@@ -156,13 +156,13 @@ class TestProfiles(TestCase):
         journalist_profile = UserProfile.objects.get(user=journalist)
         journalist_profile.status = 2
         journalist_profile.save()
-        self.assertEquals(
+        self.assertEqual(
                 UserProfile.objects.get(user=journalist).status,
                 2
         )
         client = Client()
         response = client.get(reverse("user_profile", kwargs={"group": author_group.name, "name": f"{basic.username},{journalist.username}"}))
-        self.assertEquals(
+        self.assertEqual(
             response.status_code,
             404
         )

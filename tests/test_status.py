@@ -6,36 +6,36 @@ class StatusTestCase(TestCase):
     def test_name_to_id_publish(self):
         public_post_id_actual = Status.name_to_id("publish")
         public_post_id_expected = 1
-        self.assertEquals(public_post_id_actual, public_post_id_expected)
+        self.assertEqual(public_post_id_actual, public_post_id_expected)
 
 
     def test_name_to_id_private(self):
         private_post_id_actual = Status.name_to_id("private")
         private_post_id_expected = 2
-        self.assertEquals(private_post_id_actual, private_post_id_expected)
+        self.assertEqual(private_post_id_actual, private_post_id_expected)
 
 
     def test_name_to_id_unlisted(self):
         unlisted_post_id_actual = Status.name_to_id("unlisted")
         unlisted_post_id_expected = 3
-        self.assertEquals(unlisted_post_id_actual, unlisted_post_id_expected)
+        self.assertEqual(unlisted_post_id_actual, unlisted_post_id_expected)
 
 
     def test_name_to_id_draft(self):
         draft_post_id_actual = Status.name_to_id("draft")
         draft_post_id_expected = 0
-        self.assertEquals(draft_post_id_actual, draft_post_id_expected)
+        self.assertEqual(draft_post_id_actual, draft_post_id_expected)
 
     def test_name_to_id_mixed_casing(self):
         public_post_id_actual = Status.name_to_id("pUBliSh")
         public_post_id_expected = 1
-        self.assertEquals(public_post_id_actual, public_post_id_expected)
+        self.assertEqual(public_post_id_actual, public_post_id_expected)
 
 
     def test_name_to_id_upper_casing(self):
         public_post_id_actual = Status.name_to_id("PUBLISH")
         public_post_id_expected = 1
-        self.assertEquals(public_post_id_actual, public_post_id_expected)
+        self.assertEqual(public_post_id_actual, public_post_id_expected)
 
     def test_name_to_id_unknown_value_error(self):
         try:
