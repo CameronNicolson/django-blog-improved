@@ -17,7 +17,7 @@ DEFAULT_POST_STATUS = "PUBLISH"
 
 register = template.Library()
 
-register.simple_tag(bloglist)
+register.simple_tag(func=bloglist, name="bloglist" )
 
 @register.simple_tag(takes_context=True)
 def url_gen(context, subpath="", baseUrl="", trailing_slash=True):
