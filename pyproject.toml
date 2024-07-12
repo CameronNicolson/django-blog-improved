@@ -30,10 +30,10 @@ classifiers = [
   "License :: FSF Approved :: GPL-3.0 License",
 ]
 dependencies = [
-  "Django==4.2.8",
+  "Django==5.0.7",
   "django-crispy-forms==1.9.2",
   "crispy-forms-gds==0.2.4",
-  "django-model-utils==4.3.1",
+  "django-model-utils==4.5.1",
   "django-phonenumber-field==6.1.0",
   "django-polymorphic==3.1.0",
   "django-taggit==3.0.0",
