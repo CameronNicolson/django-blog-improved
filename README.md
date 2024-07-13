@@ -23,38 +23,26 @@ A free web-based engine for creating and managing blogs.
   * [License](#license)
 
 ## Prerequisites
-Things you will need before you begin. 
 
-* `Python 3.6` or any version above
+* `Python 3.10` or greater
 
 * `PIP` most versions work 
 
-Check that these tools are available to your system.
-```
-python --version; pip --version
-```
-
-When successful, you are ready for the install guides.
-
 ## Install 
 
-This section contains install instructions. Check out the [detailed docs for more](https://spongycake.codeberg.page/django-blog-improved/@master/docs/pages/usage/get-started.html#installation).
-
 ### Compile from source
-Gain a copy of the project.
+Gain a copy of the source code.
 ```
 # download via git
-git clone https://codeberg.org/spongycake/django-blog-improved
+git clone https://github.com/CameronNicolson/django-blog-improved
 
 # when done, move inside directory
 cd django-blog-improved
 
 # compile source code
 pip install -e .
-```
-Or with your web browser -
-[Direct Download from Codeberg.org](https://codeberg.org/spongycake/django-blog-improved/archive/master.zip)
 
+```
 ## Testing
 Install the testing tools using pip: 
 ```
@@ -69,22 +57,18 @@ Run all blog tests with:
 python -m django test --setting "tests.settings"
 ```
 
-If a test fails, please consider [reporting the failure](https://codeberg.org/spongycake/django-blog-improved/issues) on the project's issue tracker. 
+If a test fails, please consider reporting: [Report an Issue](https://github.com/CameronNicolson/django-blog-improved/issues).
 
-Want the next moves? Jump into the [docs](https://spongycake.codeberg.page/django-blog-improved/@master/docs/pages/).
+Read the documentation: [Docs website](https://cameronnicolson.github.io/django-blog-improved/).
 
 ## Getting involved
-I personally enjoy software that has a collective effort attached. So please consider sharing your ideas and improvements.
-
-* Discussion in Matrix [#djangoblog:one.ems.host](https://matrix.to/#/#djangoblog:one.ems.host).
+Any questions or queries, please contact: github.cameron@nicolson.scot
 
 ### How to contribute?
 
-The challenge is to bring Django Blog Improved into a state where end-users  are protected from learning python and can pick-up and use easily.
+See what's planned on the project's roadmap: [roadmap website](https://cameronnicolson.github.io/django-blog-improved/dev/roadmap.html), essentially that is my Todo / hopeful wishes.
 
-Look at the [roadmap kanban](https://codeberg.org/spongycake/django-blog-improved/projects), essentially that is my Todo / hopeful wishes.
-
-You are invited to assign yourself to a task. We can use the project board to organise ourselves.
+You are invited to assign yourself to a task!
 
 ### Credits
 
@@ -96,7 +80,7 @@ This is typical practice, perhaps obvious to some, but I want to emphasis that -
 
 ![GPLv3 Logo](https://www.gnu.org/graphics/gplv3-with-text-136x68.png "AGPLv3 Logo")
 
-All files are copyright of 2023 Spongycake, unless stated otherwise.
+All files are copyright of 2023-2024 Cameron Nicolson, unless stated otherwise.
 
 Django Blog Improved is released under GPLv3. 
 We conventionally placed the license in a file called [LICENSE](./LICENSE).
