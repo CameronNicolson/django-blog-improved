@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Name and branding &mdash; Django Blog Improved 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Get Started" href="get-started.html" />
+    <link rel="prev" title="Features" href="../overview/features.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Django Blog Improved
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../overview/features.html">Features</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Name and branding</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#customise-your-site-title">Customise your site title</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#deleting-example-com-entry">Deleting example.com entry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#managing-multiple-sites">Managing multiple sites</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#brief-history-of-sites">Brief history of Sites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#find-the-default-site">Find the default site</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="get-started.html">Get Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="navigation.html">Navigation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Django Blog Improved</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Name and branding</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/usage/name-and-branding.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="name-and-branding">
+<h1>Name and branding<a class="headerlink" href="#name-and-branding" title="Permalink to this heading"></a></h1>
+<p>Your website branding such as page titles and copyright signage, all appear with a placeholder - <code class="docutils literal notranslate"><span class="pre">example.com</span></code>.</p>
+<p>These options are customisable from the admin panel, under the banner of our Sites module.</p>
+<p>The items of interest are directly accessible from <a class="reference external" href="http://127.0.0.1:8000/admin/sites/site/">http://127.0.0.1:8000/admin/sites/site/</a>.</p>
+<section id="customise-your-site-title">
+<h2>Customise your site title<a class="headerlink" href="#customise-your-site-title" title="Permalink to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p>Open the admin portal</p></li>
+<li><p>Click through to <strong>Sites</strong> &gt; <strong>example.com</strong></p></li>
+<li><p>Specify your site using the form</p></li>
+<li><p>Finish by <strong>Save</strong></p></li>
+</ol>
+<p>The required fields are described as:</p>
+<p><strong>Domain name</strong></p>
+<p>The fully qualified domain name associated with the website. For example, www.example.com.</p>
+<p><strong>Display name</strong></p>
+<p>A human-readable “verbose” name for the website.</p>
+<p><strong>ID</strong></p>
+<p>ID, as an integer, of the current site in the Django site database table.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Django knows the default site for your project from <strong>SITE_ID</strong> settings. So, if you do not specify a site, Django prefers value <code class="docutils literal notranslate"><span class="pre">1</span></code>. Check your settings.py files.</p>
+</div>
+</section>
+<section id="deleting-example-com-entry">
+<h2>Deleting example.com entry<a class="headerlink" href="#deleting-example-com-entry" title="Permalink to this heading"></a></h2>
+<p>Yes, you are free to delete the example object, however, you may encounter unexpected behavior as a result. Prefer editing the example entry instead. If you must delete, look at changing all references in the database and updating your <code class="docutils literal notranslate"><span class="pre">SITE_ID</span></code> settings.</p>
+<p>You can identify a problem when <strong>“No Title”</strong> error appears on your pages. This error means a Site object does not exist and the SITE_ID is missing.</p>
+<p>If you are experiencing a disruption after deleting the example name, you have some options to reverse the error.</p>
+<p>Start by accessing the admin portal:</p>
+<ol class="arabic simple">
+<li><p>Open the admin portal</p></li>
+<li><p>Click <strong>Sites</strong></p></li>
+<li><p>Proceed with <strong>Add Site +</strong></p></li>
+<li><p>Enter valid display and domain names</p></li>
+<li><p>Save</p></li>
+</ol>
+<p>The <code class="docutils literal notranslate"><span class="pre">ID</span></code> for each Site will be shown in the first column of the admin list and read-only field inside the form. These <code class="docutils literal notranslate"><span class="pre">ID</span></code> fields are what you need to use as SITE_ID:</p>
+<img alt="Admin homepage, orange arrow denotes where the blog module is resides" class="screenshot" src="../_images/sites-id-admin-preview.png" />
+<p>Once you have found what you are looking for, copy the numeric value into your <code class="docutils literal notranslate"><span class="pre">settings.py</span></code>, the original value is typically <strong>SITE_ID=1</strong>, perform an amendment and restart the server.</p>
+</section>
+<section id="managing-multiple-sites">
+<h2>Managing multiple sites<a class="headerlink" href="#managing-multiple-sites" title="Permalink to this heading"></a></h2>
+<p>When posts are contextual in nature, then the blog relies on the Site module to serve different traffic. A single content store can be used on different domains too. For example, <code class="docutils literal notranslate"><span class="pre">DjangoNews.com</span></code>’s database drives <code class="docutils literal notranslate"><span class="pre">GamingDjango.com</span></code> for rows marked gaming.</p>
+<section id="brief-history-of-sites">
+<h3>Brief history of Sites<a class="headerlink" href="#brief-history-of-sites" title="Permalink to this heading"></a></h3>
+<p>Django was originally developed at a newspaper to publish content on multiple domains; using one single content base. There was a desire from the staff to associate articles with one or more sites and avoid duplication.</p>
+<p>This is where the Sites module comes in. Its purpose is to mark content to be displayed for different domains.</p>
+</section>
+<section id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this heading"></a></h3>
+<p>The benefits of adding multiple sites is useful for other Django tools too. Think of Sites module as a way of describing any website as a stakeholder, even external domains. For instance, your image hosting may live elsewhere on the internet and blog’s dependence on an image service.</p>
+<p>Unique request processing invokes advanced development skills not covered by blogging tools, but Django can propel this task.</p>
+<p>Please consult your site owner about the possibility.</p>
+<p>With infinite storage, there is a “limitless barrier” to how many sites you can create. However, your branding is connected to a single entry. In other words, from a list of sites you can only select one to serve as the namesake. More importantly, whatever Site is holding ID <code class="docutils literal notranslate"><span class="pre">1</span></code>, typically the first entry, is the one providing all the appearance for your website. For more details look to <a class="reference external" href="https://docs.djangoproject.com/en/dev/ref/contrib/sites/">the Site Framework docmentation</a>.
+`</p>
+</section>
+</section>
+<section id="find-the-default-site">
+<h2>Find the default site<a class="headerlink" href="#find-the-default-site" title="Permalink to this heading"></a></h2>
+<p>As previously mentioned, the Site associated with <code class="docutils literal notranslate"><span class="pre">ID</span> <span class="pre">1</span></code> is the authority of your website branding. The display list can tell you at a glance what the IDs are.</p>
+<p>For quick results - on a testing server, navigate to <a class="reference external" href="http://127.0.0.1:8000/admin/sites/site/1/">http://127.0.0.1:8000/admin/sites/site/1/</a>. In production, replace the IP address `127.0.0.1’ with your own address with the appended paths. You may need to authenticate first.</p>
+<p>You will either be relocated to data inside editor mode, or if the object does not exist, then a warning will appear onscreen.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../overview/features.html" class="btn btn-neutral float-left" title="Features" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="get-started.html" class="btn btn-neutral float-right" title="Get Started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Spongycake.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
