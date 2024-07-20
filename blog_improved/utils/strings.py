@@ -50,7 +50,7 @@ def convert_str_kwargs_to_list(func):
     """
     def wrapper(*args, **kwargs):
         for key, item in kwargs.items():
-            if type(item) is str:
+            if isinstance(item, str):
                 kwargs[key] = split_string(item)
         return func(*args, **kwargs)
     return wrapper
