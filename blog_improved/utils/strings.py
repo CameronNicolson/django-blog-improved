@@ -10,6 +10,10 @@ def split_string(input_string, delimiter=','):
     Returns:
     list: A list of trimmed strings.
     """
+    try:
+        input_string = str(input_string)
+    except ValueError:
+        return None
     return [element.strip() for element in input_string.split(delimiter) if element.strip()]
 
 def convert_str_kwargs_to_list(func):
