@@ -1,7 +1,7 @@
 from django.db.models.query import QuerySet
 from django.apps import apps
 
-class QuerySetRequest:
+class QueryRequest:
     def __init__(self, app_name, model, methods):
         self._app_name = app_name
         self._model = apps.get_model(app_name, model)
@@ -27,7 +27,7 @@ class QuerySetRequest:
             qs = new_qs if isinstance(new_qs, QuerySet) else prev_qs
         return qs
 
-class QuerySetRequestDecorator: 
+class QueryRequestDecorator: 
     def __init__(self, queryset_request=None):
         self._queryset_request = queryset_request
 
@@ -40,7 +40,7 @@ class QuerySetRequestDecorator:
     def make_request(self):
         self._queryset_request.make_request()
 
-class QuerySetRequestSelectValues(QuerySetRequestDecorator):
+class QueryRequestSelectValues(QueryRequestDecorator):
     def __init__(self, queryset_request=None, fields=()):
         super().__init__(queryset_request=queryset_request)
         self._fields = fields
@@ -50,31 +50,43 @@ class QuerySetRequestSelectValues(QuerySetRequestDecorator):
         self._queryset_request.get_methods().append(select_method)
         self._queryset_request.make_request()
 
-class FilterQuerySetRequest(QuerySetRequestDecorator):
-    def __init__(self, queryset_request=None, negate=False, lookup_field=None, lookup_transformers=[], lookup_type="exact", lookup_value=None):
+class FilterQueryRequest(QueryRequestDecorator):
+    def __init__(self, queryset_request=None, negate=False, lookup_field=None, lookup_transformers=[], lookup_type="exact", lookup_value=None, inner_join=None):
         super().__init__(queryset_request=queryset_request)
         self._negate = negate
         self._lookup_field = lookup_field
         self._lookup_transformers = lookup_transformers
         self._lookup_type = lookup_type
         self._lookup_value = lookup_value
+        self._inner_join = inner_join
+
+    def apply_inner_join(self):
+        select_related = ("select_related", self._inner_join, {})
+        self.get_request().get_methods().append(select_related)
     
     def get_field_lookup(self):
         lookup_lhs = self._lookup_field
+        lookup_rhs = self._lookup_value
+        if not lookup_rhs:
+            return None
         transformers = self._lookup_transformers
         transformers = transformers if isinstance(transformers, list) else [transformers]
         for lookup_part in transformers:
-            if lookup_part is not None:
+            if lookup_part:
                 lookup_lhs += "__" + str(lookup_part)
+        if isinstance(lookup_rhs, list):
+            self._lookup_type = "in" 
         lookup_lhs += "__%s" % self._lookup_type
-        lookup_rhs = self._lookup_value
         return {lookup_lhs: lookup_rhs}
 
     def make_request(self):
         lookup = self.get_field_lookup()
-        method_name = "filter" if self._negate == False else "exclude" 
-        new_method = (method_name, tuple(), lookup,)
-        self.get_request().get_methods().append(new_method)
+        if self._inner_join:
+            self.apply_inner_join()
+        if lookup:
+            method_name = "filter" if self._negate == False else "exclude" 
+            new_method = (method_name, tuple(), lookup,)
+            self.get_request().get_methods().append(new_method)
         qs = self._queryset_request.make_request()
         return qs
 
