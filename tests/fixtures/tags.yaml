@@ -48,3 +48,8 @@
   fields:
     name: music
     slug: music
+- model: taggit.tag
+  pk: 11
+  fields:
+    name: colors
+    slug: colors

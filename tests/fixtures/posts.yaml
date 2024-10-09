@@ -291,3 +291,33 @@
     status: 3
     category: 5
     slug: preview-my-post
+- name: Red Dwarf
+  description: category grouping color
+  model: blog_improved.post
+  pk: 22
+  fields: 
+    title: The color red facts
+    content: "Second draft"
+    author: 2
+    created_on: 2024-01-11T10:10:10.00000+00:00
+    published_on: 2024-01-11T10:10:10.00000+00:00
+    updated_on: 2024-01-11T10:10:10.00000+00:00
+    status: 1
+    category: 11
+    slug: color-red
+- name: Yellow Submarine
+  description: category grouping color
+  model: blog_improved.post
+  pk: 23
+  fields: 
+    title: The color yellow facts
+    headline: Yellow represents
+    content: "First draft"
+    author: 2
+    created_on: 2024-01-11T10:10:10.00000+00:00 
+    published_on: 2024-01-11T10:10:10.00000+00:00
+    updated_on: 2024-01-11T10:10:10.00000+00:00
+    status: 1
+    category: 11
+    slug: color-yellow
+    cover_art: 1
