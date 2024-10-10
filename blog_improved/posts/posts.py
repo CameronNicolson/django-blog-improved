@@ -55,7 +55,11 @@ class PostListQueryRequest(PostListBuilder):
     def set_categories(self, categories):
         if not isinstance(categories, list):
             raise TypeError("PostListQuerySet setting categories requires a list")
-        self._categories = categories
+        # wildcard check
+        if "all" in categories or "*" in categories:
+            self._categories = None
+        else:
+            self._categories = categories
         return self
     
     @property
@@ -70,7 +74,8 @@ class PostListQueryRequest(PostListBuilder):
 
     def build(self):
         request = QueryRequest("blog_improved", "Post", [])
-        request = FilterQueryRequest(queryset_request=request, 
+        if self._categories:
+            request = FilterQueryRequest(queryset_request=request, 
                                         lookup_field="category__name", 
                                         lookup_value=self.categories,
                                         inner_join=["category"])
