@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.db.models.query import QuerySet
 from blog_improved.models import Post, Tag
-from blog_improved.query_request.query import QueryRequest, FilterQueryRequest
+from blog_improved.query_request.query import QueryRequest, LimitQueryRequest, FilterQueryRequest
 
 class TestQueryRequest(TestCase):
     fixtures = ["users", "groups", "tags", "posts", "media"]
@@ -114,3 +114,29 @@ class TestFilterQueryRequest(TestCase):
         blog_queryset = filter_join.make_request()
         django_queryset = Post.objects.select_related("category").filter(**{"category__name": "colors"})
         self.assertEqual(str(blog_queryset.query), str(django_queryset.query))
+
+class TestLimitQueryRequest(TestCase):
+    fixtures = ["users", "groups", "tags", "posts", "media"]
+
+    def test_limit_single_result(self):
+        base_req = QueryRequest("blog_improved", "Post", [("all",None,None,)])
+        limitreq = LimitQueryRequest(queryset_request=base_req, max_limit=1)
+        qs = limitreq.make_request()
+        self.assertEqual(qs.count(), 1)
+
+    def test_limit_ten_results(self):
+        base_req = QueryRequest("blog_improved", "Post", [("all",None,None,)])
+        limitreq = LimitQueryRequest(queryset_request=base_req, max_limit=10)
+        qs = limitreq.make_request()
+        self.assertEqual(qs.count(), 10)
+
+    def test_limit_throw_value_error(self):
+        base_req = QueryRequest("blog_improved", "Post", [("all",None,None,)])
+        with self.assertRaisesRegex(ValueError, "Negative integers are not allowed."):
+            limitreq = LimitQueryRequest(queryset_request=base_req, max_limit=int(-2))
+
+    def test_limit_throw_type_error(self):
+        base_req = QueryRequest("blog_improved", "Post", [("all",None,None,)])
+        with self.assertRaisesRegex(TypeError, "The value must be an integer."):
+            limitreq = LimitQueryRequest(queryset_request=base_req, max_limit="440")
+

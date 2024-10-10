@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from blog_improved.query_request.query import FilterQueryRequest, QueryRequest
+from blog_improved.query_request.query import FilterQueryRequest, LimitQueryRequest, QueryRequest
 
 class PostList(list):
     def __init__(self, post_list=None, category=None, date_generated=None, publish_status=None, fetch_command=None, max_num_posts=None):
@@ -49,7 +49,10 @@ class PostListQueryRequest(PostListBuilder):
     def set_max_size(self, number):
         if not isinstance(number, (int, float)):
             raise TypeError(self.__class__.__name__ + " takes a standard number type.")
-        self._max_size = int(number)
+        if number < 0:
+            self._max_size = None
+        else:
+            self._max_size = int(number)
         return self
 
     def set_categories(self, categories):
@@ -86,5 +89,7 @@ class PostListQueryRequest(PostListBuilder):
                                             lookup_field=lp_field, 
                                             lookup_value=lp_value, 
                                             lookup_type=lp_type)
+        if self._max_size:
+            request = LimitQueryRequest(queryset_request=request, max_limit=self._max_size)
         post_list = request.make_request()
         return PostList(post_list=post_list, fetch_command=request)

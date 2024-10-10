@@ -138,7 +138,7 @@ class BlogListTag(Tag):
 
     def render(self, context):
         options = self.kwargs.pop("%s_options" % self.name)
-        options.setdefault("max_count", TemplateConstant("50"))
+        options.setdefault("max_count", TemplateConstant("-1"))
         options.setdefault("category", ListValue(TemplateConstant("all")))
         options["max_count"] = IntegerValue(options["max_count"]) 
         self.kwargs = options

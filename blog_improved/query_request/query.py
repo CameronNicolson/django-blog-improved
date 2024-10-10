@@ -90,3 +90,17 @@ class FilterQueryRequest(QueryRequestDecorator):
         qs = self._queryset_request.make_request()
         return qs
 
+class LimitQueryRequest(QueryRequestDecorator):
+    def __init__(self, queryset_request=None, max_limit=None):
+        super().__init__(queryset_request=queryset_request)
+        if not isinstance(max_limit, int):
+            raise TypeError("The value must be an integer.")
+        elif max_limit < 0:
+            raise ValueError("Negative integers are not allowed.")
+        self._max_limit = max_limit
+   
+    def make_request(self): 
+        limit = self._max_limit
+        qs = self._queryset_request.make_request()[0:limit]
+        return qs
+
