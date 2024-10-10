@@ -40,7 +40,8 @@ class PostListQueryRequest(PostListBuilder):
     def __init__(self):
         self._categories = list()
         self._ignored_cases = tuple()
-        self._max_size = 40
+        self._max_size = None
+        self._featured = False
     
     @property
     def categories(self):
@@ -75,6 +76,14 @@ class PostListQueryRequest(PostListBuilder):
         self._ignored_cases = ignored_cases
         return self
 
+    @property
+    def featured(self):
+        return self._featured
+
+    def set_featured(self, active):
+        self._featured = active
+        return self
+
     def build(self):
         request = QueryRequest("blog_improved", "Post", [])
         if self._categories:
@@ -91,5 +100,9 @@ class PostListQueryRequest(PostListBuilder):
                                             lookup_type=lp_type)
         if self._max_size:
             request = LimitQueryRequest(queryset_request=request, max_limit=self._max_size)
+        if self._featured:
+            request = FilterQueryRequest(queryset_request=request, 
+                                        lookup_field="is_featured", 
+                                        lookup_value=True)
         post_list = request.make_request()
         return PostList(post_list=post_list, fetch_command=request)

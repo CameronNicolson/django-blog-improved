@@ -140,14 +140,16 @@ class BlogListTag(Tag):
         options = self.kwargs.pop("%s_options" % self.name)
         options.setdefault("max_count", TemplateConstant("-1"))
         options.setdefault("category", ListValue(TemplateConstant("all")))
+        options.setdefault("featured", TemplateConstant(False))
         options["max_count"] = IntegerValue(options["max_count"]) 
         self.kwargs = options
         return super().render(context)
 
-    def render_tag(self, context, max_count, category):
+    def render_tag(self, context, max_count, category, featured):
         post_list = PostListQueryRequest()\
                     .set_max_size(max_count)\
                     .set_categories(category)\
+                    .set_featured(featured)\
                     .build()
         html = "<ul>"
         for post in post_list:
