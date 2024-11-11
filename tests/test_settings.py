@@ -2,7 +2,7 @@ from pathlib import Path
 
 DEBUG = True
 
-TEST_ROOT = Path(__file__).parent / "tests"
+TEST_ROOT = Path(__file__).parent
 
 SECRET_KEY = "django-blog-improved"
 

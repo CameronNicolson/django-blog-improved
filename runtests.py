@@ -70,7 +70,8 @@ def check_dependencies():
             exit(0)
 
 if __name__ == "__main__":
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'test_settings'
+    sys.path.append(os.path.dirname("tests"))
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'tests.test_settings'
     check_dependencies()
     django.setup()
     TestRunner = get_runner(settings)
