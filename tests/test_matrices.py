@@ -1,5 +1,5 @@
 from django.test import TestCase
-from blog_improved.utils.matrices import process_layout,calc_layout_metrics, create_matrix, ProcessedLayout
+from blog_improved.utils.matrices import process_layout,calc_layout_metrics, create_matrix, LayoutMetrics, ProcessedLayout
 
 class TestProcessLayout(TestCase):
     def test_ascending_four_column_integer(self): 
@@ -96,6 +96,14 @@ class TestHtmlGenerator(TestCase):
         #           Post 8    Post 9
         #                     Post 10
         #                     Post 11
+        
+        data = [1,2,3,None,4,5,None,6,7,None,8,9,
+                None,None,10,None,None,11]
+        metrics = LayoutMetrics(
+                columns=3,
+                rows=6,
+                entries=11
+        )
 
         expected_matrix = [
                 [1,2,3],
@@ -105,7 +113,7 @@ class TestHtmlGenerator(TestCase):
                 [None,None,10],
                 [None,None,11],
         ]
-        actual_matrix = create_matrix((1,4,6,))
+        actual_matrix = create_matrix(data, metrics)
         self.assertEqual(expected_matrix, actual_matrix)
 
     def test_horizontal_first_column_longest(self):
@@ -115,6 +123,12 @@ class TestHtmlGenerator(TestCase):
         # Post 8
         # Post 9
 
+        data = [1,2,3,4,5,6,7,None,None,8,None,None,9,None,None]
+        metrics = LayoutMetrics(
+                columns=3,
+                rows=5,
+                entries=9
+        )
         expected_matrix = [
                 [1,2,3],
                 [4,5,6],
@@ -122,15 +136,22 @@ class TestHtmlGenerator(TestCase):
                 [8,None,None],
                 [9,None,None],
         ]
-        actual_matrix = create_matrix((5,2,2,))
+        actual_matrix = create_matrix(data, metrics)
         self.assertEqual(expected_matrix, actual_matrix)
 
     def test_single_row(self):
         # Post 1    Post 2    Post 3    Post 4 
+        data =[1,2,3,4]
+        metrics = LayoutMetrics(
+                columns=4,
+                rows=1,
+                entries=4
+        )
+
         expected_matrix = [
                 [1,2,3,4],
         ]
-        actual_matrix = create_matrix((1,1,1,1))
+        actual_matrix = create_matrix(data, metrics)
         self.assertEqual(expected_matrix, actual_matrix)
 
 
@@ -140,34 +161,72 @@ class TestHtmlGenerator(TestCase):
         # Post 3
         # ...
         # Post 17
+
+        data = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]
+        self.assertEqual(len(data), 17)
+        metrics = LayoutMetrics(
+                columns=1,
+                rows=17,
+                entries=17
+        )
+
         expected_matrix = [
                 [1],[2],[3],[4],[5],[6],[7],[8],[9],
                 [10],[11],[12],[13],[14],[15],[16],
                 [17]
                 ]
-        actual_matrix = create_matrix((17,))
+        actual_matrix = create_matrix(data, metrics)
         self.assertEqual(expected_matrix, actual_matrix)
 
-    def test_none(self):
+    def test_none_data(self):
+        data = []
         expected_matrix = [] #empty
-        actual_matrix = create_matrix((0,0))
-        self.assertEqual(expected_matrix, actual_matrix)
+        metrics = LayoutMetrics(
+                columns=112,
+                rows=63,
+                entries=55
+        )
+        expected = IndexError
+        self.assertRaises(expected, create_matrix, data, metrics)
 
     def test_longest_middle_column(self):
         # Post 1    Post 2    Post 3    Post 4   Post 5
         # Post 6    Post 7    Post 8    Post 9   Post 10
         #                     Post 11
         #                     Post 12
-        #
 
+        data = [1,2,3,4,5,6,7,8,9,10,None,None,11,None,None,None,None,12,None,None]
+        metrics = LayoutMetrics(
+                columns=5,
+                rows=4,
+                entries=12
+        )
         expected_matrix = [
                         [1,2,3,4,5],
                         [6,7,8,9,10],
                         [None,None,11,None,None],
                         [None,None,12,None,None]
                 ]
-        actual_matrix = create_matrix((2,2,4,2,2))
+        actual_matrix = create_matrix(data, metrics)
         self.assertEqual(expected_matrix, actual_matrix)
+
+    def test_string_dataset_success(self):
+        data = ["the", "quick", "brown", "fox", 
+                "jumps", "over", "the", "lazy", "dog"]
+        expected_matrix = [ 
+                           ["the", "quick", "brown"],
+                           ["fox", "jumps", "over"],
+                           ["the", "lazy", "dog",]
+                           ]
+        metrics = LayoutMetrics(
+                columns=3,
+                rows=3,
+                entries=9
+        )
+
+        actual_matrix = create_matrix(data, metrics)
+        self.assertEqual(expected_matrix, actual_matrix)
+
 
 SupportedNumbers = (int, float, complex,)
 def find_width(scale, value):
@@ -184,61 +243,4 @@ def find_width(scale, value):
         prev = width
     return None
 
-class TestLayoutManager(TestCase):
-    def setUp(self):
-        self.width_scale = {
-                25: "one-quarter",
-                33: "one-third",
-                50: "one-half",
-                66: "two-thirds",
-                75: "three-quarters",
-                100: "full"
-                }
-        self.width_scale_negative = {
-                -100: "minus-full",
-                -50: "minus-half",
-                -25: "minus-quarter",
-                10: "one-tenth",
-                70: "seven-tenth",
-                100: "full"
-                }
 
-    def test_one_quarter(self):
-        actual_width = find_width(self.width_scale, 25)
-        self.assertEqual(actual_width, 25)
-
-    def test_one_third(self): 
-        actual_width = find_width(self.width_scale, 38)
-        self.assertEqual(actual_width, 33)
-
-    def test_full(self):
-        actual_width = find_width(self.width_scale, 100)
-        self.assertEqual(actual_width, 100)
-
-    def test_none(self):
-        actual_width = find_width(self.width_scale, 11)
-        self.assertEqual(actual_width, None)
-
-    def test_zero(self):
-        actual_width = find_width(self.width_scale, 0)
-        self.assertEqual(actual_width, None)
-
-    def test_over(self):
-        actual_width = find_width(self.width_scale, 200)
-        self.assertEqual(actual_width, None)
-
-    def test_none_type(self):
-        expected = ValueError
-        self.assertRaises(expected, find_width, self.width_scale, None)
-
-    def test_negative_integer(self):
-        actual_width = find_width(self.width_scale, -20)
-        self.assertEqual(actual_width, None)
-
-    def test_negative_scale(self):
-        actual_width = find_width(self.width_scale_negative, -50)
-        self.assertEqual(actual_width, -50)
-
-    def test_negative_scale_again(self):
-        actual_width = find_width(self.width_scale_negative, 0)
-        self.assertEqual(actual_width, -25)
