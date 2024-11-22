@@ -146,13 +146,14 @@ class BlogListTag(Tag):
         return super().render(context)
 
     def render_tag(self, context, max_count, category, featured):
-        post_list = PostListQueryRequest()\
+        posts = PostListQueryRequest()\
                     .set_max_size(max_count)\
                     .set_categories(category)\
                     .set_featured(featured)\
                     .build()
+#        PostListMarkup(posts)
         html = "<ul>"
-        for post in post_list:
+        for post in posts:
             html += "<li>%s" % str(post.title)
             html += "</li>"
         html += "</ul>"

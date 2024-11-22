@@ -4,6 +4,12 @@ USER_PUBLIC_PROFILE = getattr(settings, "BLOG_USER_PUBLIC_PROFILE", True)
 AUTHOR_DEFAULT_GROUP = getattr(settings, "BLOG_AUTHOR_DEFAULT_GROUP", "author")
 HOMEPAGE_LATESTPOSTS_SIZE = getattr(settings, "BLOG_HOMEPAGE_LATESTPOSTS_SIZE", 6)  
 
+FALLBACK_THEME = "fallback"
+
+def get_theme_settings():
+    theme = getattr(settings, "BLOG_THEME", FALLBACK_THEME)
+    return theme
+
 def set_dynamic_settings(settings):
     """
     Call this func at the end of the project's settings file.
