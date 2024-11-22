@@ -1,17 +1,29 @@
 from abc import abstractmethod
+from django.utils import timezone
 from blog_improved.query_request.query import FilterQueryRequest, LimitQueryRequest, QueryRequest
 
 class PostList(list):
-    def __init__(self, post_list=None, category=None, date_generated=None, publish_status=None, fetch_command=None, max_num_posts=None):
-        super().__init__(post_list)
-        self._category = category
+    def __init__(self, post_list=None, date_generated=None, publish_status=None, fetch_posts=None, fetch_categories=None):
+        if post_list:
+            super().__init__(post_list)
+        else:
+            super().__init__()
+
+        self._categories = None
         self._date_generated = date_generated
-        self._max_num_posts = max_num_posts
         self._publish_status = publish_status
-        self._fetch_command = fetch_command
+        self._fetch_posts = fetch_posts
+        self._fetch_categories = fetch_categories
+
+    def categories(self):
+        self._categories = self._fetch_categories.retrieve()
+        return self._categories
 
     def fetch_posts(self):
-        self._fetch_command.retrieve()
+        self.__init__(
+                self._fetch_posts.retrieve()
+                )
+        return self
 
 class IgnoreCase:
     def __init__(self, ignore_value):
@@ -24,7 +36,7 @@ class PostListBuilder:
         pass
 
     @abstractmethod
-    def max_num_posts(self, n):
+    def num_posts(self, n):
         pass
     
     @abstractmethod
@@ -90,7 +102,7 @@ class PostListQueryRequest(PostListBuilder):
             request = FilterQueryRequest(queryset_request=request, 
                                         lookup_field="category__name", 
                                         lookup_value=self.categories,
-                                        inner_join=["category"])
+                                        inner_join=["category", "author"])
         for case in self._ignored_cases:
             lp_field, lp_type, lp_value = case
             request = FilterQueryRequest(queryset_request=request,
@@ -105,4 +117,5 @@ class PostListQueryRequest(PostListBuilder):
                                         lookup_field="is_featured", 
                                         lookup_value=True)
         post_list = request.make_request()
-        return PostList(post_list=post_list, fetch_command=request)
+        
+        return PostList(post_list=post_list, date_generated=timezone.now(), fetch_posts=request, fetch_categories=None)
