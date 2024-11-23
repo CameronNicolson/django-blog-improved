@@ -50,7 +50,7 @@ class HtmlGenerator:
             'address': make_standard_element('address'),
             'article': make_standard_element('article'),
             'figure': make_standard_element('figure'),
-            'div': make_standard_element('div'),
+            'container': make_standard_element('div'),
             'p': make_standard_element('p'), 
             'list': make_standard_element('ul'),
             'list_item': make_standard_element('li'),
@@ -124,6 +124,10 @@ class MarkupFactory(ABC):
     def create_article(self, title: str, headline: str, author: str, date: str, body_content: str) -> HtmlNode:
         pass
 
+    @abstractmethod
+    def create_node(self, tag_type: str, attributes: Optional[Dict[str, Any]] = None, **kwargs) -> HtmlNode:
+        pass
+
 class BlogHtmlFactory(MarkupFactory):
     def __init__(self, markup_generator: HtmlGenerator):
         self._markup = markup_generator
@@ -156,6 +160,10 @@ class BlogHtmlFactory(MarkupFactory):
         article_node.add_child(author_node)
 
         return article_node
+
+    def create_node(self, tag_type: str, attributes: Optional[Dict[str, Any]] = None, **kwargs) -> HtmlNode:
+        """Delegate node creation to the internal HtmlGenerator."""
+        return self._markup.create_node(tag_type, attributes, **kwargs)
 
 class TextNode(HtmlNode):
     def __init__(self, text: str, **kwargs):
