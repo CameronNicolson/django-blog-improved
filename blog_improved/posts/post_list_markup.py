@@ -25,6 +25,7 @@ class PostListMarkup:
         self._posts = posts
         self._proportions = proportions
         self._grid = list()
+        self._rendered = None
 
     def add_list_item(self, porportion: int):
         pass
@@ -57,9 +58,9 @@ class PostListMarkup:
         self._grid = matrix
         matrix = iter(matrix)
         html = BlogHtmlFactory(HtmlGenerator())
+        parent = html.create_node("container", attributes={"class": g_theme.resolve_grid_class("container", None)})
         posts = []
         for item in matrix:
-            print(f"Starting row")
             (
                     title, headline, author, publish_date, excerpt
             ) = item.content
@@ -70,7 +71,9 @@ class PostListMarkup:
         for list_item, grid_cell in zip(html_post_list, self._grid):
             column_cls = g_theme.resolve_grid_class("column", grid_cell.width)
             list_item.attributes["class"] += " " + column_cls
-        rendered = html_post_list.render()
-        print(len(posts))
-        print(rendered)
+        parent.append(html_post_list)
+        self._rendered = parent.render()
         return self 
+
+    def get_rendered(self):
+        return self._rendered
