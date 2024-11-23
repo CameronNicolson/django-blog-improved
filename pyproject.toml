@@ -50,7 +50,8 @@ dynamic = ["version"]
 [project.optional-dependencies]
 tests = [
   "python-lorem==1.1.2",
-  "PyYAML==6.0.1"
+  "PyYAML==6.0.1",
+  "beautifulsoup4==4.12.3"
 ]
 [project.urls]
 Documentation = "https://cameronnicolson.github.io/django-blog-improved/"
