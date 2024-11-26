@@ -1,6 +1,7 @@
 from bigtree import Node
 from typing import Optional, Callable, Dict, Any
 from abc import ABC, abstractmethod 
+from datetime import datetime as std_datetime
 
 class HtmlComponent:
     def __init__(self, 
@@ -58,6 +59,7 @@ class HtmlGenerator:
             'img': make_contained_element('img'),
             'br': make_contained_element('br'),
             "heading": make_hierarchical_element("h", range(1, 7)),
+            "time": make_datetime_element("time"),
         }
     
     def create_node(self, 
@@ -142,23 +144,33 @@ class BlogHtmlFactory(MarkupFactory):
             list_node.append(list_item)
         return list_node
 
-    def create_article(self, title: str, headline: str, author: str, author_homepage:str, date: str, body_content: str) -> HtmlNode:
-        article_node = self._markup.create_node("article")
+    def create_article(self, title: str, headline: str, author: str, author_homepage:str, date: std_datetime, body_content: str, category:str) -> HtmlNode:
+        article_node = self._markup.create_node("article", attributes={"class": "article"})
         headings = enumerate(list((title,headline,)), start=1)
         for heading_level, heading_text in headings:
             if not heading_text:
                 continue
-            title_node = self._markup.create_node("heading", level=heading_level)
+            is_headline = bool(heading_level - 1)
+            heading_name = "headline" if is_headline else "title" 
+            title_node = self._markup.create_node("heading", attributes={"class": f"article__{heading_name}"}, level=heading_level)
             title_node.add_child(TextNode(heading_text))
             article_node.add_child(title_node)
 
-        author_node = self._markup.create_node("address", attributes={"class": "author"})
-        author_contact = self._markup.create_node("hyperlink", attributes={"rel": f"{author}", "href": f"{author_homepage}", "class": "author__link"})
+        author_node = self._markup.create_node("address", attributes={"class": "article__author"})
+        author_contact = self._markup.create_node("hyperlink", attributes={"rel": f"{author}", "href": f"{author_homepage}", "class": "article__author-link"})
         author_contact.add_child(TextNode(f"{author}"))
         author_node.add_child(author_contact)
-
         article_node.add_child(author_node)
+        if date:
+            datetime_node = self._markup.create_node("time", {"class": "article__time--published-date", "datetime": date})
+            datetime_node.add_child(TextNode(date.strftime("%d %B %Y")))
+        article_node.add_child(datetime_node)
 
+        category_node = self._markup.create_node("hyperlink", 
+                                                 { "rel": "category", "class": "author__category--link", "href": "#"})
+
+        category_node.add_child(TextNode(category))
+        article_node.add_child(category_node)
         return article_node
 
     def create_node(self, tag_type: str, attributes: Optional[Dict[str, Any]] = None, **kwargs) -> HtmlNode:
@@ -186,6 +198,33 @@ def make_standard_element(tag: str) -> HtmlComponent:
         open_tag=lambda attrs: f"<{tag}{format_attributes(attrs)}>",
         close_tag=lambda: f"</{tag}>"
     )
+
+def dodo():
+    return "222"
+
+def make_datetime_element(tag: str) -> HtmlComponent:
+    def format_datetime(attributes):
+        datetime = attributes.get("datetime", None)
+        if datetime:
+            if isinstance(datetime, std_datetime):
+                datetime = datetime.isoformat()
+            elif isinstance(datetime, str):
+                datetime = datetime
+            else: 
+                raise ValueError()
+        attributes["datetime"] = datetime
+        return ""
+
+    def open_tag(attrs):
+        format_datetime(attrs)
+        return f"<{tag}{format_attributes(attrs)}>"
+
+    return HtmlComponent(
+        open_tag=open_tag,
+        close_tag=lambda: f"</{tag}>"
+    )
+
+
 
 def make_hierarchical_element(tag: str, level_range: range) -> HtmlComponent:
     """Create a hierarchical component with level support."""

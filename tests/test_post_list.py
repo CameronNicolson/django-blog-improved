@@ -18,11 +18,10 @@ class TestBlogList(TestCase):
         self.assertTrue(isinstance(title, str))
 
     def test_post_list_with_items(self):
-        posts = Post.objects.all().values_list("title", "headline", "author__username", "published_on", "content",)
+        posts = Post.objects.all().values_list("title", "headline", "author__username", "published_on", "content", "category__name")
         plist = PostList(posts)
         markup = PostListMarkup("post-list-test", plist, 3, 3, (50,25,25,))
         rendered = markup.build_post_list().get_rendered()
-        print(rendered) 
         soup = BeautifulSoup(rendered, "html.parser")
 
         # Find all elements with a class attribute containing "col-one-half" twice

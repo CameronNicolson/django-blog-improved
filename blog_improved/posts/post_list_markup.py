@@ -35,16 +35,10 @@ class PostListMarkup:
         index = 0
         proportion = cycle(self._proportions)
         matrix = Matrix([], self._rows, self._columns)
-        post_iter = iter(self._posts)
-        post = next(post_iter) 
-        test_iter = iter(self._posts)
-        #while test_iter.has_next(TraversalType.ROW):
-         #   print("yes")
 
         for i in range(self._rows * self._columns): 
             if i < len(self._posts):
-                data = post
-                post = next(post_iter)
+                data = self._posts[i]
             else: 
                 data = None
 
@@ -61,11 +55,13 @@ class PostListMarkup:
         parent = html.create_node("container", attributes={"class": g_theme.resolve_grid_class("container", None)})
         posts = []
         for item in matrix:
+            if item.content is None:
+                continue
             (
-                    title, headline, author, publish_date, excerpt
+                    title, headline, author, publish_date, excerpt, category
             ) = item.content
             author_url = reverse("user_profile", kwargs={"group": "author", "name": author})
-            post = html.create_article(title, headline, author, author_url, publish_date, excerpt)
+            post = html.create_article(title, headline, author, author_url, publish_date, excerpt, category)
             posts.append(post)
         html_post_list = html.create_list(posts, self._name)
         for list_item, grid_cell in zip(html_post_list, self._grid):

@@ -12,6 +12,7 @@ from classytags.values import IntegerValue
 from classytags.utils import TemplateConstant
 from django.template.base import Variable, VariableDoesNotExist
 from blog_improved.posts.posts import PostListQueryRequest
+from blog_improved.posts.post_list_markup import PostListMarkup
 
 register = template.Library()
 
@@ -140,23 +141,22 @@ class BlogListTag(Tag):
         options = self.kwargs.pop("%s_options" % self.name)
         options.setdefault("max_count", TemplateConstant("-1"))
         options.setdefault("category", ListValue(TemplateConstant("all")))
+        options.setdefault("name", TemplateConstant("bloglist"))
         options.setdefault("featured", TemplateConstant(False))
         options["max_count"] = IntegerValue(options["max_count"]) 
+        options["name"] = StringValue(options["name"])
         self.kwargs = options
         return super().render(context)
 
-    def render_tag(self, context, max_count, category, featured):
+    def render_tag(self, context, name, max_count, category, featured):
         posts = PostListQueryRequest()\
-                    .set_max_size(max_count)\
-                    .set_categories(category)\
-                    .set_featured(featured)\
+                    .max_size(max_count)\
+                    .categories(category)\
+                    .featured(featured)\
+                    .status(1)\
+                    .return_type("values_list")\
                     .build()
-#        PostListMarkup(posts)
-        html = "<ul>"
-        for post in posts:
-            html += "<li>%s" % str(post.title)
-            html += "</li>"
-        html += "</ul>"
+        html = PostListMarkup(name, posts, 3,3, (33,33,33)).build_post_list().get_rendered()
         return html
 
 
