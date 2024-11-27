@@ -1,2 +1,2 @@
 from .annotate_query_request import AnnotateQueryRequest
-
+from .sort_query_request import SortQueryRequest

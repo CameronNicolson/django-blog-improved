@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
 from enum import Enum
 from django.utils import timezone
+from django.db.models import When, Case, Value, IntegerField
 from blog_improved.query_request.query import FilterQueryRequest, LimitQueryRequest, QueryRequest, QueryRequestSelectValues
+from blog_improved.query_request import AnnotateQueryRequest, SortQueryRequest
 
 class PostList(list):
     
@@ -49,6 +51,9 @@ class PostListBuilder(ABC):
     def featured(self, active):
         pass
 
+    def number_of_featured(self, number):
+        pass
+
     @abstractmethod
     def max_size(self, number):
         pass
@@ -72,6 +77,7 @@ class PostListQueryRequest(PostListBuilder):
         self._ignored_cases = tuple()
         self._max_size = None
         self._featured = False
+        self._num_featured = None
         self._return_type = "instances"
         self._status = 1
     
@@ -102,6 +108,18 @@ class PostListQueryRequest(PostListBuilder):
 
     def featured(self, active):
         self._featured = active
+        return self
+
+    def number_of_featured(self, number):
+        if not isinstance(number, (int, float)):
+            raise TypeError(self.__class__.__name__ + " takes a standard number type.")
+        if number <= 0:
+            self._num_featured = None
+        else:
+            self._num_featured = int(number)
+
+        if not self._max_size:
+           self._max_size = self._num_featured 
         return self
 
     def return_type(self, rtype):
@@ -135,9 +153,16 @@ class PostListQueryRequest(PostListBuilder):
         if self._max_size:
             request = LimitQueryRequest(queryset_request=request, offset=0, max_limit=self._max_size)
         if self._featured:
-            request = FilterQueryRequest(queryset_request=request, 
+            if self._num_featured and\
+                    self._num_featured < self._max_size:
+                find_featured = Case(When(is_featured=True, then=Value(0)), default=Value(1), output_field=IntegerField())
+                request = AnnotateQueryRequest(queryset_request=request, name="priority", calculation=find_featured)
+                request = SortQueryRequest(queryset_request=request, sort_by=["priority"])
+            else:
+                request = FilterQueryRequest(queryset_request=request, 
                                         lookup_field="is_featured", 
-                                        lookup_value=True)
+                                        lookup_value=True) 
+
         request = QueryRequestSelectValues(queryset_request=request, fields=("title", "headline", "author__username", "published_on", "content", "category__name"))
         request.make_request()
         post_list = request.evaluate()
