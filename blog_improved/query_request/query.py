@@ -120,6 +120,7 @@ class FilterQueryRequest(QueryRequestDecorator):
         if isinstance(lookup_rhs, list):
             self._lookup_type = "in" 
         lookup_lhs += "__%s" % self._lookup_type
+        print(lookup_lhs)
         return {lookup_lhs: lookup_rhs}
 
     def make_request(self):

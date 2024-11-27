@@ -74,7 +74,7 @@
   model: blog_improved.post
   pk: 5
   fields:
-    title: Subscribe to my Odysee
+    title: Subscribe to my Odysee Channel
     headline: Watch my latest videos
     content: lorem(2)
     author: 1
@@ -322,3 +322,51 @@
     category: 11
     slug: color-yellow
     cover_art: 1
+- name: featured programming category
+  description: Blog post that joins the git repository
+  model: blog_improved.post
+  pk: 24
+  fields:
+    title: Why Python is the most popular programming language
+    headline: 2024 Developer Survey saw Python claim one of the top three spots for most-admired languages
+    content: Python poem
+    is_featured: True
+    author: 1
+    created_on: 2024-11-26T13:04:00.0+00:00
+    published_on: 2024-11-26T13:52:00.0+00:00
+    updated_on: 2024-11-26T14:11:00.0+00:00
+    status: 1
+    category: 1
+    slug: why-python-most-popular-lang
+- name: featured transport post
+  description: cars
+  model: blog_improved.post
+  pk: 25
+  fields:
+    title: Mazda RX-7
+    headline: According to Hagerty, first-gen Mazda RX-7 values rose 26 percent in 2021
+    content: Vroom
+    is_featured: True
+    author: 1
+    created_on: 2024-10-04T13:04:00.0+00:00
+    published_on: 2024-10-05T13:52:00.0+00:00
+    updated_on: 2024-10-06T14:11:00.0+00:00
+    status: 1
+    category: 7
+    slug: mazda-rx-7
+- name: featured transport post
+  description: cars
+  model: blog_improved.post
+  pk: 26
+  fields:
+    title: GNU Project celebrates it's 31st birthday
+    headline: GNU was publicly announced on September 27, 1983
+    content: Thanks Richard Stallman
+    is_featured: True
+    author: 1
+    created_on: 2024-09-27T00:00:00.0+00:00
+    published_on: 2024-09-27T00:00:00.0+00:00
+    updated_on: 2024-09-27T00:00:00.0+00:00
+    status: 1
+    category: 9
+    slug: gnu-release

@@ -58,15 +58,15 @@ class PostListMarkup:
             if item.content is None:
                 continue
             (
-                    title, headline, author, publish_date, excerpt, category
+                    title, headline, author, publish_date, excerpt, category, featured
             ) = item.content
             author_url = reverse("user_profile", kwargs={"group": "author", "name": author})
-            post = html.create_article(title, headline, author, author_url, publish_date, excerpt, category)
+            post = html.create_article(title, headline, author, author_url, publish_date, excerpt, category, featured)
             posts.append(post)
         html_post_list = html.create_list(posts, self._name)
         for list_item, grid_cell in zip(html_post_list, self._grid):
             column_cls = g_theme.resolve_grid_class("column", grid_cell.width)
-            list_item.attributes["class"] += " " + column_cls
+            list_item.attributes["class"] += column_cls
         parent.append(html_post_list)
         self._rendered = parent.render()
         return self 

@@ -3,6 +3,45 @@ from typing import Optional, Callable, Dict, Any
 from abc import ABC, abstractmethod 
 from datetime import datetime as std_datetime
 
+class StringAppender:
+    def __init__(self, value=None):
+        self._value = value
+
+    def __iadd__(self, other):
+        if self._value:
+            self._value = f"{self._value} {other}" 
+        else:
+            self._value = other
+        return self
+
+    def __repr__(self):
+        return repr(self._value)
+
+
+class SgmlAttributes(dict):
+
+    RESERVED_KEYS = {"class",}
+
+    def __init__(self, *args, **kwargs):
+        # Ensure reserved keys with default values into kwargs if not provided
+        for key in self.RESERVED_KEYS:
+            if key not in kwargs:
+                initial_value = ""
+            else:
+                initial_value = kwargs[key]
+            kwargs[key] = StringAppender(initial_value)
+
+        super().__init__(*args, **kwargs)
+
+    def __setitem__(self, key, value):
+        # Ensure values are StringAppender objects
+        if not isinstance(value, StringAppender):
+            value = StringAppender(value)
+        super().__setitem__(key, value)
+
+    def __getitem__(self, key):
+        return super().__getitem__(key)
+
 class HtmlComponent:
     def __init__(self, 
         open_tag: Optional[Callable[..., str]] = None,
@@ -14,18 +53,17 @@ class HtmlComponent:
         self.close_tag = close_tag
         self.level_range = level_range
 
-
 class HtmlNode(Node):
     node_counter = 0
 
     def __init__(self, 
                  name: str,
                  component: HtmlComponent,
-                 attributes: Optional[Dict[str, Any]] = None,
+                 attributes: Optional[SgmlAttributes] = None,
                  **kwargs):
         super().__init__(name=name, **kwargs)
         self.component = component
-        self.attributes = attributes or {}
+        self.attributes = attributes or SgmlAttributes()
         self.children = []
 
     def add_child(self, node:Node):
@@ -39,7 +77,6 @@ class HtmlNode(Node):
 
         children_html = "".join(child.render() for child in self.children)
         return f"{open_tag}{children_html}{close_tag}"
-
 
 
 class HtmlGenerator:
@@ -96,7 +133,7 @@ class HtmlGenerator:
         return HtmlNode(
             name=node_name,
             component=component,
-            attributes=attributes
+            attributes=SgmlAttributes(**attributes)
         )
 
     def _increment_count(self, n:int=1):
@@ -114,7 +151,7 @@ class HtmlGenerator:
 def format_attributes(attrs: Optional[Dict[str, Any]] = None) -> str:
     if not attrs:
         return ""
-    return " " + " ".join(f'{k}="{v}"' for k, v in attrs.items())
+    return " " + " ".join(f'{k}="{v}"'.replace("\'", "")  for k, v in attrs.items())
 
 
 class MarkupFactory(ABC):
@@ -144,8 +181,10 @@ class BlogHtmlFactory(MarkupFactory):
             list_node.append(list_item)
         return list_node
 
-    def create_article(self, title: str, headline: str, author: str, author_homepage:str, date: std_datetime, body_content: str, category:str) -> HtmlNode:
+    def create_article(self, title: str, headline: str, author: str, author_homepage:str, date: std_datetime, body_content: str, category:str, featured:bool) -> HtmlNode:
         article_node = self._markup.create_node("article", attributes={"class": "article"})
+        if featured:
+            article_node.attributes["class"] += "article--featured"
         headings = enumerate(list((title,headline,)), start=1)
         for heading_level, heading_text in headings:
             if not heading_text:

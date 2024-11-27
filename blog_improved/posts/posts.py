@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 from enum import Enum
 from django.utils import timezone
-from django.db.models import When, Case, Value, IntegerField
+from django.db.models import F, Window, When, Case, Value, IntegerField
+from django.db.models.functions import RowNumber
 from blog_improved.query_request.query import FilterQueryRequest, LimitQueryRequest, QueryRequest, QueryRequestSelectValues
 from blog_improved.query_request import AnnotateQueryRequest, SortQueryRequest
 
@@ -14,6 +15,7 @@ class PostList(list):
         PUBLISHED_ON = 3
         CONTENT = 4
         CATEGORY = 5
+        IS_FEATURED = 6
 
     def __init__(self, post_list=None, date_generated=None, publish_status=None, fetch_posts=None, fetch_categories=None):
         if post_list:
@@ -157,13 +159,14 @@ class PostListQueryRequest(PostListBuilder):
                     self._num_featured < self._max_size:
                 find_featured = Case(When(is_featured=True, then=Value(0)), default=Value(1), output_field=IntegerField())
                 request = AnnotateQueryRequest(queryset_request=request, name="priority", calculation=find_featured)
-                request = SortQueryRequest(queryset_request=request, sort_by=["priority"])
+
+                request = SortQueryRequest(queryset_request=request, sort_by=["priority"], priority=19)
             else:
                 request = FilterQueryRequest(queryset_request=request, 
                                         lookup_field="is_featured", 
                                         lookup_value=True) 
 
-        request = QueryRequestSelectValues(queryset_request=request, fields=("title", "headline", "author__username", "published_on", "content", "category__name"))
+        request = QueryRequestSelectValues(queryset_request=request, fields=("title", "headline", "author__username", "published_on", "content", "category__name", "is_featured"))
         request.make_request()
         post_list = request.evaluate()
          
