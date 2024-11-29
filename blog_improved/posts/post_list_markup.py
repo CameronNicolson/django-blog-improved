@@ -3,6 +3,7 @@ from itertools import cycle
 from dataclasses import dataclass
 from blog_improved.helpers.html_generator import BlogHtmlFactory, HtmlGenerator
 from blog_improved.themes.settings import get_theme
+from blog_improved.posts.posts import PostList
 from blog_improved import urls
 from django.urls import reverse
 
@@ -44,7 +45,7 @@ class PostListMarkup:
 
             item = ListCell(content = data,
                             width = next(proportion),
-                            height = 0
+                            height = "fill"
                     )
             matrix.append(item)
             output += str(data)
@@ -54,6 +55,7 @@ class PostListMarkup:
         html = BlogHtmlFactory(HtmlGenerator())
         parent = html.create_node("container", attributes={"class": g_theme.resolve_grid_class("container", None)})
         posts = []
+        priority = iter(self._posts.get_priority_order())
         for item in matrix:
             if item.content is None:
                 continue
@@ -62,6 +64,7 @@ class PostListMarkup:
             ) = item.content
             author_url = reverse("user_profile", kwargs={"group": "author", "name": author})
             post = html.create_article(title, headline, author, author_url, publish_date, excerpt, category, featured)
+            post.attributes["class"] += "article--featured" if next(priority) == PostList.PriorityOrder.FEATURE else ""
             posts.append(post)
         html_post_list = html.create_list(posts, self._name)
         for list_item, grid_cell in zip(html_post_list, self._grid):

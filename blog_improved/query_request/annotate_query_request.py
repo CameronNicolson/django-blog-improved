@@ -1,4 +1,4 @@
-from django.db.models import (Window, ExpressionWrapper, F, 
+from django.db.models import (ExpressionWrapper, F, 
                               Value, Case, When, Func
 )
 from blog_improved.query_request.query import QueryRequestDecorator 
@@ -19,9 +19,9 @@ class AnnotateQueryRequest(QueryRequestDecorator):
             raise ValueError("You must provide 'name' and 'calculation_object'.")
 
         # Validate the calculation's type
-        valid_types = (Case, Func, F, Value, Window, ExpressionWrapper)
+        valid_types = (Case, Func, F, Value, ExpressionWrapper)
         if not isinstance(calculation, valid_types):
-            raise TypeError(f"calculation must be one of {valid_types}, got {type(calculation_object)}")
+            raise TypeError(f"calculation must be one of {valid_types}, got {type(calculation)}")
 
         # Store the annotation details
         self._annotation = {

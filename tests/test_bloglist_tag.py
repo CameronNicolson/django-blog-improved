@@ -93,13 +93,31 @@ class BlogListTagTest(TestCase):
         # Check the `ul` element with id `latest-news__list`
         expected_ul = expected.find('ul', {'id': 'latest-news__list'})
         rendered_ul = rendered.find('ul', {'id': 'latest-news__list'})
-        print(rendered_html)
 
         self.assertTrue(rendered_ul is not None)
         #expected_li_count = len(expected_ul.find_all("li"))
         rendered_li_count = len(rendered_ul.find_all("li"))
         self.assertEqual(rendered_li_count, 5) 
 
+        rendered_featured_count = len(rendered_ul.find_all("article", attrs={"class": "article--featured"}))
+
+        self.assertEqual(rendered_featured_count, 2) 
+
+
+    def test_bloglisttag_featured_and_feature_count(self):
+        template_string = '{% load blog_tags %}{% bloglist name="latest-news" featured="True" featured_count="2" %}'
+        template = Template(template_string)
+        context = Context({})
+        rendered_html = template.render(context)
+
+        # Parse both HTML strings
+        rendered = BeautifulSoup(rendered_html, 'html.parser')
+        # Check the `ul` element with id `latest-news__list`
+        rendered_ul = rendered.find('ul', {'id': 'latest-news__list'})
+
+        self.assertTrue(rendered_ul is not None)
+        rendered_li_count = len(rendered_ul.find_all("li"))
+        self.assertEqual(rendered_li_count, 2) 
         rendered_featured_count = len(rendered_ul.find_all("article", attrs={"class": "article--featured"}))
 
         self.assertEqual(rendered_featured_count, 2) 

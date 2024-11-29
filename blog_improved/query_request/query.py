@@ -5,7 +5,7 @@ class QueryRequest:
     def __init__(self, app_name, model, methods, return_type="instances"):
         self._app_name = app_name
         self._model = apps.get_model(app_name, model)
-        self._selected_fields = set()
+        self._selected_fields = list()
         for method in methods:
             obj = QuerySet
             method_name, _, _, _ = method
@@ -14,6 +14,18 @@ class QueryRequest:
         self._methods:list[tuple] = methods or list() 
         self._return_type = return_type
         self._cache = None
+        self._offset = None
+        self._max_limit = None
+
+    def set_limit(self, max_limit=None, offset=0):
+        """Set the slicing parameters."""
+        if (offset is not None and not isinstance(offset, int)) or (max_limit is not None and not isinstance(max_limit, int)):
+            raise TypeError("The limit and offset values must be integers or None.")
+        if (offset is not None and offset < 0) or (max_limit is not None and max_limit < 0):
+            raise ValueError("Negative integers are not allowed for limit or offset.")
+        self._offset = offset
+        self._max_limit = max_limit
+
   
     def set_return_type(self, return_type, fields=None):
         """Set the desired return type and fields."""
@@ -25,7 +37,9 @@ class QueryRequest:
 
     def add_selected_fields(self, fields):
         """Add selected fields."""
-        self._selected_fields.extend(fields)
+        for field in fields:
+            if field not in self._selected_fields:
+                self._selected_fields.append(field)
 
     def get_selected_fields(self):
         """Get currently selected fields."""
@@ -54,13 +68,17 @@ class QueryRequest:
     def evaluate(self):
         """Evaluate the QuerySet with the return type applied."""
         qs = self.make_request()  # Get the QuerySet (cached if already executed)
-
-        # Apply the return type lazily, just before evaluation
+                # Determine the start and stop for slicing
+                        # Determine the start and stop for slicing
+        start = self._offset if self._offset > 0 else None
+        stop = self._max_limit if start is None else start + self._max_limit
+       # Apply the return type lazily, just before evaluation
         if self._return_type == "values":
-            return qs.values(*self._selected_fields)
+            return qs.values(*self._selected_fields)[start:stop]
         elif self._return_type == "values_list":
-            return qs.values_list(*self._selected_fields)
-        return qs  # Default is "instances" (no transformation)
+            return qs.values_list(*self._selected_fields)[start:stop]
+        
+        return qs[start:stop]
 
 class QueryRequestDecorator: 
     def __init__(self, queryset_request=None):
@@ -74,6 +92,10 @@ class QueryRequestDecorator:
 
     def make_request(self):
         self._queryset_request.make_request()
+
+    def evaluate(self):
+        # Delegate evaluation to the wrapped request or decorator
+        return self._queryset_request.evaluate()
 
     def __getattr__(self, name):
         """Delegate missing attributes/methods to the wrapped request."""
@@ -120,7 +142,6 @@ class FilterQueryRequest(QueryRequestDecorator):
         if isinstance(lookup_rhs, list):
             self._lookup_type = "in" 
         lookup_lhs += "__%s" % self._lookup_type
-        print(lookup_lhs)
         return {lookup_lhs: lookup_rhs}
 
     def make_request(self):
@@ -135,22 +156,24 @@ class FilterQueryRequest(QueryRequestDecorator):
         return qs
 
 class LimitQueryRequest(QueryRequestDecorator):
-    def __init__(self, queryset_request=None, max_limit=None, offset=None, priority=20):
+    def __init__(self, queryset_request=None, max_limit=None, offset=None):
         super().__init__(queryset_request=queryset_request)
-        if not isinstance(max_limit, int) or (offset is not None and not isinstance(offset, int)):
+        if (offset is not None and not isinstance(offset, int)) or (max_limit is not None and not isinstance(max_limit, int)):
             raise TypeError("The limit and offset values must be integers.")
         if max_limit < 0 or (offset is not None and offset < 0):
             raise ValueError("Negative integers are not allowed for limit or offset.")
         self._max_limit = max_limit
         self._offset = offset
-        self._priority = priority
   
     def make_request(self): 
-        limit = self._max_limit
-        start = self._offset if self._offset else 0
-        stop = self._max_limit
-        slicing_args = (slice(start, stop),)
-        limit_method = ("__getitem__", slicing_args, {}, self._priority)
-        self.get_request().get_methods().append(limit_method)
+        self._queryset_request.set_limit(self._max_limit, self._offset)
         return self._queryset_request.make_request()
+    
+#        limit = self._max_limit
+#        start = self._offset if self._offset else 0
+#        stop = self._max_limit
+#        slicing_args = (slice(start, stop),)
+#        limit_method = ("__getitem__", slicing_args, {}, self._priority)
+#        self.get_request().get_methods().append(limit_method)
+#        return self._queryset_request.make_request()
 

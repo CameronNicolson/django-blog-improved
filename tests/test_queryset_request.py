@@ -120,14 +120,16 @@ class TestLimitQueryRequest(TestCase):
 
     def test_limit_single_result(self):
         base_req = QueryRequest("blog_improved", "Post", [("all",None,None,3,)])
-        limitreq = LimitQueryRequest(queryset_request=base_req, max_limit=1)
-        qs = limitreq.make_request()
+        limitreq = LimitQueryRequest(queryset_request=base_req, offset=0, max_limit=1)
+        limitreq.make_request()
+        qs = limitreq.evaluate()
         self.assertEqual(qs.count(), 1)
 
     def test_limit_ten_results(self):
         base_req = QueryRequest("blog_improved", "Post", [("all",None,None,3,)])
         limitreq = LimitQueryRequest(queryset_request=base_req, offset=0, max_limit=10)
-        qs = limitreq.make_request()
+        limitreq.make_request()
+        qs = limitreq.evaluate()
         self.assertEqual(qs.count(), 10)
 
     def test_limit_throw_value_error(self):

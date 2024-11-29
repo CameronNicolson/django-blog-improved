@@ -183,8 +183,6 @@ class BlogHtmlFactory(MarkupFactory):
 
     def create_article(self, title: str, headline: str, author: str, author_homepage:str, date: std_datetime, body_content: str, category:str, featured:bool) -> HtmlNode:
         article_node = self._markup.create_node("article", attributes={"class": "article"})
-        if featured:
-            article_node.attributes["class"] += "article--featured"
         headings = enumerate(list((title,headline,)), start=1)
         for heading_level, heading_text in headings:
             if not heading_text:
