@@ -124,6 +124,10 @@ class Matrix(list):
 
     def __iter__(self):
         return self._iter(self)
+
+    def rows(self):
+        """Return rows as a list of lists."""
+        return super().__iter__()
    
     def append(self, value):
         current_row = len(self)

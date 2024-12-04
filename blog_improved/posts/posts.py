@@ -1,4 +1,3 @@
-import copy
 from itertools import chain
 from abc import ABC, abstractmethod
 from enum import Enum
@@ -93,7 +92,7 @@ class PostListQueryRequest(PostListBuilder):
         self._num_featured = None
         self._return_type = "instances"
         self._status = 1
-        self._post_fields = ("pk", "title", "headline", "author__username", "published_on", "content", "category__name", "is_featured", "priority",)
+        self._post_fields = ("pk", "title", "headline", "author__username", "published_on", "content", "category__name", "is_featured", "slug", "priority",)
 
 
     
@@ -244,9 +243,9 @@ class PostListQueryRequest(PostListBuilder):
         # Process each tuple
         for item in post_list:
             # Remove the number at index 8 and keep the rest
-            new_tuple = item[1:7] + item[8:]
-            # Add the number at index 6 to the separate tuple
-            priority_order.append(item[8])
+            new_tuple = item[1:8] + item[9:]
+            # Add the number at index 9 to the separate tuple
+            priority_order.append(item[9])
             # Add the modified tuple to the new list
             new_data.append(new_tuple)
         return PostList(post_list=new_data, date_generated=timezone.now(), fetch_posts=request, fetch_categories=None, priority_order=priority_order)

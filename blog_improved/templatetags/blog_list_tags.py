@@ -1,4 +1,5 @@
 from django import template
+from django.template import Context, Template
 from django.template import Node, TemplateSyntaxError
 from django.db.models.query import QuerySet
 from blog_improved.models import Post, Status
@@ -13,6 +14,7 @@ from classytags.utils import TemplateConstant
 from django.template.base import Variable, VariableDoesNotExist
 from blog_improved.posts.posts import PostListQueryRequest
 from blog_improved.posts.post_list_markup import PostListMarkup
+from blog_improved.helpers.html_generator import BlogHtmlFactory, HtmlGenerator
 
 register = template.Library()
 
@@ -159,7 +161,13 @@ class BlogListTag(Tag):
                     .status(1)\
                     .return_type("values_list")\
                     .build()
-        html = PostListMarkup(name, posts, 3,3, (33,33,33)).build_post_list().get_rendered()
+        htmlgen = BlogHtmlFactory(HtmlGenerator())
+        markup = PostListMarkup(name, posts, 3,3, (33,33,33), htmlgen)
+        markup.build_grid()
+#        template = Template(markup.generate_html())
+ #       html = template.render(Context())
+        markup.generate_html(layout_type="flat")
+        html = markup.get_rendered()
         return html
 
 

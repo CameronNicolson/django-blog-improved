@@ -1,4 +1,5 @@
-from bigtree import Node
+from django.template.base import Node, NodeList, TextNode
+from django.template.context import Context
 from typing import Optional, Callable, Dict, Any
 from abc import ABC, abstractmethod 
 from datetime import datetime as std_datetime
@@ -53,7 +54,15 @@ class HtmlComponent:
         self.close_tag = close_tag
         self.level_range = level_range
 
-class HtmlNode(Node):
+class SgmlNode(Node, ABC):
+    def __init__(self, nodelist: NodeList=None):
+        self.nodelist = nodelist or NodeList()  # Initialize the nodelist
+
+    @abstractmethod
+    def add_child(self, node):
+        raise NotImplemented()
+
+class HtmlNode(SgmlNode):
     node_counter = 0
 
     def __init__(self, 
@@ -61,26 +70,41 @@ class HtmlNode(Node):
                  component: HtmlComponent,
                  attributes: Optional[SgmlAttributes] = None,
                  **kwargs):
-        super().__init__(name=name, **kwargs)
+        super().__init__()
         self.component = component
         self.attributes = attributes or SgmlAttributes()
-        self.children = []
+        #self.children = []
 
     def add_child(self, node:Node):
-        children = self.children + (node,)
-        self.children = children
+        self.nodelist.append(node)
+        #children = self.children + (node,)
+        #self.children = children
 
-    def render(self) -> str:
+    def render(self, context: Context=Context()) -> str:
         """Render the HTML node and its children recursively"""
         open_tag = self.component.open_tag(self.attributes) if self.component.open_tag else ""
         close_tag = self.component.close_tag() if self.component.close_tag else ""
-
-        children_html = "".join(child.render() for child in self.children)
+        context = Context(dict_=None, autoescape=True, use_l10n=None, use_tz=None)
+        children_html = self.nodelist.render(context)
         return f"{open_tag}{children_html}{close_tag}"
 
-
-class HtmlGenerator:
-
+class SgmlGenerator(ABC):
+    @abstractmethod
+    def create_node(self, 
+                   tag_type: str, 
+                   attributes: Optional[Dict[str, Any]] = None, 
+                   **kwargs) -> SgmlNode:
+        """Create a node with the appropriate component"""
+        raise NotImplemented()
+    
+    @abstractmethod
+    def register_component(self, 
+                         name: str, 
+                         open_tag: Optional[Callable[..., str]] = None,
+                         close_tag: Optional[Callable[..., str]] = None):
+        raise NotImplemented()
+ 
+class HtmlGenerator(SgmlGenerator):
     def __init__(self):
         self._internal_count = 0
         self._components = {
@@ -89,10 +113,10 @@ class HtmlGenerator:
             'article': make_standard_element('article'),
             'figure': make_standard_element('figure'),
             'container': make_standard_element('div'),
-            'p': make_standard_element('p'), 
+            'paragraph': make_standard_element('p'), 
             'list': make_standard_element('ul'),
             'list_item': make_standard_element('li'),
-            'ol': make_standard_element('ol'),
+            'ordered_list': make_standard_element('ol'),
             'img': make_contained_element('img'),
             'br': make_contained_element('br'),
             "heading": make_hierarchical_element("h", range(1, 7)),
@@ -160,11 +184,11 @@ class MarkupFactory(ABC):
         pass
     
     @abstractmethod
-    def create_article(self, title: str, headline: str, author: str, date: str, body_content: str) -> HtmlNode:
+    def create_article(self, title: str, headline: str, author: str, date: str, body_content: str) -> SgmlNode:
         pass
 
     @abstractmethod
-    def create_node(self, tag_type: str, attributes: Optional[Dict[str, Any]] = None, **kwargs) -> HtmlNode:
+    def create_node(self, tag_type: str, attributes: Optional[Dict[str, Any]] = None, **kwargs) -> SgmlNode:
         pass
 
 class BlogHtmlFactory(MarkupFactory):
@@ -183,6 +207,9 @@ class BlogHtmlFactory(MarkupFactory):
 
     def create_article(self, title: str, headline: str, author: str, author_homepage:str, date: std_datetime, body_content: str, category:str, featured:bool) -> HtmlNode:
         article_node = self._markup.create_node("article", attributes={"class": "article"})
+        if featured:
+            article_node.attributes["class"] += "article--featured"
+
         headings = enumerate(list((title,headline,)), start=1)
         for heading_level, heading_text in headings:
             if not heading_text:
@@ -213,14 +240,6 @@ class BlogHtmlFactory(MarkupFactory):
     def create_node(self, tag_type: str, attributes: Optional[Dict[str, Any]] = None, **kwargs) -> HtmlNode:
         """Delegate node creation to the internal HtmlGenerator."""
         return self._markup.create_node(tag_type, attributes, **kwargs)
-
-class TextNode(HtmlNode):
-    def __init__(self, text: str, **kwargs):
-        super().__init__(name="text", component=HtmlComponent(), **kwargs)
-        self._text = text
-
-    def render(self) -> str:
-        return self._text
 
 def make_contained_element(tag: str) -> HtmlComponent:
     """Factory for void elements like <img>, <br>, <input>"""
