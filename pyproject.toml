@@ -44,7 +44,6 @@ dependencies = [
   "sqlparse==0.4.2",
   "toml==0.10.2",
   "django-redirects==0.5.0",
-  "bigtree==0.22.3",
 ]
 dynamic = ["version"]
 [project.optional-dependencies]
