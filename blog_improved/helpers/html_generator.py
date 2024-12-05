@@ -73,12 +73,9 @@ class HtmlNode(SgmlNode):
         super().__init__()
         self.component = component
         self.attributes = attributes or SgmlAttributes()
-        #self.children = []
 
     def add_child(self, node:Node):
         self.nodelist.append(node)
-        #children = self.children + (node,)
-        #self.children = children
 
     def render(self, context: Context=Context()) -> str:
         """Render the HTML node and its children recursively"""
@@ -109,16 +106,16 @@ class HtmlGenerator(SgmlGenerator):
         self._internal_count = 0
         self._components = {
             "hyperlink": make_standard_element('a'),
-            'address': make_standard_element('address'),
-            'article': make_standard_element('article'),
-            'figure': make_standard_element('figure'),
-            'container': make_standard_element('div'),
-            'paragraph': make_standard_element('p'), 
-            'list': make_standard_element('ul'),
-            'list_item': make_standard_element('li'),
-            'ordered_list': make_standard_element('ol'),
-            'img': make_contained_element('img'),
-            'br': make_contained_element('br'),
+            "address": make_standard_element("address"),
+            "article": make_standard_element("article"),
+            "figure": make_standard_element("figure"),
+            "container": make_standard_element("div"),
+            "paragraph": make_standard_element("p"), 
+            "list": make_standard_element("ul"),
+            "list_item": make_standard_element("li"),
+            "ordered_list": make_standard_element("ol"),
+            "image": make_contained_element("img"),
+            "vertical-space": make_contained_element("br"),
             "heading": make_hierarchical_element("h", range(1, 7)),
             "time": make_datetime_element("time"),
         }
@@ -223,22 +220,30 @@ class BlogHtmlFactory(MarkupFactory):
             headline_node = self._markup.create_node("heading", attributes={"class": f"article__headline"}, level=2)
             headline_node.add_child(TextNode(headline))
             article_node.add_child(headline_node)
-        
-        author_node = self._markup.create_node("address", attributes={"class": "article__author"})
-        author_contact = self._markup.create_node("hyperlink", attributes={"rel": f"{author}", "href": f"{author_homepage}", "class": "article__author-link"})
-        author_contact.add_child(TextNode(f"{author}"))
-        author_node.add_child(author_contact)
-        article_node.add_child(author_node)
+
+        meta_node = self._markup.create_node("container", attributes={"class": "article__meta"})
+
+        if author: 
+            author_node = self._markup.create_node("address", attributes={"class": "article__author"})
+            author_text_node = TextNode(f"{author}")
+            author_text_node = hyperlink_wrapper(self._markup, author_homepage, author_text_node)
+            author_node.add_child(author_text_node)
+            meta_node.add_child(author_node)
+
         if date:
             datetime_node = self._markup.create_node("time", {"class": "article__time--published-date", "datetime": date})
             datetime_node.add_child(TextNode(date.strftime("%d %B %Y")))
-        article_node.add_child(datetime_node)
+            meta_node.add_child(datetime_node)
+        
+        if category:
+            category_node = TextNode(category)
+            category_link = self._markup.create_node("hyperlink", attributes={"rel": "category"})
+            category_link.add_child(category_node)
+            meta_node.add_child(category_link)
 
-        category_node = self._markup.create_node("hyperlink", 
-                                                 { "rel": "category", "class": "author__category--link", "href": "#"})
+        if len(meta_node.nodelist) > 0:
+            article_node.add_child(meta_node)
 
-        category_node.add_child(TextNode(category))
-        article_node.add_child(category_node)
         return article_node
 
     def create_node(self, tag_type: str, attributes: Optional[Dict[str, Any]] = None, **kwargs) -> HtmlNode:
