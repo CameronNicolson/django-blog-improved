@@ -10,17 +10,20 @@ from blog_improved.query_request import AnnotateQueryRequest, SortQueryRequest
 class PostList(list):
     
     class Field(Enum):
-        TITLE = 0
-        HEADLINE = 1
-        AUTHOR = 2 
-        PUBLISHED_ON = 3
-        CONTENT = 4
-        CATEGORY = 5
-        IS_FEATURED = 6
+        PK = 0
+        TITLE = 1
+        HEADLINE = 2
+        AUTHOR = 3
+        PUBLISHED_ON = 4
+        CONTENT = 5
+        CATEGORY = 6
+        IS_FEATURED = 7
+        SLUG = 8
+        FIELD_COUNT = 9
 
     class PriorityOrder:
         FEATURE = 0
-        SPECIAL = 1
+        PROMOTED = 1
         NORMAL = 2
 
     def __init__(self, post_list=None, date_generated=None, publish_status=None, fetch_posts=None, fetch_categories=None, priority_order=None):
@@ -34,7 +37,7 @@ class PostList(list):
         self._publish_status = publish_status
         self._fetch_posts = fetch_posts
         self._fetch_categories = fetch_categories
-        self._priority_ordering = priority_order or [PostList.PriorityOrder.NORMAL for v in self]
+        self._priority_ordering = priority_order or [(v[0], PostList.PriorityOrder.NORMAL,) for v in self]
 
     def categories(self):
         self._categories = self._fetch_categories.retrieve()
@@ -93,8 +96,6 @@ class PostListQueryRequest(PostListBuilder):
         self._return_type = "instances"
         self._status = 1
         self._post_fields = ("pk", "title", "headline", "author__username", "published_on", "content", "category__name", "is_featured", "slug", "priority",)
-
-
     
     def max_size(self, number):
         if not isinstance(number, (int, float)):
@@ -239,13 +240,11 @@ class PostListQueryRequest(PostListBuilder):
        # Initialize the new tuples
         new_data = []
         priority_order = []
-
         # Process each tuple
+        last_field = PostList.Field.FIELD_COUNT.value - 1 
+        priority_pos = last_field + 1
         for item in post_list:
-            # Remove the number at index 8 and keep the rest
-            new_tuple = item[1:8] + item[9:]
-            # Add the number at index 9 to the separate tuple
-            priority_order.append(item[9])
-            # Add the modified tuple to the new list
+            new_tuple = item[:priority_pos] + item[priority_pos + 1:]
+            priority_order.append((item[0], item[priority_pos],))
             new_data.append(new_tuple)
         return PostList(post_list=new_data, date_generated=timezone.now(), fetch_posts=request, fetch_categories=None, priority_order=priority_order)

@@ -19,7 +19,7 @@ class TestBlogList(TestCase):
         self.assertTrue(isinstance(title, str))
 
     def test_post_list_with_items(self):
-        posts = Post.objects.all().values_list("title", "headline", "author__username", "published_on", "content", "category__name", "is_featured", "slug")
+        posts = Post.objects.all().values_list("pk", "title", "headline", "author__username", "published_on", "content", "category__name", "is_featured", "slug")
         plist = PostList(posts)
         html = BlogHtmlFactory(HtmlGenerator())
         markup = PostListMarkup("post-list-test", plist, 3, 3, (50,25,25,), html)

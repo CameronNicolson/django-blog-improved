@@ -1,10 +1,10 @@
 class HeteroDataWrapper:
-    def __init__(self, data):
+    def __init__(self, data, start=0):
         if not isinstance(data, (tuple, dict)):
             raise TypeError("Data must be a tuple or dictionary")
         self._data = data
-        self._saved_access = list()
-        self._index = 0
+        self._saved_access = [None for _ in range(start)]
+        self._index = start
 
     def __getitem__(self, key):
         if isinstance(self._data, dict):

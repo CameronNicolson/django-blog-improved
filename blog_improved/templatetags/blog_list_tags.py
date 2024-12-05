@@ -164,8 +164,6 @@ class BlogListTag(Tag):
         htmlgen = BlogHtmlFactory(HtmlGenerator())
         markup = PostListMarkup(name, posts, 3,3, (33,33,33), htmlgen)
         markup.build_grid()
-#        template = Template(markup.generate_html())
- #       html = template.render(Context())
         markup.generate_html(layout_type="flat")
         html = markup.get_rendered()
         return html

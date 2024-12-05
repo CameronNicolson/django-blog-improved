@@ -10,6 +10,7 @@ from django.urls import reverse
 
 @dataclass
 class ListCell:
+    ident: int
     content: any
     width: float 
     height: float
@@ -66,6 +67,7 @@ class PostListMarkup:
                 return None
         elif link_type == "title":
             try:
+                uri = kwargs.get("slug", None)
                 return reverse("post_detail", kwargs={"slug": uri})
             except Exception:
                 return None
@@ -83,7 +85,7 @@ class PostListMarkup:
         for i in range(self._rows * self._columns):
             content = self._posts[i] if i < len(self._posts) else None
             matrix.append(
-                ListCell(content=content, width=next(proportion), height="fill")
+                ListCell(ident=i, content=content, width=next(proportion), height="fill")
             )
 
         self._grid = matrix
@@ -163,7 +165,8 @@ class PostListMarkup:
     def create_post_article(self, cell: ListCell) -> SgmlNode:
         """Create an article node for a given cell."""
         sgml = self._sgml
-        post_data = HeteroDataWrapper(cell.content)
+        post_data = HeteroDataWrapper(cell.content, start=1)
+        _, priority = self._posts.get_priority_order()[cell.ident]
         return sgml.create_article(
             title=post_data["title"],
             headline=post_data["headline"],
@@ -172,7 +175,8 @@ class PostListMarkup:
             date=post_data["published_on"],
             body_content=post_data["content"],
             category=post_data["category"],
-            featured=(post_data["featured"] and post_data["priority"] == 0),
+            featured=(post_data["featured"] and priority == 0),
+            article_url=self.generate_post_link("title", slug=post_data["slug"])
     )
 
     def get_rendered(self) -> str:

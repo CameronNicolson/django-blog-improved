@@ -205,21 +205,25 @@ class BlogHtmlFactory(MarkupFactory):
             list_node.append(list_item)
         return list_node
 
-    def create_article(self, title: str, headline: str, author: str, author_homepage:str, date: std_datetime, body_content: str, category:str, featured:bool) -> HtmlNode:
+    def create_article(self, title: str, headline: str, author: str, author_homepage:str, date: std_datetime, body_content: str, category:str, featured:bool, article_url:str) -> HtmlNode:
+
+        from blog_improved.helpers.hyperlink_wrapper import hyperlink_wrapper
         article_node = self._markup.create_node("article", attributes={"class": "article"})
         if featured:
             article_node.attributes["class"] += "article--featured"
-
-        headings = enumerate(list((title,headline,)), start=1)
-        for heading_level, heading_text in headings:
-            if not heading_text:
-                continue
-            is_headline = bool(heading_level - 1)
-            heading_name = "headline" if is_headline else "title" 
-            title_node = self._markup.create_node("heading", attributes={"class": f"article__{heading_name}"}, level=heading_level)
-            title_node.add_child(TextNode(heading_text))
+        
+        if title:
+            title_node = self._markup.create_node("heading", attributes={"class": f"article__title"}, level=1)
+            title_text_node = TextNode(title)
+            title_text_node = hyperlink_wrapper(self._markup, article_url, title_text_node)
+            title_node.add_child(title_text_node)
             article_node.add_child(title_node)
 
+        if headline: 
+            headline_node = self._markup.create_node("heading", attributes={"class": f"article__headline"}, level=2)
+            headline_node.add_child(TextNode(headline))
+            article_node.add_child(headline_node)
+        
         author_node = self._markup.create_node("address", attributes={"class": "article__author"})
         author_contact = self._markup.create_node("hyperlink", attributes={"rel": f"{author}", "href": f"{author_homepage}", "class": "article__author-link"})
         author_contact.add_child(TextNode(f"{author}"))

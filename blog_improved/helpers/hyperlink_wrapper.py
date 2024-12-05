@@ -1,12 +1,14 @@
-import django.template.base import Node
-import blog_improved.helpers.html_generator import SgmlGenerator
+from django.template.base import Node
+from blog_improved.helpers.html_generator import SgmlGenerator
 
-def hyperlink_wrapper(self, sgml:SgmlGenerator, hyperlink:str, description:str, prepend_to:Node) -> Node:
+def hyperlink_wrapper(sgml:SgmlGenerator, hyperlink:str, prepend_to:Node) -> Node:
+    if prepend_to is None:
+        return None
     if hyperlink:
         link_node = sgml.create_node(
             "hyperlink",
             attributes={
-                "title": description, 
+                "class": "link",
                 "href": hyperlink,
             })            
         link_node.add_child(prepend_to)
