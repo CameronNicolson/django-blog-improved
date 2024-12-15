@@ -1,3 +1,5 @@
+from blog_improved.utils.strings import StringAppender
+
 def ID(value):
     """ID and NAME tokens must begin with a letter ([A-Za-z]) and may be followed by any number of letters, digits ([0-9]), hyphens ("-"), underscores ("_"), colons (":"), and periods (".")."""
     pass 
@@ -26,7 +28,7 @@ HTML_CORE_ATTRS = {
 
 ATTRIBUTE_PROCESSORS = {**HTML_CORE_ATTRS}
 
-class SgmlAttribute:
+class SgmlAttributeEntry:
     """Represents a single SGML attribute with a given processor and value."""
     def __init__(self, name, processor, initial_value=None):
         self.name = name
@@ -51,7 +53,7 @@ class SgmlAttribute:
         return self.value if self.value is not None else ""
 
     def __repr__(self):
-        return f"SgmlAttribute(name={self.name!r}, value={self.value!r})"
+        return f"SgmlAttributeEntry(name={self.name!r}, value={self.value!r})"
 
 
 class SgmlAttributes:
@@ -76,7 +78,7 @@ class SgmlAttributes:
         # Initialize the known attributes
         for name, processor in attributes_def.items():
             initial_value = initial_values.get(name, None)
-            attr = SgmlAttribute(name, processor, initial_value=initial_value)
+            attr = SgmlAttributeEntry(name, processor, initial_value=initial_value)
             self._attributes[name] = attr
 
         # Store allowed keys to prevent adding new ones
@@ -98,7 +100,7 @@ class SgmlAttributes:
         if key not in self._allowed_keys:
             raise KeyError(f"Cannot delete key '{key}' that wasn't initially defined.")
         # This removes the attribute entirely. If you want to forbid deletion, just raise an error.
-        raise ValueError(f"Cannot remove attribute '{key}' after its initalisation.")
+        raise TypeError(f"Cannot remove attribute '{key}' after its initalisation.")
 
     def __contains__(self, key):
         return key in self._attributes
