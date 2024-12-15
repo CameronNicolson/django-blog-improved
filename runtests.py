@@ -75,8 +75,14 @@ if __name__ == "__main__":
     check_dependencies()
     django.setup()
     TestRunner = get_runner(settings)
-    test_runner = TestRunner()
-    failures = test_runner.run_tests(["tests"])
+    test_runner = TestRunner() 
+    failures = None
+    if len(sys.argv) > 1:
+        from tests.suite import suite
+        argument = sys.argv[1]
+        failures = test_runner.run_suite(suite(argument))
+    else:
+        failures = test_runner.run_tests(["tests"])
     sys.exit(bool(failures))
 
 
