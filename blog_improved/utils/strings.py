@@ -59,3 +59,25 @@ def convert_str_kwargs_to_list(func):
         return func(*args, **kwargs)
     return wrapper
 
+
+class StringAppender(str):
+    def __init__(self, value=None):
+        self._value = value
+
+    def __add__(self, other):
+        other = " " + other
+        return StringAppender(super().__add__(other))
+
+    def __iadd__(self, other):
+        if self._value:
+            self._value = f"{self._value} {other}" 
+        else:
+            self._value = other
+        return self
+
+    def get_value(self):
+        return self._value
+
+    def get_value_list(self):
+        return self._value.split(" ")
+
