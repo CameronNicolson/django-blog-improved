@@ -8,9 +8,10 @@ from blog_improved.sgml import (
         SequenceContentModel, 
         RepetitionControl,
         OmissionRule,
+        SgmlAttribute,
 )
 
-class TestSgml(TestCase):
+class SgmlTestCase(TestCase):
     def test_element_definition(self):
         expected_definition = "<!ELEMENT html - - (head?,body)>"
         element = ElementDefinition(
@@ -47,3 +48,8 @@ class TestSgml(TestCase):
         actual = str(element)
         self.assertEqual(actual, expected_definition)
 
+class SgmlAttributeTestCase(TestCase):
+    def test_attribute_creation(self):
+        id_processor = lambda value: value 
+        attr = SgmlAttribute("id", id_processor, initial_value=None)
+        self.assertEqual(attr.name, "id")

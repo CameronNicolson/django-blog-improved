@@ -6,3 +6,4 @@ from .sgml import LiteralStringValue
 from .sgml import SequenceContentModel
 from .sgml import RepetitionControl
 from .sgml import OmissionRule
+from .sgml_attributes import SgmlAttribute
