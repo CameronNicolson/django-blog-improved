@@ -81,3 +81,36 @@ class StringAppender(str):
     def get_value_list(self):
         return self._value.split(" ")
 
+def to_string_appender(func):
+    """Decorator that ensures the returned value from func is a StringAppender."""
+    def wrapper(value):
+        processed = func(value)
+        if not isinstance(processed, str):
+            processed = str(processed)  # Convert non-string values to string
+        return StringAppender(processed)
+    return wrapper
+
+def strip_whitespace(func):
+    def wrapper(value):
+        if not isinstance(value, str):
+            value = str(value)
+        value = value.strip()
+        return func(value)
+    return wrapper
+
+def normalise_extra_whitespace(func):
+    def wrapper(value):
+        parts = value.split()
+        normalized = " ".join(parts)
+        return func(normalized)
+    return wrapper
+
+def validate_regex(pattern):
+    from re import match
+    def decorator(func):
+        def wrapper(value):
+            if not match(pattern, value):
+                raise ValueError(f"Value '{value}' does not match pattern {pattern}")
+            return func(value)
+        return wrapper
+    return decorator

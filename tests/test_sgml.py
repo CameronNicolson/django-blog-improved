@@ -1,20 +1,28 @@
 from django.test import TestCase
 from datetime import datetime
+from blog_improved.utils.strings import (
+    to_string_appender,
+    normalise_extra_whitespace,
+    validate_regex,
+    strip_whitespace
+)
 from blog_improved.sgml import (
-        ContentModel, 
-        ChoiceContentModel,
-        ElementDefinition, 
-        EntityDefinition,
-        LiteralStringValue,
-        SequenceContentModel, 
-        RepetitionControl,
-        OmissionRule,
-        SgmlAttributeEntry,
-        SgmlAttributes
+    ContentModel, 
+    ChoiceContentModel,
+    ElementDefinition, 
+    EntityDefinition,
+    LiteralStringValue,
+    SequenceContentModel, 
+    RepetitionControl,
+    OmissionRule,
+    SgmlAttributeEntry,
+    SgmlAttributes
 )
 
 # Example processors
-def ID(value):
+@strip_whitespace
+@validate_regex(r'^[A-Za-z][A-Za-z0-9\-_:\.]*$')
+def id_processor(value):
     # Simple processor that requires value to start with a letter
     import re
     pattern = r'^[A-Za-z].*$'
@@ -22,7 +30,10 @@ def ID(value):
         raise ValueError("Invalid ID format.")
     return value
 
-def CDATA(value):
+@to_string_appender
+@normalise_extra_whitespace
+@strip_whitespace
+def classname_processor(value):
     return value
 
 def DATETIME(value):
@@ -85,7 +96,7 @@ class SgmlAttributeEntryTestCase(TestCase):
         self.assertIsNone(attr.value)
 
     def test_attribute_with_initial_value(self):
-        attr = SgmlAttributeEntry("class", CDATA, initial_value="main-header")
+        attr = SgmlAttributeEntry("class", classname_processor, initial_value="main-header")
         self.assertEqual(attr.value, "main-header")
 
     def test_processor_application(self):
@@ -99,7 +110,7 @@ class SgmlAttributeEntryTestCase(TestCase):
 
     def test_processor_validation(self):
         # ID requires value to start with a letter
-        attr = SgmlAttributeEntry("id", ID)
+        attr = SgmlAttributeEntry("id", id_processor)
         with self.assertRaises(ValueError):
             attr.value = "1invalid"
 
@@ -108,7 +119,7 @@ class SgmlAttributeEntryTestCase(TestCase):
         self.assertEqual(attr.value, "validId")
 
     def test_str_and_repr(self):
-        attr = SgmlAttributeEntry("id", CDATA, initial_value="header1")
+        attr = SgmlAttributeEntry("id", id_processor, initial_value="header1")
         self.assertEqual(str(attr), "header1")
         self.assertIn("SgmlAttributeEntry(name='id', value='header1')", repr(attr))
 
@@ -116,8 +127,8 @@ class SgmlAttributeEntryTestCase(TestCase):
 class SgmlAttributesTestCase(TestCase):
     def setUp(self):
         self.attributes_def = {
-            "id": ID,
-            "class": CDATA,
+            "id": id_processor,
+            "class": classname_processor,
             "datetime": DATETIME
         }
 

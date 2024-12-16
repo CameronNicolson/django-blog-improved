@@ -1,33 +1,3 @@
-from blog_improved.utils.strings import StringAppender
-
-def ID(value):
-    """ID and NAME tokens must begin with a letter ([A-Za-z]) and may be followed by any number of letters, digits ([0-9]), hyphens ("-"), underscores ("_"), colons (":"), and periods (".")."""
-    pass 
-
-# Processor Functions
-def ID(value):
-    """Ensure value matches SGML ID rules:
-    ID and NAME tokens must begin with a letter ([A-Za-z]) and may be followed by
-    letters, digits, hyphens, underscores, colons, and periods.
-    """
-    import re
-    pattern = r'^[A-Za-z][A-Za-z0-9\-_:\.]*$'
-    if not re.match(pattern, value):
-        raise ValueError(f"Invalid ID format for value: {value}")
-    return value
-
-def CDATA(value):
-    """CDATA could be nearly any string."""
-    return value
-
-# Dictionaries of processors
-HTML_CORE_ATTRS = {
-    "id": ID,          # Ensures correct SGML ID format
-    "class": CDATA,    # May hold multiple class tokens
-}
-
-ATTRIBUTE_PROCESSORS = {**HTML_CORE_ATTRS}
-
 class SgmlAttributeEntry:
     """Represents a single SGML attribute with a given processor and value."""
     def __init__(self, name, processor, initial_value=None):
@@ -43,11 +13,7 @@ class SgmlAttributeEntry:
 
     @value.setter
     def value(self, new_value):
-        # Process and store as StringAppender
-        processed = self.processor(new_value)
-        if not isinstance(processed, StringAppender):
-            processed = StringAppender(processed)
-        self._value = processed
+        self._value = self.processor(new_value)
 
     def __str__(self):
         return self.value if self.value is not None else ""
