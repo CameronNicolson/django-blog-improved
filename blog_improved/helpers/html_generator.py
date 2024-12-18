@@ -1,63 +1,54 @@
+import copy
 from django.template.base import Node, NodeList, TextNode
 from django.template.context import Context
-from typing import Optional, Callable, Dict, Any
+from typing import Any, Callable, Union, Dict, List, Optional
 from abc import ABC, abstractmethod 
 from datetime import datetime as std_datetime
+from blog_improved.sgml import SgmlAttributes
 
-class StringAppender:
-    def __init__(self, value=None):
-        self._value = value
+from blog_improved.utils.strings import (
+    to_string_appender,
+    normalise_extra_whitespace,
+    validate_regex,
+    strip_whitespace
+)
+from blog_improved.utils.time import convert_to_iso8601
+from blog_improved.utils.urls import starts_with_uri    
 
-    def __iadd__(self, other):
-        if self._value:
-            self._value = f"{self._value} {other}" 
-        else:
-            self._value = other
-        return self
+@strip_whitespace
+@normalise_extra_whitespace
+@to_string_appender
+def class_processor(value):
+    return value
 
-    def __repr__(self):
-        return repr(self._value)
+@strip_whitespace
+@validate_regex(r'^[A-Za-z][A-Za-z0-9\-_:\.]*$')
+def id_processor(value):
+    return value
 
+@strip_whitespace
+def uri_processor(value):
+    return value
 
-class SgmlAttributes(dict):
+def CDATA(value):
+    return value
 
-    RESERVED_KEYS = {"class",}
-
-    def __init__(self, *args, **kwargs):
-        # Ensure reserved keys with default values into kwargs if not provided
-        for key in self.RESERVED_KEYS:
-            if key not in kwargs:
-                initial_value = ""
-            else:
-                initial_value = kwargs[key]
-            kwargs[key] = StringAppender(initial_value)
-
-        super().__init__(*args, **kwargs)
-
-    def __setitem__(self, key, value):
-        # Ensure values are StringAppender objects
-        if not isinstance(value, StringAppender):
-            value = StringAppender(value)
-        super().__setitem__(key, value)
-
-    def __getitem__(self, key):
-        return super().__getitem__(key)
-
-class HtmlComponent:
+class SgmlComponent:
     def __init__(self, 
-        open_tag: Optional[Callable[..., str]] = None,
-        close_tag: Optional[Callable[..., str]] = None,
-        base_tag: Optional[str] = None,
-        level_range: Optional[range] = None):
-
-        self.open_tag = open_tag
-        self.close_tag = close_tag
+        tag:str = None,
+        attrs:Optional[SgmlAttributes] = None,
+        tag_omissions:str = None,
+        level_range: Optional[range] = None):       
+        
+        self.tag = tag
+        self.attrs = attrs
+        self.tag_omissions = tag_omissions
         self.level_range = level_range
 
 class SgmlNode(Node, ABC):
     def __init__(self, nodelist: NodeList=None):
         self.nodelist = nodelist or NodeList()  # Initialize the nodelist
-
+    
     @abstractmethod
     def add_child(self, node):
         raise NotImplemented()
@@ -67,25 +58,84 @@ class HtmlNode(SgmlNode):
 
     def __init__(self, 
                  name: str,
-                 component: HtmlComponent,
+                 component: SgmlComponent,
                  attributes: Optional[SgmlAttributes] = None,
                  **kwargs):
         super().__init__()
         self.component = component
-        self.attributes = attributes or SgmlAttributes()
+        self.child_counts = dict()
+   
+    @property
+    def attrs(self):
+        return self.component.attrs
 
     def add_child(self, node:Node):
-        self.nodelist.append(node)
+        # comply with the occurence policy
+        #occurrence_rule = self.component.definition.occurence or "*"
+       # current_count = self.child_counts.get(node.name, 0)
 
-    def render(self, context: Context=Context()) -> str:
+        #num_occurence = self.occurence.get(node.name, None)
+        # Enforce occurrence rules
+        #if occurrence_rule == "?" and current_count >= 1:
+        #    raise ValueError(f"Element '{node.name}' can only appear once.")
+        #elif occurrence_rule == "+" and current_count == 0:
+        #    pass  # Adding first occurrence is valid
+        #elif occurrence_rule == "+" and current_count >= 1:
+        #    pass  # Adding repeated occurrences is valid
+        #elif occurrence_rule == "*" and current_count >= 0:
+        #    pass  # Adding any number of occurrences is valid
+        #else:
+        #    raise ValueError(f"Invalid occurrence '{occurrence_rule}' for '{node.name}'.")
+
+        # self.child_counts[node.name] = current_count + 1
+        self.nodelist.append(node)
+    
+    def get_style_class(self) -> list[str]:
+        classes = []
+        if self.attributes:
+          classes = self.attributes.get("class", None)
+        if classes:
+            return classes.get_as_list()
+        return classes
+
+    def open_tag(self):
+        # clean spaces between chars
+        omission_parts = self.component.tag_omissions.replace(" ", "")
+        omission = omission_parts[0] 
+        if omission in ["-", "0"]:
+            return self.component.tag
+        return None
+
+    def end_tag(self):
+        omission_parts = self.component.tag_omissions.replace(" ", "")
+        omission = omission_parts[1] 
+        if omission in ["-", "0"]:
+            return self.component.tag
+        return None
+
+    def render(self, context: Context=Context(), open_tag=True, end_tag=True) -> str:
         """Render the HTML node and its children recursively"""
-        open_tag = self.component.open_tag(self.attributes) if self.component.open_tag else ""
-        close_tag = self.component.close_tag() if self.component.close_tag else ""
+        if open_tag:
+            open_tag = self.open_tag() 
+        else:
+            open_tag = ""
+        if self.component.attrs:
+            attributes = format_attributes(self.component.attrs)
+        else:
+            attributes = ""
+        if end_tag:
+            end_tag = self.end_tag()
+        else:
+            end_tag = ""
         context = Context(dict_=None, autoescape=True, use_l10n=None, use_tz=None)
-        children_html = self.nodelist.render(context)
-        return f"{open_tag}{children_html}{close_tag}"
+
+        children = "".join(child.render(Context({})) for child in self.nodelist)
+        #children = self.nodelist.render(context)
+
+        return f"<{open_tag}{attributes}>{children}</{end_tag}>"
 
 class SgmlGenerator(ABC):
+
     @abstractmethod
     def create_node(self, 
                    tag_type: str, 
@@ -100,24 +150,28 @@ class SgmlGenerator(ABC):
                          open_tag: Optional[Callable[..., str]] = None,
                          close_tag: Optional[Callable[..., str]] = None):
         raise NotImplemented()
- 
+
+COREATTRS = {"id": id_processor, "class": class_processor}
+
+
 class HtmlGenerator(SgmlGenerator):
     def __init__(self):
         self._internal_count = 0
         self._components = {
-            "hyperlink": make_standard_element('a'),
-            "address": make_standard_element("address"),
-            "article": make_standard_element("article"),
-            "figure": make_standard_element("figure"),
-            "container": make_standard_element("div"),
-            "paragraph": make_standard_element("p"), 
-            "list": make_standard_element("ul"),
-            "list_item": make_standard_element("li"),
-            "ordered_list": make_standard_element("ol"),
-            "image": make_contained_element("img"),
-            "vertical-space": make_contained_element("br"),
-            "heading": make_hierarchical_element("h", range(1, 7)),
-            "time": make_datetime_element("time"),
+                "hyperlink": make_standard_element("a", {"id": id_processor, "class": class_processor, "href": uri_processor, "rel": CDATA  }),
+            "address": make_standard_element("address", COREATTRS),
+            "article": make_standard_element("article", COREATTRS),
+            "figure": make_standard_element("figure", COREATTRS),
+            "container": make_standard_element("div", COREATTRS),
+            "inline_container": make_standard_element("span", COREATTRS),
+            "paragraph": make_standard_element("p", COREATTRS), 
+            "list": make_standard_element("ul", COREATTRS),
+            "list_item": make_standard_element("li", COREATTRS),
+            "ordered_list": make_standard_element("ol", COREATTRS),
+            "image": make_standard_element("img", COREATTRS),
+            "vertical-space": make_standard_element("br", COREATTRS, tag_omissions="- O"),
+            "heading": make_hierarchical_element("h1|h2|h3|h4|h5|h6", COREATTRS),
+            "time": make_standard_element("time", {"id": id_processor, "datetime": convert_to_iso8601, "class": class_processor}),
         }
     
     def create_node(self, 
@@ -127,34 +181,44 @@ class HtmlGenerator(SgmlGenerator):
         """Create a node with the appropriate component"""
         if tag_type not in self._components:
             raise ValueError(f"Unknown tag type: {tag_type}")
-        name = tag_type
         component = self._components[tag_type]
-        
-        # Handle hierarchical elements (e.g., headings)
+        node_name = "" 
+        new_attrs = copy.deepcopy(component.attrs)
+        new_component = SgmlComponent(
+                tag=component.tag,
+                attrs=new_attrs,
+                tag_omissions=component.tag_omissions,
+            )
+        if attributes:
+            node_name = attributes.get("id", self._internal_count)
+            new_component.attrs.update(attributes)
+        else:
+            node_name = self._internal_count
+
+      
+        # If hierarchical, adjust component tag based on level
         if component.level_range:
             level = kwargs.get("level")
             if level is None:
                 raise ValueError(f"Level is required for hierarchical elements like '{tag_type}'")
             if level not in component.level_range:
                 raise ValueError(f"Invalid level {level} for '{tag_type}'. Must be in range {component.level_range}.")
-            # Use level to modify the component dynamically
-            name = f"{tag_type}{level}"
-    # Use level to modify the component dynamically
-            original_open_tag = component.open_tag
-            original_close_tag = component.close_tag
-            component = HtmlComponent(
-                        open_tag=lambda attrs, level=level: original_open_tag(attrs, level) if original_open_tag else "",
-                        close_tag=lambda level=level: original_close_tag(level) if original_close_tag else "",
-                        level_range=component.level_range)
+
+            # Split tags and choose the correct one
+            all_tags = component.tag.split("|")
+            chosen_tag = all_tags[level - 1]
+            new_component = SgmlComponent(
+                tag=chosen_tag,
+                attrs=new_attrs,
+                tag_omissions=component.tag_omissions,
+                level_range=component.level_range,
+            )
+
         self._increment_count()
-        if attributes:
-            node_name = attributes.get("id", self._internal_count)
-        else:
-            node_name = self._internal_count
+ 
         return HtmlNode(
             name=node_name,
-            component=component,
-            attributes=SgmlAttributes(**attributes)
+            component=new_component,
         )
 
     def _increment_count(self, n:int=1):
@@ -166,13 +230,13 @@ class HtmlGenerator(SgmlGenerator):
                          open_tag: Optional[Callable[..., str]] = None,
                          close_tag: Optional[Callable[..., str]] = None):
         """Register a new component type"""
-        self._components[name] = HtmlComponent(open_tag, close_tag)
+        self._components[name] = SgmlComponent(open_tag, close_tag)
 
 # Helper function for attribute formatting
 def format_attributes(attrs: Optional[Dict[str, Any]] = None) -> str:
     if not attrs:
         return ""
-    return " " + " ".join(f'{k}="{v}"'.replace("\'", "")  for k, v in attrs.items())
+    return " " + " ".join(f'{k}="{v}"'.replace("\'", "")  for k, v in attrs.items() if v is not None)
 
 
 class MarkupFactory(ABC):
@@ -207,17 +271,17 @@ class BlogHtmlFactory(MarkupFactory):
         from blog_improved.helpers.hyperlink_wrapper import hyperlink_wrapper
         article_node = self._markup.create_node("article", attributes={"class": "article"})
         if featured:
-            article_node.attributes["class"] += "article--featured"
+            article_node.attrs["class"] += "article--featured"
         
         if title:
-            title_node = self._markup.create_node("heading", attributes={"class": f"article__title"}, level=1)
+            title_node = self._markup.create_node("heading", attributes={"class": "article__title"}, level=1)
             title_text_node = TextNode(title)
             title_text_node = hyperlink_wrapper(self._markup, article_url, title_text_node)
             title_node.add_child(title_text_node)
             article_node.add_child(title_node)
 
         if headline: 
-            headline_node = self._markup.create_node("heading", attributes={"class": f"article__headline"}, level=2)
+            headline_node = self._markup.create_node("heading", attributes={"class": "article__headline"}, level=2)
             headline_node.add_child(TextNode(headline))
             article_node.add_child(headline_node)
 
@@ -250,64 +314,36 @@ class BlogHtmlFactory(MarkupFactory):
         """Delegate node creation to the internal HtmlGenerator."""
         return self._markup.create_node(tag_type, attributes, **kwargs)
 
-def make_contained_element(tag: str) -> HtmlComponent:
+def make_standard_element(name: str, attrs:dict, tag_omissions:str="--") -> SgmlComponent:
     """Factory for void elements like <img>, <br>, <input>"""
-    return HtmlComponent(
-        open_tag=lambda attrs: f"<{tag}{format_attributes(attrs)}/>",
-        close_tag=None
-    )
-
-def make_standard_element(tag: str) -> HtmlComponent:
-    """Factory for standard elements like <div>, <p>"""
-    return HtmlComponent(
-        open_tag=lambda attrs: f"<{tag}{format_attributes(attrs)}>",
-        close_tag=lambda: f"</{tag}>"
-    )
-
-def dodo():
-    return "222"
-
-def make_datetime_element(tag: str) -> HtmlComponent:
-    def format_datetime(attributes):
-        datetime = attributes.get("datetime", None)
-        if datetime:
-            if isinstance(datetime, std_datetime):
-                datetime = datetime.isoformat()
-            elif isinstance(datetime, str):
-                datetime = datetime
-            else: 
-                raise ValueError()
-        attributes["datetime"] = datetime
-        return ""
-
-    def open_tag(attrs):
-        format_datetime(attrs)
-        return f"<{tag}{format_attributes(attrs)}>"
-
-    return HtmlComponent(
-        open_tag=open_tag,
-        close_tag=lambda: f"</{tag}>"
+    attrs = SgmlAttributes(attributes_def=attrs)
+    return SgmlComponent(
+        tag=name,
+        attrs=attrs,
+        tag_omissions=tag_omissions
     )
 
 
 
-def make_hierarchical_element(tag: str, level_range: range) -> HtmlComponent:
-    """Create a hierarchical component with level support."""
-    if not level_range:
-        raise ValueError("Level range must not be empty.")
+#def make_standard_element(tag: str) -> SgmlComponent:
+#    """Factory for standard elements like <div>, <p>"""
+#    return SgmlComponent(
+#        open_tag=lambda attrs: f"<{tag}{format_attributes(attrs)}>",
+#        close_tag=lambda: f"</{tag}>"
+#    )
 
-    def open_tag(attrs: Optional[Dict[str, Any]], level:int) -> str:
-        if level not in level_range:
-            raise ValueError(f"Level {level} is outside the valid range: {level_range}")
-        return f"<{tag}{level}{format_attributes(attrs)}>"
-
-    def close_tag(level: int) -> str:
-        if level not in level_range:
-            raise ValueError(f"Level {level} is outside the valid range: {level_range}")
-        return f"</{tag}{level}>"
-
-    return HtmlComponent(
-        open_tag=lambda attrs=None, level=None: open_tag(attrs, level) if level else "",
-        close_tag=lambda level=None: close_tag(level) if level else "",
-        level_range=level_range  # Save the range for potential future use
+def make_hierarchical_element(tags: str, attrs: Dict[str, Callable]) -> SgmlComponent:
+    """
+    Create a hierarchical component with level support.
+    `tags` is a string like "H1|H2|H3|H4|H5|H6".
+    """
+    name_list = tags.split("|")
+    level_range = range(1, len(name_list) + 1)
+    attrs = SgmlAttributes(attributes_def=attrs)
+    return SgmlComponent(
+        tag=tags,  # Store all possible tags here, separated by |
+        attrs=attrs,
+        tag_omissions="--",
+        level_range=level_range
     )
+

@@ -1,3 +1,5 @@
+from functools import wraps
+
 def split_string(input_string, delimiter=','):
     """
     Splits a string into a list of strings based on the specified delimiter, 
@@ -69,11 +71,12 @@ class StringAppender(str):
         return StringAppender(super().__add__(other))
 
     def __iadd__(self, other):
-        if self._value:
-            self._value = f"{self._value} {other}" 
-        else:
-            self._value = other
-        return self
+        return self + other
+   #     if self._value:
+    #        other = f"{self._value} {other}" 
+     #   else:
+      #      self._value = other
+       # return self + 
 
     def get_value(self):
         return self._value
@@ -82,27 +85,35 @@ class StringAppender(str):
         return self._value.split(" ")
 
 def to_string_appender(func):
-    """Decorator that ensures the returned value from func is a StringAppender."""
-    def wrapper(value):
-        processed = func(value)
-        if not isinstance(processed, str):
-            processed = str(processed)  # Convert non-string values to string
-        return StringAppender(processed)
-    return wrapper
-
-def strip_whitespace(func):
+#    """Decorator that ensures the returned value from func is a StringAppender."""
     def wrapper(value):
         if not isinstance(value, str):
             value = str(value)
-        value = value.strip()
+        value = StringAppender(value)
         return func(value)
     return wrapper
+
+def strip_whitespace(func_or_value):
+    # If the input is callable, treat it as a decorator
+    if callable(func_or_value):
+        @wraps(func_or_value)
+        def wrapper(value):
+            if not isinstance(value, str):
+                value = str(value)
+            value = value.strip()
+            return func_or_value(value)
+        return wrapper
+    # Otherwise, treat it as a normal function
+    else:
+        if not isinstance(func_or_value, str):
+            func_or_value = str(func_or_value)
+        return func_or_value.strip()
 
 def normalise_extra_whitespace(func):
     def wrapper(value):
         parts = value.split()
-        normalized = " ".join(parts)
-        return func(normalized)
+        normalised = " ".join(parts)
+        return func(normalised)
     return wrapper
 
 def validate_regex(pattern):

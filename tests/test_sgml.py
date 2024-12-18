@@ -19,22 +19,7 @@ from blog_improved.sgml import (
     SgmlAttributes
 )
 
-# Example processors
-@strip_whitespace
-@validate_regex(r'^[A-Za-z][A-Za-z0-9\-_:\.]*$')
-def id_processor(value):
-    # Simple processor that requires value to start with a letter
-    import re
-    pattern = r'^[A-Za-z].*$'
-    if not re.match(pattern, value):
-        raise ValueError("Invalid ID format.")
-    return value
-
-@to_string_appender
-@normalise_extra_whitespace
-@strip_whitespace
-def classname_processor(value):
-    return value
+from blog_improved.helpers.html_generator import id_processor, class_processor
 
 def DATETIME(value):
     # Validate as ISO datetime
@@ -96,7 +81,7 @@ class SgmlAttributeEntryTestCase(TestCase):
         self.assertIsNone(attr.value)
 
     def test_attribute_with_initial_value(self):
-        attr = SgmlAttributeEntry("class", classname_processor, initial_value="main-header")
+        attr = SgmlAttributeEntry("class", class_processor, initial_value="main-header")
         self.assertEqual(attr.value, "main-header")
 
     def test_processor_application(self):
@@ -128,7 +113,7 @@ class SgmlAttributesTestCase(TestCase):
     def setUp(self):
         self.attributes_def = {
             "id": id_processor,
-            "class": classname_processor,
+            "class": class_processor,
             "datetime": DATETIME
         }
 

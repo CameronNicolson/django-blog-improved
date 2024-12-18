@@ -85,3 +85,8 @@ class SgmlAttributes:
         items_repr = ", ".join(f"{k}={v.value!r}" for k, v in self._attributes.items())
         return f"{cls_name}({items_repr})"
 
+    def update(self, values):
+        for key, value in values.items():
+            self.__setitem__(key, value)
+
+
