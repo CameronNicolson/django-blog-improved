@@ -1,5 +1,5 @@
 from blog_improved.themes.base.base_theme import BaseTheme
-from blog_improved.conf import get_theme_settings
+from blog_improved.conf.themes import get_theme_settings
 
 # Globals to hold the theme instance
 _theme_instance = None

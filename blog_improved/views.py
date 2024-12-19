@@ -6,7 +6,7 @@ from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.detail import SingleObjectMixin
 from django.urls import reverse
 from django.contrib.auth.models import User
-from blog_improved.conf import HOMEPAGE_LATESTPOSTS_SIZE as latest_post_limit
+from blog_improved.conf.models import HOMEPAGE_LATESTPOSTS_SIZE as latest_post_limit
 from .models import BlogGroup, Post, PostViaGit, PostShoutout, UserProfile, Status
 from .forms import FilterForm
 from taggit.models import Tag
