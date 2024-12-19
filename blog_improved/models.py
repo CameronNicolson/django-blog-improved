@@ -10,7 +10,7 @@ from django.urls import reverse
 from django.utils.text import slugify
 from blog_improved.conf.models import USER_PUBLIC_PROFILE, AUTHOR_DEFAULT_GROUP
 from taggit.managers import TaggableManager
-#from taggit.models import Tag
+from taggit.models import Tag
 from phonenumber_field.modelfields import PhoneNumberField
 from django.db.models.signals import pre_save, post_save, pre_init
 from django.dispatch import receiver
