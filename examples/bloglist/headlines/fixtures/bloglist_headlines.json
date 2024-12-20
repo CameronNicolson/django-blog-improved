@@ -1,0 +1,32 @@
+[
+  {
+    "model": "auth.user",
+    "pk": 2,
+    "fields": {
+      "username": "sean.tuffelson",
+      "password": "ilovethenews",
+      "email": "sean@localnews.local",
+      "is_active": true,
+      "is_staff": true,
+      "is_superuser": false,
+      "first_name": "Sean",
+      "last_name": "Tuffelson",
+      "date_joined": "2022-07-08T09:42:45Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "blog_improved.post",
+    "pk": 1,
+    "fields": {
+      "title": "Returned cat, Mr Furball, discovered after long hunt",
+      "headline": "A Floridian family were 'overwhelemed' with joy after finding their estranged cat.",
+      "author": 2,
+      "created_on": 2024-22-10, 
+      "published_on": 2024-23-10,
+      "is_featured": true,
+      "category": 1
+    }
+  }
+]

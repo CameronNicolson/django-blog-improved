@@ -1,0 +1,23 @@
+{% load static %}
+<!DOCTYPE HTML> 
+<html>
+	<head>
+	  <meta charset="UTF-8">
+    	  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="{% static 'css/bootstrap.css' %}" />
+	 <title>{% block title %}Default Title{% endblock %}</title>
+
+	</head>
+	<body>
+	{% block header %}
+	<header>
+		<h1>Examples</h1>
+	</header>
+	{% endblock %}
+	
+	<main id="main-content" class="mt-4 mb-4" rel="main">
+		{% block content %}
+		{% endblock %}
+	</main>
+	</body>
+</html>
