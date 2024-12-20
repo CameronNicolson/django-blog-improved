@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.sessions",
     "django.contrib.sites",
+    "redirects",
     "taggit",
     "blog_improved"
 ]
