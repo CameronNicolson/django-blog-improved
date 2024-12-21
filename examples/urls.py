@@ -25,15 +25,12 @@ examples = getattr(settings, "EXAMPLES", [])
 
 def dynamic_template_view(request, *args, **kwargs):
     # Get the last part of the URL and construct the template name
-    template_name = f"{kwargs['last_part']}.html"
+    title = kwargs["last_part"]
+    template_name = f"{title}.html"
 
     try:
-        # Render the template
-        print(template_name)
-        print(settings.TEMPLATES)
-        return render(request, template_name)
+        return render(request, template_name, context={"title": title})
     except Exception as e:
-        # Raise a 404 if the template does not exist
         raise e
 
 urlpatterns = [

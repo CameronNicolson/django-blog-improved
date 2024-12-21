@@ -7,11 +7,17 @@
 {% block header %} {% endblock %}
 {% block content %}
 <div class="container">
-<h2>Headlines</h2>
+	<h2 class="mb-5">{{ title }}</h2>
 </div>
-<div class="container-fluid">
+<div class="container">
+<pre class="pre">
+<code class="code">
+  &#123;&#37; bloglist &#37;&#125;
+</code>
+</pre>
+
 <div id="preview" class="pt-4">
-{% bloglist name="headlines" featured="True" featured_count="2" max_count="5" %}
+{% bloglist %}
 </div>
 </div>
 {% endblock %}
