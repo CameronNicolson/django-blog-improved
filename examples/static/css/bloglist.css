@@ -1,0 +1,15 @@
+.posts .posts__item {
+    margin-bottom: 20px;
+}
+
+.article--featured::before {
+    content: "Featured";
+    display: inline-block;
+    background-color: #e0e0e0;
+    color: #333333;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-right: 8px;
+    font-size: 0.9em;
+}
