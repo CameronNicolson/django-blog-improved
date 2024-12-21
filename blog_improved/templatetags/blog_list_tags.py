@@ -138,19 +138,23 @@ class BlogListTag(Tag):
 
     def __init__(self, parser, tokens):
         super().__init__(parser, tokens)
-
+    
     def render(self, context):
-        options = self.kwargs.pop("%s_options" % self.name)
-        options.setdefault("max_count", TemplateConstant("-1"))
-        options.setdefault("featured_count", TemplateConstant("-1"))
-        options.setdefault("category", ListValue(TemplateConstant("all")))
-        options.setdefault("name", TemplateConstant("bloglist"))
-        options.setdefault("featured", TemplateConstant(False))
-        options["max_count"] = IntegerValue(options["max_count"]) 
-        options["featured_count"] = IntegerValue(options["featured_count"]) 
-        options["name"] = StringValue(options["name"])
-        self.kwargs = options
-        return super().render(context)
+        try:
+            options = self.kwargs.pop("%s_options" % self.name)
+            options.setdefault("max_count", TemplateConstant("-1"))
+            options.setdefault("featured_count", TemplateConstant("-1"))
+            options.setdefault("category", ListValue(TemplateConstant("all")))
+            options.setdefault("name", TemplateConstant("bloglist"))
+            options.setdefault("featured", TemplateConstant(False))
+            options["max_count"] = IntegerValue(options["max_count"]) 
+            options["featured_count"] = IntegerValue(options["featured_count"]) 
+            options["name"] = StringValue(options["name"])
+            self.kwargs = options
+        except:
+            pass
+        finally:
+            return super().render(context)
 
     def render_tag(self, context, name, max_count, featured_count, category, featured):
         posts = PostListQueryRequest()\
