@@ -300,10 +300,15 @@ class BlogHtmlFactory(MarkupFactory):
             meta_node.add_child(datetime_node)
         
         if category:
-            category_node = TextNode(category)
-            category_link = self._markup.create_node("hyperlink", attributes={"rel": "category"})
-            category_link.add_child(category_node)
-            meta_node.add_child(category_link)
+            divider_text_node = TextNode(" - ")
+            category_text_node = TextNode(category)
+            category_text_node = hyperlink_wrapper(self._markup, category, category_text_node)
+            try:
+                category_text_node.attrs["rel"] = "category"
+            except:
+                pass
+            meta_node.add_child(divider_text_node)
+            meta_node.add_child(category_text_node)
 
         if len(meta_node.nodelist) > 0:
             article_node.add_child(meta_node)
