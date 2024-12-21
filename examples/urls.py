@@ -29,14 +29,23 @@ def dynamic_template_view(request, *args, **kwargs):
 
     try:
         # Render the template
+        print(template_name)
+        print(settings.TEMPLATES)
         return render(request, template_name)
-    except Exception:
+    except Exception as e:
         # Raise a 404 if the template does not exist
-        raise Http404(f"Template '{template_name}' not found.")
-
+        raise e
 
 urlpatterns = [
-        re_path(r"^$", TemplateView.as_view(template_name="index.html", extra_context={"examples": examples})),
-    path("admin/", admin.site.urls),
+    path("", TemplateView.as_view(template_name="index.html", extra_context={"examples": examples})),
     re_path(r"^.*/(?P<last_part>[^/]+)/?$", dynamic_template_view),
 ]
+
+try: 
+    from debug_toolbar.toolbar import debug_toolbar_urls
+    print("Debug Toolbar is now enabled in the examples. This gives better insights into the performance and code lifespan.")
+    urlpatterns = [
+        *debug_toolbar_urls()
+    ] + urlpatterns
+except:
+    pass

@@ -78,6 +78,22 @@ def set_templates(templates, examples):
                     template_config["DIRS"].append(template)
                     break
 
+def set_debug_toolbar(settings):
+    try:
+        from debug_toolbar import toolbar
+    except e:
+        print(e)
+        return
+    print(settings.TEMPLATES)
+    settings.INSTALLED_APPS.append("debug_toolbar")
+    settings.MIDDLEWARE.insert(0, "debug_toolbar.middleware.DebugToolbarMiddleware")
+    # Find the first template backend (DjangoTemplates)
+    for template_engine in settings.TEMPLATES:
+        if template_engine['BACKEND'] == 'django.template.backends.django.DjangoTemplates':
+            # Add the debug context processor dynamically
+            template_engine['OPTIONS']['context_processors'].append(
+            'django.template.context_processors.debug'
+        )
 
 def main():
     """Run administrative tasks."""
@@ -102,6 +118,7 @@ def main():
         EXAMPLES_DIR / "static/",
     ]
     settings.INSTALLED_APPS.append("django.contrib.staticfiles")
+    set_debug_toolbar(settings)
     command = ["django", "testserver"]
     for fixture in get_all_fixtures(settings):
         command.append(fixture)
