@@ -87,6 +87,13 @@ def set_debug_toolbar(settings):
     print(settings.TEMPLATES)
     settings.INSTALLED_APPS.append("debug_toolbar")
     settings.MIDDLEWARE.insert(0, "debug_toolbar.middleware.DebugToolbarMiddleware")
+
+    settings.RENDER_PANELS = True
+
+    settings.DEBUG_TOOLBAR_CONFIG = {
+        "SHOW_TOOLBAR_CALLBACK" : lambda request: True,
+    }
+
     # Find the first template backend (DjangoTemplates)
     for template_engine in settings.TEMPLATES:
         if template_engine['BACKEND'] == 'django.template.backends.django.DjangoTemplates':
