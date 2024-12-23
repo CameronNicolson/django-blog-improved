@@ -102,6 +102,7 @@ class PostListQueryRequest(PostListBuilder):
             raise TypeError(self.__class__.__name__ + " takes a standard number type.")
         if number < 0:
             self._max_size = None
+            raise ValueError(f"The value {number} in {self.__class__.__name__}'s max_size must be a positive number")
         else:
             self._max_size = int(number)
         return self
