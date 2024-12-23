@@ -36,12 +36,32 @@ class BlogListTagTestCase(TestCase):
         bloglist_item_count = len(rendered_list.find_all(class_="posts__item"))
         self.assertEqual(bloglist_item_count, 9)
 
+    def test_bloglisttag_default_order(self):
+        # order should be time newest to oldest
+        template_string = "{% load blog_tags %}{% bloglist %}"
+        template = Template(template_string)
+        context = Context({})
+        render = template.render(context) 
+        rendered = BeautifulSoup(render, 'html.parser') 
+        rendered_list = rendered.find(id="bloglist")
+        self.assertTrue(rendered_list is not None)
+        all_post_times = rendered_list.findAll(class_="article__time--published-date")
+        original_publish_dates = [time["datetime"] for time in all_post_times]
+        sorted_publish_dates  = sorted(original_publish_dates, reverse=True)
+        # test lists are in the same order
+        self.assertEqual(original_publish_dates, 
+                         sorted_publish_dates)
+
+
 
     def test_bloglisttag_invalid_negative_max_count(self):
         template_string = '{% load blog_tags %}{% bloglist max_count="-1" %}'
         template = Template(template_string)
         context = Context({})
         render = template.render(context) 
+        rendered = BeautifulSoup(render, 'html.parser') 
+        rendered_list = rendered.find(id="bloglist")
+        self.assertTrue(rendered_list is not None)
 
     def test_bloglisttag_multiple_categories(self):
         expected_html = self.load_fixture("bloglist_multiple_categories.html") 
