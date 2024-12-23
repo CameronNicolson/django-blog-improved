@@ -120,7 +120,9 @@ class PostListMarkup:
         Default strategy: Each row becomes a <div>, and each cell becomes a <div> inside that row.
         """
         sgml = self._sgml
-        parent_node = sgml.create_node("container", {"class": "posts"})
+        parent_node = sgml.create_node("container", {"id": self._name, 
+                        "class": "posts"
+                    })
         for row in grid.rows():
             row_node = sgml.create_node("container", {"class": "posts__row"})
             for cell in row:
@@ -146,8 +148,8 @@ class PostListMarkup:
         sgml = self._sgml
 
         list_node = sgml.create_node("list", {
-            "class": "posts__list",
-             "id":   f"{self._name}"  
+            "class": "posts",
+            "id":   f"{self._name}"  
         })
 
         for row in grid.rows():
