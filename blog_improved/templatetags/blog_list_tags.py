@@ -15,6 +15,7 @@ from django.template.base import Variable, VariableDoesNotExist
 from blog_improved.posts.posts import PostListQueryRequest
 from blog_improved.posts.post_list_markup import PostListMarkup
 from blog_improved.helpers.html_generator import BlogHtmlFactory, HtmlGenerator
+from blog_improved.posts.post_list_markup_presets import create_post_list_markup, POST_LIST_GRID_PRESETS
 
 register = template.Library()
 
@@ -157,6 +158,10 @@ class BlogListTag(Tag):
             return super().render(context)
 
     def render_tag(self, context, name, max_count, featured_count, category, featured):
+        layout_name = "standard_3by3"
+        if max_count < 0:
+            layout = POST_LIST_GRID_PRESETS[layout_name]
+            max_count = layout["rows"] * layout["columns"]
         posts = PostListQueryRequest()\
                     .max_size(max_count)\
                     .categories(category)\
@@ -166,9 +171,9 @@ class BlogListTag(Tag):
                     .return_type("values_list")\
                     .build()
         htmlgen = BlogHtmlFactory(HtmlGenerator())
-        markup = PostListMarkup(name, posts, 3,3, (33,33,33), htmlgen)
+        markup = create_post_list_markup(name, posts, layout_name, htmlgen)
         markup.build_grid()
-        markup.generate_html(layout_type="flat")
+        markup.generate_html(layout_type="row")
         html = markup.get_rendered()
         return html
 
