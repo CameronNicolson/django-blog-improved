@@ -88,5 +88,11 @@ class SgmlAttributes:
     def update(self, values):
         for key, value in values.items():
             self.__setitem__(key, value)
+    
+    def get(self, key, default=None):
+        value = self.__getitem__(key)
+        if value == "" or value == None:
+            value = default
+        return value
 
 

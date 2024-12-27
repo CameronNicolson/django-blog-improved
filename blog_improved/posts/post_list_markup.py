@@ -124,7 +124,7 @@ class PostListMarkup:
                         "class": "posts"
                     })
         for row in grid.rows():
-            row_node = sgml.create_node("container", {"class": "posts__row"})
+            row_node = sgml.create_node("container", {"class": "row"})
             for cell in row:
                 if cell.content:
                     article_node = self.create_post_article(cell) 
@@ -132,9 +132,10 @@ class PostListMarkup:
                     cell_node = sgml.create_node(
                         "container",
                         {
-                            "class": f"posts__item w{cell.width}",
+                            "class": f"posts__item column",
                         },
                     )
+                    sgml.apply_presentation_attributes(sgml_element=cell_node, width=cell.width, height=cell.height)
                     cell_node.add_child(article_node)
                     row_node.add_child(cell_node)
             parent_node.add_child(row_node)

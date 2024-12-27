@@ -139,11 +139,11 @@ class SgmlGenerator(ABC):
     @abstractmethod
     def create_node(self, 
                    tag_type: str, 
-                   attributes: Optional[Dict[str, Any]] = None, 
+                   attributes: Optional[Dict[str, Any]] = None,
                    **kwargs) -> SgmlNode:
         """Create a node with the appropriate component"""
         raise NotImplemented()
-    
+   
     @abstractmethod
     def register_component(self, 
                          name: str, 
@@ -151,7 +151,7 @@ class SgmlGenerator(ABC):
                          close_tag: Optional[Callable[..., str]] = None):
         raise NotImplemented()
 
-COREATTRS = {"id": id_processor, "class": class_processor}
+COREATTRS = {"id": id_processor, "class": class_processor, "style": CDATA}
 
 
 class HtmlGenerator(SgmlGenerator):
@@ -252,6 +252,12 @@ class MarkupFactory(ABC):
     def create_node(self, tag_type: str, attributes: Optional[Dict[str, Any]] = None, **kwargs) -> SgmlNode:
         pass
 
+    @abstractmethod
+    def apply_presentation_attributes(self, sgml_element, width: int, height: int):
+        """Applies platform-specific presentation attributes to the SGML element."""
+        raise NotImplementedError("Subclasses must implement this method.")
+ 
+
 class BlogHtmlFactory(MarkupFactory):
     def __init__(self, markup_generator: HtmlGenerator):
         self._markup = markup_generator
@@ -318,6 +324,16 @@ class BlogHtmlFactory(MarkupFactory):
     def create_node(self, tag_type: str, attributes: Optional[Dict[str, Any]] = None, **kwargs) -> HtmlNode:
         """Delegate node creation to the internal HtmlGenerator."""
         return self._markup.create_node(tag_type, attributes, **kwargs)
+
+    def apply_presentation_attributes(self, sgml_element, width: int, height: int):
+        
+        if width:
+            sgml_element.attrs["style"] = sgml_element.attrs.get("style", ""
+            ) + f" width: {width}%;"
+        if height:
+            sgml_element.attrs["style"] = sgml_element.attrs.get("style", ""
+                ) + f" height: {height}%;"
+
 
 def make_standard_element(name: str, attrs:dict, tag_omissions:str="--") -> SgmlComponent:
     """Factory for void elements like <img>, <br>, <input>"""
