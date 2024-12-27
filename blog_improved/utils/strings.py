@@ -89,7 +89,12 @@ def to_string_appender(func):
     def wrapper(value):
         if not isinstance(value, str):
             value = str(value)
-        value = StringAppender(value)
+        # split multiple entries e.g "class1 class2"
+        value = iter(value.split(" "))
+        string = StringAppender(next(value))
+        for v in value:
+            string += v 
+        value = string
         return func(value)
     return wrapper
 
