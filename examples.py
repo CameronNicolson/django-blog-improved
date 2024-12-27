@@ -43,16 +43,28 @@ def find_and_parse_entrypoints(path: Path):
 def get_all_fixtures(settings):
     fixture_files = []
     sorted_fixtures = []
+    ignore_dirs = ["html"]
     fixture_order = ["users.yaml", "groups.yaml", "redirects.yaml", "media.yaml", "tags.yaml", "posts.yaml"]
-    preferred = lambda fixture: fixture_order.index(fixture.split("/")[-1]) if fixture.split("/")[-1] in fixture_order else len(fixture_order) 
+
+    # Function to determine the sort order
+    preferred = lambda fixture: fixture_order.index(fixture.split("/")[-1]) if fixture.split("/")[-1] in fixture_order else len(fixture_order)
+
     for fixture_dir in settings.FIXTURE_DIRS:
-        for root, dirs, files in os.walk(fixture_dir):
-            fixture_files = [f"{root}/{f}" for f in files]
-    for i, file in enumerate(fixture_files):
-        if not file.endswith(".yaml"):
-            fixture_files.remove(i)
-    for file in sorted(fixture_files, key=preferred):
-        sorted_fixtures.append(file)
+        # List all files and directories in the root folder
+        for entry in os.listdir(fixture_dir):
+            entry_path = os.path.join(fixture_dir, entry)
+
+            # Skip directories (e.g., "html")
+            if os.path.isdir(entry_path) and entry in ignore_dirs:
+                continue
+
+            # Add files with .yaml extension
+            if os.path.isfile(entry_path) and entry.endswith(".yaml"):
+                fixture_files.append(entry_path)
+
+    # Sort the files based on the preferred order
+    sorted_fixtures = sorted(fixture_files, key=preferred)
+
     return sorted_fixtures
 
 def set_templates(templates, examples):
