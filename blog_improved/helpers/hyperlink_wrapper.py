@@ -8,7 +8,6 @@ def hyperlink_wrapper(sgml:SgmlGenerator, hyperlink:str, prepend_to:Node) -> Nod
         link_node = sgml.create_node(
             "hyperlink",
             attributes={
-                "class": "link",
                 "href": hyperlink,
             })            
         link_node.add_child(prepend_to)
