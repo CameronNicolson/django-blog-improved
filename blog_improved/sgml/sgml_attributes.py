@@ -95,4 +95,16 @@ class SgmlAttributes:
             value = default
         return value
 
-
+    def to_dict(self):
+        """
+        Returns a dictionary representation of the attributes, including
+        the processor and the value.
+        Format: {"attribute_name": {"processor": processor_ref, "value": value_ref}}
+        """
+        return {
+            name: {
+                "processor": entry.processor,
+                "value": entry.value,
+            }
+            for name, entry in self._attributes.items()
+        }

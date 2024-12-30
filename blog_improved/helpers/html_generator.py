@@ -151,27 +151,36 @@ class SgmlGenerator(ABC):
                          close_tag: Optional[Callable[..., str]] = None):
         raise NotImplemented()
 
+    @abstractmethod
+    def remove_component(self, component_name):
+        raise NotImplemented()
+
+    @abstractmethod
+    def get_registered_components(self):
+        raise NotImplemented()
+
 COREATTRS = {"id": id_processor, "class": class_processor, "style": CDATA}
 
 
 class HtmlGenerator(SgmlGenerator):
-    def __init__(self):
+    def __init__(self, element_composer: Callable[[str, dict, str], SgmlComponent]):
+        self._element_composer = element_composer
         self._internal_count = 0
         self._components = {
-                "hyperlink": make_standard_element("a", {"id": id_processor, "class": class_processor, "href": uri_processor, "rel": CDATA  }),
-            "address": make_standard_element("address", COREATTRS),
-            "article": make_standard_element("article", COREATTRS),
-            "figure": make_standard_element("figure", COREATTRS),
-            "container": make_standard_element("div", COREATTRS),
-            "inline_container": make_standard_element("span", COREATTRS),
-            "paragraph": make_standard_element("p", COREATTRS), 
-            "list": make_standard_element("ul", COREATTRS),
-            "list_item": make_standard_element("li", COREATTRS),
-            "ordered_list": make_standard_element("ol", COREATTRS),
-            "image": make_standard_element("img", COREATTRS),
-            "vertical-space": make_standard_element("br", COREATTRS, tag_omissions="- O"),
+                "hyperlink": self._element_composer("a", {"id": id_processor, "class": class_processor, "href": uri_processor, "rel": CDATA  }),
+            "address": self._element_composer("address", COREATTRS),
+            "article": self._element_composer("article", COREATTRS),
+            "figure": self._element_composer("figure", COREATTRS),
+            "container": self._element_composer("div", COREATTRS),
+            "inline_container": self._element_composer("span", COREATTRS),
+            "paragraph": self._element_composer("p", COREATTRS), 
+            "list": self._element_composer("ul", COREATTRS),
+            "list_item": self._element_composer("li", COREATTRS),
+            "ordered_list": self._element_composer("ol", COREATTRS),
+            "image": self._element_composer("img", COREATTRS),
+            "vertical-space": self._element_composer("br", COREATTRS, tag_omissions="- O"),
             "heading": make_hierarchical_element("h1|h2|h3|h4|h5|h6", COREATTRS),
-            "time": make_standard_element("time", {"id": id_processor, "datetime": convert_to_iso8601, "class": class_processor}),
+            "time": self._element_composer("time", {"id": id_processor, "datetime": convert_to_iso8601, "class": class_processor}),
         }
     
     def create_node(self, 
@@ -187,6 +196,7 @@ class HtmlGenerator(SgmlGenerator):
         new_component = SgmlComponent(
                 tag=component.tag,
                 attrs=new_attrs,
+
                 tag_omissions=component.tag_omissions,
             )
         if attributes:
@@ -225,12 +235,16 @@ class HtmlGenerator(SgmlGenerator):
         result = self._internal_count + n
         self._internal_count = result
 
-    def register_component(self, 
-                         name: str, 
-                         open_tag: Optional[Callable[..., str]] = None,
-                         close_tag: Optional[Callable[..., str]] = None):
+    def register_component(self, name: str, component_factory: Callable):
         """Register a new component type"""
-        self._components[name] = SgmlComponent(open_tag, close_tag)
+        self._components[name] = component_factory
+
+    def remove_component(self, name: str):
+        if name in self._components:
+            del self._components[name]
+
+    def get_registered_components(self):
+        return self._components
 
 # Helper function for attribute formatting
 def format_attributes(attrs: Optional[Dict[str, Any]] = None) -> str:
@@ -326,7 +340,6 @@ class BlogHtmlFactory(MarkupFactory):
         return self._markup.create_node(tag_type, attributes, **kwargs)
 
     def apply_presentation_attributes(self, sgml_element, width: int, height: int):
-        
         if width:
             sgml_element.attrs["style"] = sgml_element.attrs.get("style", ""
             ) + f" width: {width}%;"
@@ -335,23 +348,15 @@ class BlogHtmlFactory(MarkupFactory):
                 ) + f" height: {height}%;"
 
 
-def make_standard_element(name: str, attrs:dict, tag_omissions:str="--") -> SgmlComponent:
+def make_standard_element(name: str, attrs:dict, attrs_defaults=None, tag_omissions:str="--") -> SgmlComponent:
     """Factory for void elements like <img>, <br>, <input>"""
-    attrs = SgmlAttributes(attributes_def=attrs)
+    attrs = SgmlAttributes(attributes_def=attrs, initial_values=attrs_defaults)
     return SgmlComponent(
         tag=name,
         attrs=attrs,
         tag_omissions=tag_omissions
     )
 
-
-
-#def make_standard_element(tag: str) -> SgmlComponent:
-#    """Factory for standard elements like <div>, <p>"""
-#    return SgmlComponent(
-#        open_tag=lambda attrs: f"<{tag}{format_attributes(attrs)}>",
-#        close_tag=lambda: f"</{tag}>"
-#    )
 
 def make_hierarchical_element(tags: str, attrs: Dict[str, Callable]) -> SgmlComponent:
     """

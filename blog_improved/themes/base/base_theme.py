@@ -1,3 +1,4 @@
+from typing import Dict, Optional
 from blog_improved.themes.base.theme import Theme, WidthNegotiator
 
 class BaseTheme(Theme):
@@ -7,7 +8,22 @@ class BaseTheme(Theme):
        
         self._width_scale = width_scale if width_scale else { 25: "one-quarter", 33: "one-third", 50: "one-half", 66: "two-thirds", 75: "three-quarters", 100: "full"}
         self._width_negotiator = width_negotiator if width_negotiator else WidthNegotiator(max_offset_percent=20)
+        self._styles: Dict[str, str] = {}
+        self._elements: Dict[str, str] = {}
 
+    def get_element_attributes(self, element_name: str) -> Optional[Dict[str, str]]:
+        """
+        Returns the initial attributes for a given element.
+
+        :param element_name: The HTML element name (e.g., "a", "div").
+        :return: A dictionary of attributes or None if not defined.
+        """
+        return self._elements.get(element_name, {})
+
+    def apply_theme(self, theme):
+        self._name = theme.get("name")
+        self._styles = theme.get("styles")
+        self._elements = theme.get("elements")
 
     def get_column_class(self, size):
         """Returns the appropriate class for a given column size."""

@@ -1,8 +1,26 @@
+from pathlib import Path
 from blog_improved.themes.base.base_theme import BaseTheme
-from blog_improved.conf import get_theme_settings
 
 # Globals to hold the theme instance
 _theme_instance = None
+
+def compute_sha(n):
+    return None
+
+def load_theme(theme_path: Path):
+    sha = "placeholder"
+    current_sha = compute_sha(theme_path)
+
+    if current_sha is None:
+        print("Config file not found. Using default theme settings.")
+        theme = get_theme()
+        theme.apply_theme({"name": "Base Theme", "styles": {}, "elements": {"a": {"class": "link link-offset-3 link-opacity-50-hover"}}})
+    elif sha != current_sha:
+        print("Config file has changed. Loading new settings.")
+        sha = current_sha
+    else:
+        print("Config file unchanged. Using cached theme settings.")
+
 
 def get_theme():
     """
@@ -11,13 +29,12 @@ def get_theme():
     global _theme_instance
 
     if _theme_instance is None:  # Initialize if not already done
-        theme_name = get_theme_settings()
+        theme_name = "fallback"
         # TODO: Handle alternative themes
         if theme_name.lower() == "fallback":
             _theme_instance = BaseTheme()
         else:
             # If alternative themes are implemented later
-            raise ValueError(f"Unknown theme: {theme_name}")
-    else:
-        _theme_instance = BaseTheme()
+            _theme_instance = BaseTheme()
     return _theme_instance
+
