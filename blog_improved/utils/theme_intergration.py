@@ -1,8 +1,12 @@
 from blog_improved.helpers.html_generator import SgmlComponent, make_standard_element
+from blog_improved.sgml.sgml_attributes import SgmlAttributeEntry, SgmlAttributes
+from blog_improved.themes.settings import get_theme
 
 def make_themed_element(name: str, attrs: dict, attrs_defaults:dict = None, tag_omissions: str = "--") -> SgmlComponent:
     # TODO: return a type of sgmlcomponent suited to themes that change
-    return make_standard_element(name, attrs, attrs_defaults, tag_omissions)
+    theme = get_theme()
+    attrs = ThemableSgmlAttributes(attrs, attrs_defaults, theme)
+    return SgmlComponent(name, attrs, tag_omissions)
 
 def merge_attributes(sgml_attrs: dict, themed_attrs: dict) -> dict:
     """
@@ -73,3 +77,64 @@ def integrate_theme_with_generator(theme, generator):
 
         # Re-register the component with themed attributes
         generator.register_component(key, element)
+
+class ThemableSgmlAttributeEntry(SgmlAttributeEntry):
+    """Represents a single SGML attribute with theme integration."""
+
+    def __init__(self, name, processor, theme=None, initial_value=None):
+        super().__init__(name, processor, initial_value)
+        self.theme = theme  # Store the theme instance
+
+    @SgmlAttributeEntry.value.setter
+    def value(self, new_value):
+        """
+        Sets the value, checking the theme first.
+        If the theme has a value for this attribute, merge it with the provided value.
+        """
+        theme_value = None
+        print("checking if theme")
+        if self.theme:
+            print("checking the new_value")
+            print(new_value)
+            theme_value = self.theme.get_styles().get(new_value, None)
+
+        # Merge theme value and new value if applicable
+        if self.name == "class" and theme_value:
+            # Concatenate class attributes with a space
+            new_value = f"{theme_value} {new_value}".strip()
+        elif theme_value:
+            # Use the theme value as a fallback
+            new_value = theme_value
+
+        # Set the processed value
+        self._value = self.processor(new_value)
+
+class ThemableSgmlAttributes(SgmlAttributes):
+    """Holds a collection of themable SGML attributes."""
+
+    def __init__(self, attributes_def=None, initial_values=None, theme=None):
+        """
+        :param attributes_def: dict of {attribute_name: processor_function}
+        :param initial_values: dict of {attribute_name: initial_value}
+        :param theme: The theme instance providing attribute defaults.
+        """
+        self.theme = theme  # Store the theme instance
+        super().__init__(attributes_def, initial_values)
+
+    def _create_entry(self, name, processor, initial_value=None):
+        """
+        Override the entry creation to use ThemableSgmlAttributeEntry.
+        """
+        return ThemableSgmlAttributeEntry(
+            name=name, processor=processor, theme=self.theme, initial_value=initial_value
+        )
+
+    def __setitem__(self, key, value):
+        """
+        Override to apply theme-aware logic when setting an attribute value.
+        """
+        if key not in self._allowed_keys:
+            raise KeyError(f"Cannot add new attribute '{key}' after initialization.")
+
+        # Delegate to the themable entry logic
+        self._attributes[key].value = value

@@ -20,6 +20,9 @@ class BaseTheme(Theme):
         """
         return self._elements.get(element_name, {})
 
+    def get_styles(self):
+        return self._styles
+
     def apply_theme(self, theme):
         self._name = theme.get("name")
         self._styles = theme.get("styles")
