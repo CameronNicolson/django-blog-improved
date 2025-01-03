@@ -85,14 +85,37 @@ class RepetitionControl:
     def __str__(self):
         return str(self.operator)
 
+class Parameter:
+    def __init__(self, name: str, value: str):
+        self._param_name = name
+        self._param_value = value
+
+    def param_name(self) -> str:
+        return self._param_name
+
+    def param_value(self):
+        return self._param_value
+
 @dataclass 
 class Declaration:
-    name:str
     keyword:str
     params:list[Any]
+    name:Union[str, Parameter] = ""
     open_delimiter:str = "<!"
     close_delimiter:str = ">"
 
+    @property
+    def name(self) -> str:
+        """Intercept access to the `name` property."""
+        if isinstance(self._name, Parameter):
+            return self._name.param_name()  # Use param_name() for Parameter instances
+        return self._name  # Return the raw name if it's a string
+
+    @name.setter
+    def name(self, value: Union[str, Parameter]):
+        """Allow setting the `name` property."""
+        self._name = value
+   
     def __str__(self):
         params = " ".join(str(p) for p in self.params)
         # Convert name to string or evaluate if it's a ContentModel
@@ -106,21 +129,29 @@ class Declaration:
         return f"{self.open_delimiter}{self.keyword} {name_str} {params}{self.close_delimiter}"
 
 @dataclass
-class EntityDefinition(Declaration):
+class EntityDefinition(Declaration, Parameter):
     keyword = "ENTITY"
     parameter: bool = False
     value:any = None
-   
+     
     def __init__(self, name, value, *args, parameter=False):
         super().__init__(name=name, keyword="ENTITY", params=(value, *args))
         self.parameter = parameter
         self.value = value
+        self._name = name 
+        self._value = value
 
     def __str__(self):
         """Generates the SGML declaration string."""
         param_prefix = "%" if self.parameter else ""
         self.name = param_prefix + " " + self.name
         return super().__str__()
+    
+    def param_name(self):
+        return self.value
+
+    def param_value(self):
+        return self
 
 class EntityRegistry:
     """Manages registration and lookup of parameter entities."""
@@ -199,7 +230,7 @@ class ChoiceContentModel(ContentModel):
 
 @dataclass
 class ElementDefinition(Declaration):
-    name:str
+
     content:ContentModel = EmptyContentModel
     tag_ommission_rules:str = ""
 
@@ -207,4 +238,3 @@ class ElementDefinition(Declaration):
         super().__init__(name=name, keyword="ELEMENT", params=(tag_omission_rules,content))
         self.content = content
         self.tag_omission_rules = tag_omission_rules
-

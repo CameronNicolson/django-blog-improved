@@ -80,6 +80,27 @@ class SgmlTestCase(TestCase):
         # Assert the SGML matches the expected output
         self.assertEqual(actual, expected_definition)
 
+    def test_element_heading_equality(self):
+        # Define the expected SGML declaration
+        expected_definition = "<!ELEMENT (%heading;) - - (%inline;)*>"
+
+        # Define the entity for %heading;
+        heading_entity = EntityDefinition(
+            "heading",
+            LiteralStringValue(components=[ChoiceContentModel(elements=["H1", "H2", "H3", "H4", "H5", "H6"], group_repetition=RepetitionControl(""))]),
+            parameter=True
+        )
+        # Define the element that uses the heading entity
+        element = ElementDefinition(
+            name=heading_entity,
+            content=ContentModel(elements=["%inline;"], group_repetition=RepetitionControl("*")),
+            tag_omission_rules=OmissionRule("-", "-")
+        )
+        self.assertTrue("H1" == element.name, "Expected H1 to match component name H1|H2|H3")
+        self.assertTrue("H2" == element.name, "Expected H2 to match component name H1|H2|H3")
+        self.assertTrue("H3" == element.name, "Expected H3 to match component name H1|H2|H3")
+ 
+
     def test_entity_creation_declaration(self):
         expected_definition = "<!ENTITY % inline \"#PCDATA | %fontstyle; | %phrase; | %special; | %formctrl;\">"
         literal_value = LiteralStringValue(components=[ChoiceContentModel(elements=["#PCDATA ", " %fontstyle; ", " %phrase; ", " %special; ", " %formctrl;"], group_repetition=RepetitionControl(""))])
@@ -90,6 +111,7 @@ class SgmlTestCase(TestCase):
             )
         actual = str(element)
         self.assertEqual(actual, expected_definition)
+
 
     def test_multiple_name_match(self):
         # <!ENTITY % heading "H1|H2|H3|H4|H5|H6">
