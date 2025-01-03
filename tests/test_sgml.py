@@ -11,6 +11,7 @@ from blog_improved.sgml import (
     ChoiceContentModel,
     ElementDefinition, 
     EntityDefinition,
+    EntityRegistry,
     LiteralStringValue,
     SequenceContentModel, 
     RepetitionControl,
@@ -42,7 +43,6 @@ class SgmlTestCase(TestCase):
 
         actual = str(element)
         self.assertEqual(actual, expected_definition)
-
  
     def test_element_whole_repeat_declaration(self):
         expected_definition = "<!ELEMENT A - - (%inline;)*>"
@@ -56,9 +56,33 @@ class SgmlTestCase(TestCase):
         actual = str(element)
         self.assertEqual(actual, expected_definition)
 
+
+    def test_element_heading_declaration(self):
+        # Define the expected SGML declaration
+        expected_definition = "<!ELEMENT (%heading;) - - (%inline;)*>"
+
+        # Define the entity for %heading;
+        heading_entity = EntityDefinition(
+            "heading",
+            LiteralStringValue(components=[ChoiceContentModel(elements=["H1", "H2", "H3", "H4", "H5", "H6"], group_repetition=RepetitionControl(""))]),
+            parameter=True
+        )
+        # Define the element that uses the heading entity
+        element = ElementDefinition(
+            name="%heading;",
+            content=ContentModel(elements=["%inline;"], group_repetition=RepetitionControl("*")),
+            tag_omission_rules=OmissionRule("-", "-")
+        )
+
+        # Generate the actual SGML string for the element
+        actual = f"{str(element)}"
+
+        # Assert the SGML matches the expected output
+        self.assertEqual(actual, expected_definition)
+
     def test_entity_creation_declaration(self):
         expected_definition = "<!ENTITY % inline \"#PCDATA | %fontstyle; | %phrase; | %special; | %formctrl;\">"
-        literal_value = LiteralStringValue(components=[ChoiceContentModel(elements=["#PCDATA", "%fontstyle;", "%phrase;", "%special;", "%formctrl;"], group_repetition=RepetitionControl(""))])
+        literal_value = LiteralStringValue(components=[ChoiceContentModel(elements=["#PCDATA ", " %fontstyle; ", " %phrase; ", " %special; ", " %formctrl;"], group_repetition=RepetitionControl(""))])
         element = EntityDefinition(
             "inline",
             literal_value,
@@ -66,6 +90,45 @@ class SgmlTestCase(TestCase):
             )
         actual = str(element)
         self.assertEqual(actual, expected_definition)
+
+    def test_multiple_name_match(self):
+        # <!ENTITY % heading "H1|H2|H3|H4|H5|H6">
+        # heading has a range of acceptable names
+        # we want to check if check if passing "H1" will return true for its name, and so on
+        
+         # Create the entity definition
+        expected_definition = "<!ENTITY % heading \"H1|H2|H3|H4|H5|H6\">"
+        literal_value = LiteralStringValue(components=[ChoiceContentModel(elements=["H1", "H2", "H3", "H4", "H5", "H6"], group_repetition=RepetitionControl(""))])
+        entity = EntityDefinition(
+            "heading",
+            value=literal_value,
+            parameter=True
+        )
+
+        # Assert the SGML declaration
+        actual = str(entity)
+        self.assertEqual(actual, expected_definition)
+
+        # Validate that each name matches correctly
+        for valid_name in ["H1", "H2", "H3", "H4", "H5", "H6"]:
+            self.assertIn(valid_name, entity.value)
+
+    def test_entity_name_equality(self):
+        # Create an EntityDefinition with a name containing multiple values
+        entity_name = ChoiceContentModel(elements=["H1","H2","H3"])
+        literal_value = LiteralStringValue(components=[entity_name])
+        entity = EntityDefinition("heading", literal_value, parameter=True)
+        # Simulate the `name` being the value "H1|H2|H3"
+        #entity.name = entity_name  # Normally set during creation
+        
+        # Test equality for individual components
+
+        self.assertTrue("H1" == entity.value, "Expected H1 to match component name H1|H2|H3")
+        self.assertTrue("H2" == entity.value, "Expected H2 to match component name H1|H2|H3")
+        self.assertTrue("H3" == entity.value, "Expected H3 to match component name H1|H2|H3")
+        
+        # Test equality for a non-existent component
+        self.assertFalse("H4" == entity, "Expected H4 not to match component name H1|H2|H3")
 
 class SgmlAttributeTestCase(TestCase):
     def test_attribute_creation(self):
