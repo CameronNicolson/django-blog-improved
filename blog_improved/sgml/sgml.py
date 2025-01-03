@@ -1,116 +1,6 @@
 from typing import Any, Callable, Union, Dict, List, Optional
 from dataclasses import dataclass
 
-class EntityRegistry:
-    """Manages registration and lookup of parameter entities."""
-    def __init__(self):
-        self.registry: Dict[str, str] = {}
-
-    def register(self, name: str, value: str):
-        """Register a parameter entity with a name and value."""
-        self.registry[name] = value
-
-    def resolve(self, name: str) -> Optional[str]:
-        """Resolve a parameter entity by name."""
-        return self.registry.get(name)
-
-@dataclass
-class OmissionRule:
-    start_tag: str  # Either '-' (required) or 'O' (optional)
-    end_tag: str    # Either '-' (required) or 'O' (optional)
-
-    def __post_init__(self):
-        # Validate the inputs
-        valid_values = {"-", "O"}
-        if self.start_tag not in valid_values or self.end_tag not in valid_values:
-            raise ValueError("Omission rules must be '-' (required) or 'O' (optional).")
-
-    def __str__(self):
-        # Concatenate start and end tag rules
-        return f"{self.start_tag} {self.end_tag}"
-
-@dataclass
-class RepetitionControl:
-    """Represents a repetition operator."""
-    operator: str  # One of '*', '+', '?'
-
-    def __str__(self):
-        return str(self.operator)
-
-@dataclass
-class ContentModel:
-    """Represents a generic content model."""
-    elements: List[Union[str, "ContentModel", "RepetitionControl"]]
-    group_repetition: Optional[RepetitionControl] = None  # Repetition applied to the group
-
-    def _wrap_with_repetition(self, content: str) -> str:
-        """
-        Wraps the content in parentheses if group_repetition exists and applies the repetition operator.
-        """
-        if self.group_repetition:
-            return f"({content}){self.group_repetition}"
-        return f"({content})"
-
-    def __str__(self):
-        elements_str = " ".join(str(e) for e in self.elements)
-        return self._wrap_with_repetition(elements_str)
-
-    def evaluate(self, registry: EntityRegistry) -> str:
-        def resolve_element(el):
-            if isinstance(el, str) and el.startswith("%") and el.endswith(";"):
-                param_name = el[1:-1]
-                return registry.resolve(param_name) or el
-            return str(el)
-        elements_str = ", ".join(resolve_element(e) for e in self.elements)
-        if self.group_repetition:
-            return f"({elements_str}){self.group_repetition}"
-        return elements_str
-
-@dataclass
-class EmptyContentModel:
-    """Represents an empty content model."""
-
-@dataclass
-class SequenceContentModel(ContentModel):
-    """Represents a sequence content model."""
-    elements: List[Union[str, "RepetitionControl"]]
-
-    def __str__(self):
-        element_str = "".join(
-        str(val) if not isinstance(val, RepetitionControl) else str(val) + ","
-        for val in self.elements
-        ).rstrip(",")
-        return self._wrap_with_repetition(element_str)
-
-@dataclass
-class ChoiceContentModel(ContentModel):
-    """Represents a choice content model."""
-
-    def __str__(self):
-        return " | ".join(str(e) for e in self.elements)
-
-@dataclass 
-class Declaration:
-    name:str
-    keyword:str
-    params:list[Any]
-    open_delimiter:str = "<!"
-    close_delimiter:str = ">"
-
-    def __str__(self):
-        params = " ".join(str(p) for p in self.params)
-        return f"{self.open_delimiter}{self.keyword} {self.name} {params}{self.close_delimiter}"
-
-@dataclass
-class ElementDefinition(Declaration):
-    content:ContentModel = EmptyContentModel
-    tag_ommission_rules:str = ""
-
-    def __init__(self, name, tag_omission_rules, content, *args):
-        super().__init__(name=name, keyword="ELEMENT", params=(tag_omission_rules,content))
-        self.content = content
-        self.tag_omission_rules = tag_omission_rules
-
 class LiteralStringValue:
     def __init__(self, components=None):
         """
@@ -147,6 +37,24 @@ class LiteralStringValue:
         Return the original components for inspection.
         """
         return self._components[:]
+
+    def __contains__(self, item):
+        """
+        Check if the item exists in the components list.
+        """
+        return item in self.to_string()
+
+    def __eq__(self, other):
+        for comp in self._components:
+            result = comp.__eq__(other)
+            if result:
+                return True
+        return False
+
+
+    def __iter__(self):
+        """Return an iterator over the components."""
+        return iter(self.to_string())
         
     def __str__(self):
         """
@@ -155,15 +63,58 @@ class LiteralStringValue:
         return f"\"" + self.to_string() + "\""
 
 @dataclass
+class OmissionRule:
+    start_tag: str  # Either '-' (required) or 'O' (optional)
+    end_tag: str    # Either '-' (required) or 'O' (optional)
+
+    def __post_init__(self):
+        # Validate the inputs
+        valid_values = {"-", "O"}
+        if self.start_tag not in valid_values or self.end_tag not in valid_values:
+            raise ValueError("Omission rules must be '-' (required) or 'O' (optional).")
+
+    def __str__(self):
+        # Concatenate start and end tag rules
+        return f"{self.start_tag} {self.end_tag}"
+
+@dataclass
+class RepetitionControl:
+    """Represents a repetition operator."""
+    operator: str  # One of '*', '+', '?'
+
+    def __str__(self):
+        return str(self.operator)
+
+@dataclass 
+class Declaration:
+    name:str
+    keyword:str
+    params:list[Any]
+    open_delimiter:str = "<!"
+    close_delimiter:str = ">"
+
+    def __str__(self):
+        params = " ".join(str(p) for p in self.params)
+        # Convert name to string or evaluate if it's a ContentModel
+        if isinstance(self.name, ContentModel):
+            name_str = f"(l{str(self.name)})"
+        elif isinstance(self.name, str) and self.name.startswith("%") and self.name.endswith(";"):
+            # Ensure parameter entities are properly referenced
+            name_str = f"({str(self.name)})"
+        else:
+            name_str = self.name  # Raw string names
+        return f"{self.open_delimiter}{self.keyword} {name_str} {params}{self.close_delimiter}"
+
+@dataclass
 class EntityDefinition(Declaration):
     keyword = "ENTITY"
     parameter: bool = False
-    value:List[Any] = None
-#    content_model: ContentModel = None  # Reuse ContentModel for entity content
+    value:any = None
    
-    def __init__(self, name, *args, parameter=False):
-        super().__init__(name=name, keyword="ENTITY", params=(*args,))
+    def __init__(self, name, value, *args, parameter=False):
+        super().__init__(name=name, keyword="ENTITY", params=(value, *args))
         self.parameter = parameter
+        self.value = value
 
     def __str__(self):
         """Generates the SGML declaration string."""
@@ -171,22 +122,89 @@ class EntityDefinition(Declaration):
         self.name = param_prefix + " " + self.name
         return super().__str__()
 
+class EntityRegistry:
+    """Manages registration and lookup of parameter entities."""
+    def __init__(self):
+        self.registry: Dict[str, EntityDefinition] = {}
+
+    def register(self, name: str, value: EntityDefinition):
+        """Register a parameter entity with a name and value."""
+        self.registry[name] = value
+
+    def resolve(self, name: str) -> Optional[str]:
+        """Resolve a parameter entity by name."""
+        return self.registry.get(name)
+
+
+@dataclass
+class ContentModel:
+    """Represents a generic content model."""
+    elements: List[Union[str, "ContentModel", "RepetitionControl"]]
+    group_repetition: Optional[RepetitionControl] = None  # Repetition applied to the group
+
+    def _wrap_with_parentheses(self, content: str) -> str:
+        """Ensure content is wrapped in parentheses."""
+        return f"({content})"
+
+    def _wrap_with_repetition(self, content: str) -> str:
+        """
+        Wraps the content in parentheses if group_repetition exists and applies the repetition operator.
+        """
+        if self.group_repetition:
+            return f"({content}){self.group_repetition}"
+        return f"({content})"
+
+    def __str__(self):
+        elements_str = " ".join(str(e) for e in self.elements)
+        return self._wrap_with_repetition(elements_str)
+
     def evaluate(self, registry: EntityRegistry) -> str:
-        """
-        Evaluates the entity by resolving any parameter references.
-        :param registry: The registry to resolve parameter entities.
-        :return: The fully expanded content of the entity.
-        """
-        evaluated_elements = []
-        for el in self.elements:
-            if el.startswith("%") and el.endswith(";"):
-                # Extract parameter name
-                param_name = el[1:-1]  # Strip `%` and `;`
-                resolved_value = registry.resolve(param_name)
-                if resolved_value is None:
-                    raise ValueError(f"Parameter '{el}' is not defined in the registry.")
-                evaluated_elements.append(resolved_value)
-            else:
-                # Literal value
-                evaluated_elements.append(el)
-        return " | ".join(evaluated_elements)
+        """Evaluate the content model by resolving parameter entities."""
+        def resolve_element(el):
+            if isinstance(el, str) and el.startswith("%") and el.endswith(";"):
+                param_name = el[1:-1]
+                resolved_value = registry.resolve(param_name) or el
+                # Wrap resolved entities in parentheses if they represent choices or groups
+                if "|" in resolved_value or "," in resolved_value:
+                    return self._wrap_with_parentheses(resolved_value)
+                return resolved_value
+            return str(el)
+
+        elements_str = " ".join(resolve_element(e) for e in self.elements)
+        return self._wrap_with_repetition(elements_str)
+
+@dataclass
+class EmptyContentModel:
+    """Represents an empty content model."""
+
+@dataclass
+class SequenceContentModel(ContentModel):
+    """Represents a sequence content model."""
+    elements: List[Union[str, "RepetitionControl"]]
+
+    def __str__(self):
+        element_str = "".join(
+        str(val) if not isinstance(val, RepetitionControl) else str(val) + ","
+        for val in self.elements
+        ).rstrip(",")
+        return self._wrap_with_repetition(element_str)
+
+@dataclass
+class ChoiceContentModel(ContentModel):
+    """Represents a choice content model."""
+    elements: List[Union[str, "RepetitionControl"]]
+
+    def __str__(self):
+        return "|".join(str(e) for e in self.elements)
+
+@dataclass
+class ElementDefinition(Declaration):
+    name:str
+    content:ContentModel = EmptyContentModel
+    tag_ommission_rules:str = ""
+
+    def __init__(self, name, tag_omission_rules, content, *args):
+        super().__init__(name=name, keyword="ELEMENT", params=(tag_omission_rules,content))
+        self.content = content
+        self.tag_omission_rules = tag_omission_rules
+
