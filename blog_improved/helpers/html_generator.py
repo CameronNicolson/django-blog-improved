@@ -196,7 +196,6 @@ class HtmlGenerator(SgmlGenerator):
         new_component = SgmlComponent(
                 tag=component.tag,
                 attrs=new_attrs,
-
                 tag_omissions=component.tag_omissions,
             )
         if attributes:
