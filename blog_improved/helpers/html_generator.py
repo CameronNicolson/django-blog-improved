@@ -4,7 +4,7 @@ from django.template.context import Context
 from typing import Any, Callable, Union, Dict, List, Optional
 from abc import ABC, abstractmethod 
 from datetime import datetime as std_datetime
-from blog_improved.sgml import SgmlAttributes
+from blog_improved.sgml import ChoiceContentModel, ContentModel, ElementDefinition, EntityDefinition, LiteralStringValue, OmissionRule, RepetitionControl, SgmlAttributes
 
 from blog_improved.utils.strings import (
     to_string_appender,
@@ -161,26 +161,50 @@ class SgmlGenerator(ABC):
 
 COREATTRS = {"id": id_processor, "class": class_processor, "style": CDATA}
 
+ELEMENTS = {
+    "a": ElementDefinition(name="A", content=ContentModel(elements=["%inline;"], group_repetition=RepetitionControl("*")), tag_omission_rules=OmissionRule("-", "-")),
+    "address": ElementDefinition(name="ADDRESS", content=ContentModel(elements=["%inline;"], group_repetition=RepetitionControl("*")), 
+                tag_omission_rules=OmissionRule("-", "-")
+            ),
+    "article": ElementDefinition(name="ARTICLE", content=ContentModel(elements=["%flow;"], group_repetition=RepetitionControl("*")),
+                                 tag_omission_rules=OmissionRule("-", "-")),
+    "div": ElementDefinition(name="DIV", content=ContentModel(elements=["%flow;"], group_repetition=RepetitionControl("*")),
+                             tag_omission_rules=OmissionRule("-", "-")),
+    "span": ElementDefinition(name="SPAN", content=ContentModel(elements=["%inline;"], group_repetition=RepetitionControl("*")), tag_omission_rules=OmissionRule("-", "-")
+        ),
+    "heading": ElementDefinition(EntityDefinition(
+            "heading",
+           LiteralStringValue(components=[ChoiceContentModel(elements=["H1", "H2", "H3", "H4", "H5", "H6"], group_repetition=RepetitionControl(""))]),
+            parameter=True
+        ),
+            OmissionRule("-", "-"),
+            ContentModel(elements=["%inline;"], group_repetition=RepetitionControl("*")),
+        ),
+    "time": ElementDefinition(name="TIME", content=ContentModel(elements=["%Datetime;"]), tag_omission_rules=OmissionRule("-", "-")
+                              ),
+
+    "p": ElementDefinition(name="P", content=ContentModel(elements=["%inline;"], group_repetition=RepetitionControl("*")), tag_omission_rules=OmissionRule("-", "O")),
+    }
+
 
 class HtmlGenerator(SgmlGenerator):
     def __init__(self, element_composer: Callable[[str, dict, str], SgmlComponent]):
         self._element_composer = element_composer
         self._internal_count = 0
         self._components = {
-                "hyperlink": self._element_composer("a", {"id": id_processor, "class": class_processor, "href": uri_processor, "rel": CDATA  }),
-            "address": self._element_composer("address", COREATTRS),
-            "article": self._element_composer("article", COREATTRS),
-            "figure": self._element_composer("figure", COREATTRS),
-            "container": self._element_composer("div", COREATTRS),
-            "inline_container": self._element_composer("span", COREATTRS),
-            "paragraph": self._element_composer("p", COREATTRS), 
-            "list": self._element_composer("ul", COREATTRS),
-            "list_item": self._element_composer("li", COREATTRS),
-            "ordered_list": self._element_composer("ol", COREATTRS),
-            "image": self._element_composer("img", COREATTRS),
-            "vertical-space": self._element_composer("br", COREATTRS, tag_omissions="- O"),
-            "heading": make_hierarchical_element("h1|h2|h3|h4|h5|h6", COREATTRS),
-            "time": self._element_composer("time", {"id": id_processor, "datetime": convert_to_iso8601, "class": class_processor}),
+                "hyperlink": self._element_composer(ELEMENTS["a"], {"id": id_processor, "class": class_processor, "href": uri_processor, "rel": CDATA  }),
+            "address": self._element_composer(ELEMENTS["address"], COREATTRS),
+            "article": self._element_composer(ELEMENTS["article"], COREATTRS),
+            "container": self._element_composer(ELEMENTS["div"], COREATTRS),
+            "inline_container": self._element_composer(ELEMENTS["span"], COREATTRS),
+            "paragraph": self._element_composer(ELEMENTS["p"], COREATTRS), 
+            #            "list": self._element_composer("ul", COREATTRS),
+            #            "list_item": self._element_composer("li", COREATTRS),
+            #            "ordered_list": self._element_composer("ol", COREATTRS),
+            #            "image": self._element_composer("img", COREATTRS),
+            #            "vertical-space": self._element_composer("br", COREATTRS, tag_omissions="- O"),
+            "heading": make_hierarchical_element(ELEMENTS["heading"], COREATTRS),
+            "time": self._element_composer(ELEMENTS["time"], {"id": id_processor, "datetime": convert_to_iso8601, "class": class_processor}),
         }
     
     def create_node(self, 
@@ -203,8 +227,7 @@ class HtmlGenerator(SgmlGenerator):
             new_component.attrs.update(attributes)
         else:
             node_name = self._internal_count
-
-      
+ 
         # If hierarchical, adjust component tag based on level
         if component.level_range:
             level = kwargs.get("level")
@@ -214,7 +237,7 @@ class HtmlGenerator(SgmlGenerator):
                 raise ValueError(f"Invalid level {level} for '{tag_type}'. Must be in range {component.level_range}.")
 
             # Split tags and choose the correct one
-            all_tags = component.tag.split("|")
+            all_tags = [n for n in component.tag]
             chosen_tag = all_tags[level - 1]
             new_component = SgmlComponent(
                 tag=chosen_tag,
@@ -293,14 +316,14 @@ class BlogHtmlFactory(MarkupFactory):
             article_node.attrs["class"] += "article--featured"
         
         if title:
-            title_node = self._markup.create_node("heading", attributes={"class": "article__title"}, level=1)
+            title_node = self._markup.create_node("heading", attributes={"class": "article__title"}, level=2)
             title_text_node = TextNode(title)
             title_text_node = hyperlink_wrapper(self._markup, article_url, title_text_node)
             title_node.add_child(title_text_node)
             article_node.add_child(title_node)
 
         if headline: 
-            headline_node = self._markup.create_node("heading", attributes={"class": "article__headline"}, level=2)
+            headline_node = self._markup.create_node("paragraph", attributes={"class": "article__headline"})
             headline_node.add_child(TextNode(headline))
             article_node.add_child(headline_node)
 
@@ -316,6 +339,9 @@ class BlogHtmlFactory(MarkupFactory):
         if date:
             datetime_node = self._markup.create_node("time", {"class": "article__time--published-date", "datetime": date})
             datetime_node.add_child(TextNode(date.strftime("%d %B %Y")))
+            context_node = self._markup.create_node("inline_container", {"class": "visually-hidden"})
+            context_node.add_child(TextNode("Posted on:"))
+            meta_node.add_child(context_node)
             meta_node.add_child(datetime_node)
         
         if category:
@@ -324,9 +350,13 @@ class BlogHtmlFactory(MarkupFactory):
             category_text_node = hyperlink_wrapper(self._markup, category, category_text_node)
             try:
                 category_text_node.attrs["rel"] = "category"
+                category_text_node.attrs["class"] += "article__category"
             except:
                 pass
             meta_node.add_child(divider_text_node)
+            context_node = self._markup.create_node("inline_container", {"class": "visually-hidden"})
+            context_node.add_child(TextNode("In the category:"))
+            meta_node.add_child(context_node)
             meta_node.add_child(category_text_node)
 
         if len(meta_node.nodelist) > 0:
@@ -347,26 +377,26 @@ class BlogHtmlFactory(MarkupFactory):
                 ) + f" height: {height}%;"
 
 
-def make_standard_element(name: str, attrs:dict, attrs_defaults=None, tag_omissions:str="--") -> SgmlComponent:
+def make_standard_element(element: ElementDefinition, attrs:dict, attrs_defaults=None, tag_omissions:str="--") -> SgmlComponent:
     """Factory for void elements like <img>, <br>, <input>"""
     attrs = SgmlAttributes(attributes_def=attrs, initial_values=attrs_defaults)
     return SgmlComponent(
-        tag=name,
+        tag=element.name,
         attrs=attrs,
         tag_omissions=tag_omissions
     )
 
 
-def make_hierarchical_element(tags: str, attrs: Dict[str, Callable]) -> SgmlComponent:
+def make_hierarchical_element(element: ElementDefinition, attrs: Dict[str, Callable]) -> SgmlComponent:
     """
     Create a hierarchical component with level support.
     `tags` is a string like "H1|H2|H3|H4|H5|H6".
     """
-    name_list = tags.split("|")
-    level_range = range(1, len(name_list) + 1)
+    num_element_options = sum(1 for _ in element.name) 
+    level_range = range(1, num_element_options)
     attrs = SgmlAttributes(attributes_def=attrs)
     return SgmlComponent(
-        tag=tags,  # Store all possible tags here, separated by |
+        tag=element.name,
         attrs=attrs,
         tag_omissions="--",
         level_range=level_range

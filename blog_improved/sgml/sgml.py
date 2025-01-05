@@ -1,3 +1,4 @@
+from __future__ import annotations  # Enable forward references
 from typing import Any, Callable, Union, Dict, List, Optional
 from dataclasses import dataclass
 
@@ -42,7 +43,16 @@ class LiteralStringValue:
         """
         Check if the item exists in the components list.
         """
-        return item in self.to_string()
+        return item in self._components
+
+    def __iter__(self):
+        """Iterate over components and recursively iterate through nested iterables."""
+        for component in self._components:
+            if hasattr(component, "__iter__") and not isinstance(component, str):
+                # Recursively iterate over nested iterables
+                yield from component
+            else:
+                yield component
 
     def __eq__(self, other):
         for comp in self._components:
@@ -50,12 +60,7 @@ class LiteralStringValue:
             if result:
                 return True
         return False
-
-
-    def __iter__(self):
-        """Return an iterator over the components."""
-        return iter(self.to_string())
-        
+       
     def __str__(self):
         """
         For convenience, when the object is converted to a string, return `to_string()`.
@@ -89,6 +94,9 @@ class Parameter:
     def __init__(self, name: str, value: str):
         self._param_name = name
         self._param_value = value
+    
+    def __str__(self):
+        return f"%{self._param_name};"
 
     def param_name(self) -> str:
         return self._param_name
@@ -100,36 +108,38 @@ class Parameter:
 class Declaration:
     keyword:str
     params:list[Any]
-    name:Union[str, Parameter] = ""
+    name:Union[str, EntityDefinition] = ""
     open_delimiter:str = "<!"
     close_delimiter:str = ">"
 
     @property
     def name(self) -> str:
         """Intercept access to the `name` property."""
-        if isinstance(self._name, Parameter):
-            return self._name.param_name()  # Use param_name() for Parameter instances
-        return self._name  # Return the raw name if it's a string
+        if isinstance(self._name, EntityDefinition):
+            if self._name.is_parameter():
+                return self._name.param_value()
+        return self._name
 
     @name.setter
-    def name(self, value: Union[str, Parameter]):
+    def name(self, value: Union[str, EntityDefinition]):
         """Allow setting the `name` property."""
         self._name = value
    
     def __str__(self):
+        name = str(self._name)
         params = " ".join(str(p) for p in self.params)
         # Convert name to string or evaluate if it's a ContentModel
-        if isinstance(self.name, ContentModel):
-            name_str = f"(l{str(self.name)})"
-        elif isinstance(self.name, str) and self.name.startswith("%") and self.name.endswith(";"):
+#        if isinstance(self.name, ContentModel):
+#            name_str = f"(l{str(self.name)})"
+#        elif isinstance(self.name, str) and self.name.startswith("%") and self.name.endswith(";"):
             # Ensure parameter entities are properly referenced
-            name_str = f"({str(self.name)})"
-        else:
-            name_str = self.name  # Raw string names
-        return f"{self.open_delimiter}{self.keyword} {name_str} {params}{self.close_delimiter}"
+#            name_str = f"({str(self.name)})"
+#        else:
+#            name_str = self.name  # Raw string names
+        return f"{self.open_delimiter}{self.keyword} {name} {params}{self.close_delimiter}"
 
 @dataclass
-class EntityDefinition(Declaration, Parameter):
+class EntityDefinition(Declaration):
     keyword = "ENTITY"
     parameter: bool = False
     value:any = None
@@ -138,21 +148,31 @@ class EntityDefinition(Declaration, Parameter):
         super().__init__(name=name, keyword="ENTITY", params=(value, *args))
         self.parameter = parameter
         self.value = value
-        self._name = name 
-        self._value = value
 
-    def __str__(self):
-        """Generates the SGML declaration string."""
-        param_prefix = "%" if self.parameter else ""
-        self.name = param_prefix + " " + self.name
-        return super().__str__()
-    
-    def param_name(self):
+    def is_parameter(self) -> bool:
+        """Check if this instance behaves as a Parameter."""
+        return self.parameter
+
+    def param_name(self) -> str:
+        """Return the name of the parameter if it's acting as one."""
+        if not self.is_parameter():
+            raise AttributeError("This EntityDefinition is not a parameter.")
+        return self.name
+
+    def param_value(self) -> Any:
+        """Return the value of the parameter if it's acting as one."""
+        if not self.is_parameter():
+            raise AttributeError("This EntityDefinition is not a parameter.")
         return self.value
 
-    def param_value(self):
-        return self
+    def __str__(self):
+        string = super().__str__()
+        if self.parameter:
+            index = len(self.keyword) + string.find(self.keyword)
+            return (string[:index] + " %" + string[index:])
+        return string
 
+   
 class EntityRegistry:
     """Manages registration and lookup of parameter entities."""
     def __init__(self):
@@ -223,7 +243,10 @@ class SequenceContentModel(ContentModel):
 @dataclass
 class ChoiceContentModel(ContentModel):
     """Represents a choice content model."""
-    elements: List[Union[str, "RepetitionControl"]]
+    elements: List[Union[str, "RepetitionControl"]] 
+    
+    def __iter__(self):
+        return iter(self.elements)
 
     def __str__(self):
         return "|".join(str(e) for e in self.elements)
@@ -235,6 +258,8 @@ class ElementDefinition(Declaration):
     tag_ommission_rules:str = ""
 
     def __init__(self, name, tag_omission_rules, content, *args):
-        super().__init__(name=name, keyword="ELEMENT", params=(tag_omission_rules,content))
+        super().__init__(name=name, keyword="ELEMENT", params=(tag_omission_rules,content,args))
         self.content = content
         self.tag_omission_rules = tag_omission_rules
+        self._name = name
+
