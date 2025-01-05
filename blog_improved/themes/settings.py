@@ -14,7 +14,7 @@ def load_theme(theme_path: Path):
     if current_sha is None:
         print("Config file not found. Using default theme settings.")
         theme = get_theme()
-        theme.apply_theme({"name": "Base Theme", "styles": {"article__title": "fs-5 fw-bold", "article__headline": "fs-6 lh-sm text-secondary"}, "elements": {"h2": {"class": None}, "p": {"class": None}, "a": {"class": "link link-offset-3 link-opacity-50-hover", "id": "link"}}})
+        theme.apply_theme({"name": "Base Theme", "styles": {"article__title": "fs-5 fw-bold", "article__headline": "fs-6 lh-sm text-secondary"}, "elements": {"h2": {"class": None}, "p": {"class": None}, "a": {"class": "link link-offset-3 link-opacity-50-hover"}}})
     elif sha != current_sha:
         print("Config file has changed. Loading new settings.")
         sha = current_sha
