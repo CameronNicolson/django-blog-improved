@@ -118,8 +118,8 @@ class BlogListTagTestCase(TestCase):
         self.assertTrue("article--featured" in expected_article.attrs["class"])
         self.assertTrue("article--featured" in rendered_article.attrs["class"])
         # Check h1, h2, and address content
-        self.assertEqual(rendered_article.find('h1').text, expected_article.find('h1').text)
         self.assertEqual(rendered_article.find('h2').text, expected_article.find('h2').text)
+        self.assertEqual(rendered_article.find('p').text, expected_article.find('p').text)
         expected_author = expected_article.find('address').find('a')
         rendered_author = rendered_article.find('address').find('a')
         self.assertEqual(rendered_author.text, expected_author.text)

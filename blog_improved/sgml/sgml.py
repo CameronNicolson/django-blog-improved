@@ -43,7 +43,11 @@ class LiteralStringValue:
         """
         Check if the item exists in the components list.
         """
-        return item in self._components
+        print("is it going here tho")
+        for value in self._components:
+            if item in str(value):
+                return True
+        return False
 
     def __iter__(self):
         """Iterate over components and recursively iterate through nested iterables."""
@@ -127,15 +131,7 @@ class Declaration:
    
     def __str__(self):
         name = str(self._name)
-        params = " ".join(str(p) for p in self.params)
-        # Convert name to string or evaluate if it's a ContentModel
-#        if isinstance(self.name, ContentModel):
-#            name_str = f"(l{str(self.name)})"
-#        elif isinstance(self.name, str) and self.name.startswith("%") and self.name.endswith(";"):
-            # Ensure parameter entities are properly referenced
-#            name_str = f"({str(self.name)})"
-#        else:
-#            name_str = self.name  # Raw string names
+        params = " ".join(str(p) for p in self.params if p)
         return f"{self.open_delimiter}{self.keyword} {name} {params}{self.close_delimiter}"
 
 @dataclass
@@ -206,7 +202,9 @@ class ContentModel:
         return f"({content})"
 
     def __str__(self):
-        elements_str = " ".join(str(e) for e in self.elements)
+        elements_str = " ".join(
+            str(e) if isinstance(e, str) else f"%{e.name};" for e in self.elements if e
+        )
         return self._wrap_with_repetition(elements_str)
 
     def evaluate(self, registry: EntityRegistry) -> str:
@@ -258,7 +256,7 @@ class ElementDefinition(Declaration):
     tag_ommission_rules:str = ""
 
     def __init__(self, name, tag_omission_rules, content, *args):
-        super().__init__(name=name, keyword="ELEMENT", params=(tag_omission_rules,content,args))
+        super().__init__(name=name, keyword="ELEMENT", params=(tag_omission_rules,content, *args))
         self.content = content
         self.tag_omission_rules = tag_omission_rules
         self._name = name

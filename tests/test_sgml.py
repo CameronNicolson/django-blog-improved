@@ -35,10 +35,10 @@ class SgmlTestCase(TestCase):
     def test_element_definition(self):
         expected_definition = "<!ELEMENT html - - (head?,body)>"
         element = ElementDefinition(
-            name="html",
+            "html",
+            tag_omission_rules=OmissionRule("-", "-"),
             content=SequenceContentModel(elements=["head", RepetitionControl(operator="?"), "body"], group_repetition=RepetitionControl(""),
             ),
-            tag_omission_rules=OmissionRule("-", "-")
         )
 
         actual = str(element)
@@ -69,9 +69,9 @@ class SgmlTestCase(TestCase):
         )
         # Define the element that uses the heading entity
         element = ElementDefinition(
-            name="%heading;",
+            ContentModel(elements=[heading_entity]),
+            tag_omission_rules=OmissionRule("-", "-"),
             content=ContentModel(elements=["%inline;"], group_repetition=RepetitionControl("*")),
-            tag_omission_rules=OmissionRule("-", "-")
         )
 
         # Generate the actual SGML string for the element
@@ -130,7 +130,9 @@ class SgmlTestCase(TestCase):
         # Assert the SGML declaration
         actual = str(entity)
         self.assertEqual(actual, expected_definition)
-
+        print("entity.value")
+        print(type(entity.value))
+        print(entity.value)
         # Validate that each name matches correctly
         for valid_name in ["H1", "H2", "H3", "H4", "H5", "H6"]:
             self.assertIn(valid_name, entity.value)
@@ -262,4 +264,11 @@ class SgmlAttributesTestCase(TestCase):
         attrs = SgmlAttributes(attributes_def=self.attributes_def, initial_values=self.initial_values)
         with self.assertRaises(TypeError):
             del attrs["id"]
+
+    def test_add_multiple_attribute_classes(self): 
+        attrs = SgmlAttributes(attributes_def=self.attributes_def, initial_values=self.initial_values)
+        attrs["class"] += "anotherclass"
+        actual_class = attrs["class"]
+        self.assertEqual("main-header anotherclass", actual_class)
+
 
