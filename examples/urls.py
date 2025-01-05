@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, re_path
 from django.views.generic import RedirectView, TemplateView
-from django.http import Http404
+from django.http import HttpResponse, Http404
 from django.shortcuts import render
 from django.conf import settings 
 
@@ -27,16 +27,19 @@ def dynamic_template_view(request, *args, **kwargs):
     # Get the last part of the URL and construct the template name
     title = kwargs["last_part"]
     template_name = f"{title}.html"
-
     try:
         return render(request, template_name, context={"title": title})
     except Exception as e:
         raise e
 
+def dummy_view(request, slug=None):
+    return HttpResponse(f"You are accessing: {request.path} on the Examples server")
+
 urlpatterns = [
     path("", TemplateView.as_view(template_name="index.html", extra_context={"examples": examples})),
     path("favicon.ico", RedirectView.as_view(url="/static/img/favicon.ico", permanent=True)),
     re_path(r"^.*/(?P<last_part>[^/]+)/?$", dynamic_template_view),
+    path("<slug:slug>/", dummy_view, name="post_detail"),
 ]
 
 try: 

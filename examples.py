@@ -99,6 +99,7 @@ def set_debug_toolbar(settings):
     print(settings.TEMPLATES)
     settings.INSTALLED_APPS.append("debug_toolbar")
     settings.MIDDLEWARE.insert(0, "debug_toolbar.middleware.DebugToolbarMiddleware")
+    settings.MIDDLEWARE.append("examples.middleware.debug_reverse_override.DebugReverseOverrideMiddleware")
 
     settings.RENDER_PANELS = True
 
