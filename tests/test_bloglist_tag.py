@@ -123,7 +123,9 @@ class BlogListTagTestCase(TestCase):
         expected_author = expected_article.find('address').find('a')
         rendered_author = rendered_article.find('address').find('a')
         self.assertEqual(rendered_author.text, expected_author.text)
-        self.assertEqual(rendered_author['href'], expected_author['href'])
+        print(rendered_author)
+        print("author")
+        self.assertEqual(rendered_author["href"], expected_author["href"])
 
     def test_bloglisttag_featured_and_ordinary_posts(self):
         expected_html = self.load_fixture("bloglist_mix_feature_ordinary_posts.html")

@@ -80,6 +80,9 @@ class StringAppender(str):
 
     def get_value(self):
         return self._value
+    
+    def __iter__(self):
+        return iter(self._value.split(" "))
 
     def get_value_list(self):
         return self._value.split(" ")

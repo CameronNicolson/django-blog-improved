@@ -5,7 +5,6 @@ from typing import Any, Callable, Union, Dict, List, Optional
 from abc import ABC, abstractmethod 
 from datetime import datetime as std_datetime
 from blog_improved.sgml import ChoiceContentModel, ContentModel, ElementDefinition, EntityDefinition, LiteralStringValue, OmissionRule, RepetitionControl, SgmlAttributes
-
 from blog_improved.utils.strings import (
     to_string_appender,
     normalise_extra_whitespace,
@@ -309,8 +308,8 @@ class BlogHtmlFactory(MarkupFactory):
         return list_node
 
     def create_article(self, title: str, headline: str, author: str, author_homepage:str, date: std_datetime, body_content: str, category:str, featured:bool, article_url:str) -> HtmlNode:
+        from blog_improved.utils.sgml import bool_wrapper
 
-        from blog_improved.helpers.hyperlink_wrapper import hyperlink_wrapper
         article_node = self._markup.create_node("article", attributes={"class": "article"})
         if featured:
             article_node.attrs["class"] += "article--featured"
@@ -318,7 +317,7 @@ class BlogHtmlFactory(MarkupFactory):
         if title:
             title_node = self._markup.create_node("heading", attributes={"class": "article__title"}, level=2)
             title_text_node = TextNode(title)
-            title_text_node = hyperlink_wrapper(self._markup, article_url, title_text_node)
+            title_text_node = bool_wrapper(self._markup, article_url, "hyperlink", {"href": article_url, "class": "article__title-link"}, title_text_node)
             title_node.add_child(title_text_node)
             article_node.add_child(title_node)
 
@@ -332,7 +331,8 @@ class BlogHtmlFactory(MarkupFactory):
         if author: 
             author_node = self._markup.create_node("address", attributes={"class": "article__author"})
             author_text_node = TextNode(f"{author}")
-            author_text_node = hyperlink_wrapper(self._markup, author_homepage, author_text_node)
+            author_text_node = bool_wrapper(self._markup, author_homepage, "hyperlink", {"href": author_homepage}, author_text_node)
+
             author_node.add_child(author_text_node)
             meta_node.add_child(author_node)
 
@@ -347,10 +347,9 @@ class BlogHtmlFactory(MarkupFactory):
         if category:
             divider_text_node = TextNode(" - ")
             category_text_node = TextNode(category)
-            category_text_node = hyperlink_wrapper(self._markup, category, category_text_node)
+            category_text_node = bool_wrapper(self._markup, article_url, "hyperlink", {"href": category, "class": "article__category-link"}, category_text_node)
             try:
                 category_text_node.attrs["rel"] = "category"
-                category_text_node.attrs["class"] += "article__category"
             except:
                 pass
             meta_node.add_child(divider_text_node)
@@ -385,7 +384,6 @@ def make_standard_element(element: ElementDefinition, attrs:dict, attrs_defaults
         attrs=attrs,
         tag_omissions=tag_omissions
     )
-
 
 def make_hierarchical_element(element: ElementDefinition, attrs: Dict[str, Callable]) -> SgmlComponent:
     """

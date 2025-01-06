@@ -43,7 +43,6 @@ class LiteralStringValue:
         """
         Check if the item exists in the components list.
         """
-        print("is it going here tho")
         for value in self._components:
             if item in str(value):
                 return True

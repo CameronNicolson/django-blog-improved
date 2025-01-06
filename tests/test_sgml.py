@@ -268,7 +268,15 @@ class SgmlAttributesTestCase(TestCase):
     def test_add_multiple_attribute_classes(self): 
         attrs = SgmlAttributes(attributes_def=self.attributes_def, initial_values=self.initial_values)
         attrs["class"] += "anotherclass"
-        actual_class = attrs["class"]
-        self.assertEqual("main-header anotherclass", actual_class)
+        actual_classnames = attrs["class"]
+        self.assertEqual("main-header anotherclass", actual_classnames)
 
+        attrs = SgmlAttributes(attributes_def=self.attributes_def, initial_values={"class": "first second third"})
+        classes = attrs["class"]
+        for actual_classname, expected_classname in zip(classes, ["first", "second", "third"]):
+            self.assertTrue(expected_classname == actual_classname) 
+        attrs["class"] += "addedlater"
+        classes = attrs["class"]
+        for actual_classname, expected_classname in zip(classes, ["first", "second", "third", "addedlater"]):
+            self.assertTrue(expected_classname == actual_classname)
 

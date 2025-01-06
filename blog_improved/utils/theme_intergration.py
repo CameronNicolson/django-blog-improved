@@ -154,37 +154,15 @@ class ThemableSgmlAttributeEntry(SgmlAttributeEntry):
         """Retrieve the value, applying theming if applicable."""
         if self.theme:
             # Check if the value needs to be resolved through the theme
-            if self._cached_value is None or self._cached_value[0] != self._value:
-                themed_value = self.theme.get_styles().get(self._value)
-                self._cached_value = (self._value, f"{self._value} {themed_value}" if themed_value else self._value)
-            return self._cached_value[1]
+            themed_value = self.theme.get_styles().get(self._value)
+            if themed_value:
+                return self.processor(f"{self._value} {themed_value}")
         return super().value
 
     @value.setter
     def value(self, new_value):
-        """Set the value and clear the cache if necessary."""
-        self._cached_value = None  # Clear the cache on new value
+        """Set the value."""
         super(ThemableSgmlAttributeEntry, self.__class__).value.fset(self, new_value)
-
-   # @SgmlAttributeEntry.value.setter
-   # def value(self, new_value):
-          #    theme_value = None
-     #   print("checking if theme")
-      #  if self.theme:
-      #      print("checking the new_value")
-       #     print(new_value)
-        #    theme_value = self.theme.get_styles().get(new_value, None)
-
-        # Merge theme value and new value if applicable
-      #  if self.name == "class" and theme_value:
-            # Concatenate class attributes with a space
-       #     new_value = f"{theme_value} {new_value}".strip()
-       # elif theme_value:
-            # Use the theme value as a fallback
-        #    new_value = theme_value
-
-        # Set the processed value
-       # self._value = self.processor(new_value)
 
 class ThemableSgmlAttributes(SgmlAttributes):
     """Holds a collection of themable SGML attributes."""
