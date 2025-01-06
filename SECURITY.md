@@ -3,7 +3,7 @@
 If you have found a security vulnerability, we kindly ask that you disclose it responsibly by emailing security@nicolson.scot. Optionally, if you are using an insecure network and wish to protect your communications, you can use our PGP key. 
 Please do not discuss potential vulnerabilities publicly without validating them with us first.
 
-Upon receiving a report, our team will:
+Please note that the email address does not send automated responses. Upon receiving a report, our team will:
 * Review the report, verify the vulnerability, and respond with confirmation and/or further information requests. We aim to reply within 5 business days.
 * Notify the reporter once the security issue has been addressed, at which point they are welcome to disclose it publicly if they wish.
 
