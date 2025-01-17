@@ -17,7 +17,7 @@ def site(request):
         except Site.DoesNotExist:
             return ""
 
-def get_pages(page_settings=settings.MAIN_NAVIGATION_PAGES):
+def get_pages(page_settings):
     links = []
     for page in page_settings:
         nav_item = copy.copy(page)
