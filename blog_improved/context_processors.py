@@ -17,30 +17,38 @@ def site(request):
         except Site.DoesNotExist:
             return ""
 
-def get_pages(page_settings):
-    links = []
-    for page in page_settings:
-        nav_item = copy.copy(page)
-        url = page["URL"]
-        # if external service (outside of your domain e.g. ibm.com)
-        is_external = re.findall(r'(http|ftp|https):\/\/([\w\-_]+(?:(?:\.[\w\-_]+)+))([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?', url)
-        if is_external:
-            nav_item["PATTERN_NAME"] = None
+def get_navigation_links(pages):
+    pages = pages or []
+    def get_links():
+        links = []
+        for page in pages:
+            nav_item = copy.copy(page)
+            url = page["URL"]
+            # if external service (outside of your domain e.g. ibm.com)
+            is_external = re.findall(r'(http|ftp|https):\/\/([\w\-_]+(?:(?:\.[\w\-_]+)+))([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?', url)
+            if is_external:
+                nav_item["PATTERN_NAME"] = None
+                links.append(nav_item)
+                continue
+            nav_item["PATTERN_NAME"] = url
+            nav_item["URL"] = reverse(url)
             links.append(nav_item)
-            continue
-        nav_item["PATTERN_NAME"] = url
-        nav_item["URL"] = reverse(url)
-        links.append(nav_item)
-    return links
+        return links
+    return get_links
 
 def get_crumbs(request):
     page_title = prettify_url(request.resolver_match.view_name)
     return [("Home", reverse("home"),),(page_title, None,)]
 
+def get_pages():
+    return []
+
 def navigation(request):
     request_url_name = request.resolver_match.url_name
     crumbs = get_crumbs(request)
     with thread_lock:
-        navigation = cache.get_or_set('navigation', get_pages)
+        pages = get_pages()
+        links = get_navigation_links(pages)
+        navigation = cache.get_or_set('navigation', get_navigation_links)
     return {"navigation": navigation, "current_url": request_url_name, "crumbs": crumbs }
 
