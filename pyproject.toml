@@ -1,11 +1,11 @@
 [build-system]
-requires = ["setuptools>=62.0"]
+requires = ["setuptools>=75.8", "wheel"]
 build-backend = "setuptools.build_meta"
 [project]
 name="django-blog-improved"
 description="Blog app with breadcrumbs, categories, contact and profiles"
 license={ text="GPL-3.0" }
-requires-python = ">=3.6"
+requires-python = ">=3.12"
 authors = [
   { name = "Spongycake", email = "spongycake@spongycake.org" },
 ]
@@ -45,7 +45,13 @@ dependencies = [
   "django-redirects==0.5.0",
 ]
 dynamic = ["version"]
+
 [project.optional-dependencies]
+
+api = [
+  "djangorestframework==3.15.2"
+]
+
 tests = [
   "python-lorem==1.1.2",
   "PyYAML==6.0.1"
