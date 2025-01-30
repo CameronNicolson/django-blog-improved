@@ -228,3 +228,12 @@ class ThemableSgmlAttributes(SgmlAttributes):
                 self._attributes[key] = SgmlAttributeEntry(
                     name=key, processor=processor, initial_value=value
                 )
+
+def get_theme_width_map():
+    theme = get_theme()
+    return theme.width_scale
+
+def get_theme_grid():
+    theme = get_theme()
+    return theme.grid_properties
+

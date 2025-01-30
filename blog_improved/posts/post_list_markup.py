@@ -5,8 +5,10 @@ from dataclasses import dataclass
 from blog_improved.helpers.html_generator import MarkupFactory, SgmlGenerator, SgmlNode
 from blog_improved.themes.settings import get_theme
 from blog_improved.posts.posts import PostList
+from blog_improved.utils.strings import string_bound
 from blog_improved import urls
 from django.urls import reverse
+from blog_improved.presentations.presentation_strategy import Rect
 
 @dataclass
 class ListCell:
@@ -106,7 +108,9 @@ class PostListMarkup:
         """
         sgml = self._sgml
         if self._container is None:
-            self._container = sgml.create_node("container", {"class": "posts"})
+            container = sgml.create_node("container")
+            sgml.assign_class(container, "contaienr")
+            self._container = container
         # Default layout strategy if none provided
         if layout_strategy is None:
             layout_strategy = self._default_layout
@@ -120,22 +124,23 @@ class PostListMarkup:
         Default strategy: Each row becomes a <div>, and each cell becomes a <div> inside that row.
         """
         sgml = self._sgml
-        parent_node = sgml.create_node("container", {"id": self._name, 
-                        "class": "posts"
-                    })
-        for row in grid.rows():
-            row_node = sgml.create_node("container", {"class": "row"})
-            for cell in row:
+        parent_node = sgml.create_node("container")
+        sgml.assign_identifier(parent_node, self._name)
+        sgml.assign_class(parent_node, "posts")
+        for row_number, row in enumerate(grid.rows()):
+            row_node = sgml.create_node("container")
+            sgml.assign_class(row_node, "row")
+            for column_number, cell in enumerate(row):
                 if cell.content:
                     article_node = self.create_post_article(cell) 
-
-                    cell_node = sgml.create_node(
-                        "container",
-                        {
-                            "class": f"posts__item column",
-                        },
-                    )
-                    sgml.apply_presentation_attributes(sgml_element=cell_node, width=cell.width, height=cell.height)
+                    cell_node = sgml.create_node("container")
+                    x = column_number * cell.width
+                    x2 = x + cell.width
+                    y = row_number * cell.height
+                    y2 = y + cell.height 
+                    pos = Rect(x, y, x2, y2)
+                    sgml.move_position(cell_node, pos)
+                    sgml.assign_class(cell_node, "posts__item")
                     cell_node.add_child(article_node)
                     row_node.add_child(cell_node)
             parent_node.add_child(row_node)

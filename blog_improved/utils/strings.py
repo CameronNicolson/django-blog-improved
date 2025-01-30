@@ -133,3 +133,14 @@ def validate_regex(pattern):
             return func(value)
         return wrapper
     return decorator
+
+def string_bound(results=None):
+    default_results = {"message": "hi"}
+    results = results or default_results
+   
+    def find(number, value):
+        print(results["message"])
+        return value
+
+    find.default_results = default_results
+    return find

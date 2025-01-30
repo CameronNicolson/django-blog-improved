@@ -14,13 +14,14 @@ from classytags.utils import TemplateConstant
 from django.template.base import Variable, VariableDoesNotExist
 from blog_improved.posts.posts import PostListQueryRequest
 from blog_improved.posts.post_list_markup import PostListMarkup
-from blog_improved.helpers.html_generator import BlogHtmlFactory, HtmlGenerator
+from blog_improved.helpers.html_generator import BlogHtmlFactory, HtmlGenerator, create_blog_html_factory
 from blog_improved.posts.post_list_markup_presets import create_post_list_markup, POST_LIST_GRID_PRESETS
 from django.apps import apps
 
 # Access the AppConfig instance
 config = apps.get_app_config("blog_improved")
 
+HTML_FACTORY_INSTANCE = create_blog_html_factory()
 
 register = template.Library()
 
@@ -176,9 +177,9 @@ class BlogListTag(Tag):
                     .return_type("values_list")\
                     .build()
         
-        sgml_generator = config.sgml_generator
-        markup = BlogHtmlFactory(sgml_generator)
-        markup = create_post_list_markup(name, posts, layout_name, markup)
+        markup = create_post_list_markup(name, posts, 
+                                         layout_name, 
+                                         HTML_FACTORY_INSTANCE)
         markup.build_grid()
         markup.generate_html(layout_type="row")
         html = markup.get_rendered()
