@@ -19,26 +19,31 @@ def find_and_parse_entrypoints(path: Path):
     Returns:
         list: A list of dictionaries parsed from 'entrypoint.example' files.
     """
-    entries = []
+    entries = dict()
+    groups = dict()
 
     # Recursively search for 'entrypoint.example' files
     for file in path.rglob("entrypoint.example"):
         if file.is_file():
-            print(file)
             try:
                 # Parse the JSON content of the file
                 with file.open('r', encoding='utf-8') as f:
                     data = json.load(f)
                     if isinstance(data, dict):  # Ensure it's a dictionary
-                        entries.append(data)
+                        ident = data["path"].replace("/", "").lower() 
+                        entries[ident] = data
+                        try:
+                            group_name = data["group"]
+                            groups[group_name].append(data)
+                        except KeyError:
+                            groups[data["group"]] = list([data])
                     else:
                         print(f"Skipped {file}: JSON is not a dictionary.")
             except json.JSONDecodeError as e:
                 print(f"Error parsing JSON in {file}: {e}")
             except Exception as e:
                 print(f"Unexpected error with {file}: {e}")
-
-    return entries
+    return (groups, entries)
 
 # Get all fixture paths from FIXTURE_DIRS
 def get_all_fixtures(settings):
@@ -70,18 +75,12 @@ def get_all_fixtures(settings):
 
 def set_templates(templates, examples):
     # The new directory to add
-    print("examples")
-    print(examples)
     default_template_dir = EXAMPLES_DIR / "templates"
     new_template_dirs = [default_template_dir]
     # Get the templates from examples
-    for example in examples:
+    for example in examples.values():
         template_dir = example["path"]
-        print("ttttemplate_dir")
-        print(template_dir)
         if template_dir and (EXAMPLES_DIR / template_dir).exists():
-            print("hi")
-            print(template_dir)
             new_template_dirs.append(EXAMPLES_DIR / template_dir)
     # Get the existing template directories from the settings
     template_dirs = []
@@ -96,9 +95,6 @@ def set_templates(templates, examples):
                 if "DIRS" in template_config:
                     template_config["DIRS"].append(template)
                     break
-    print("tempalte dirs")
-    print(new_template_dirs)
-    print(template_dirs)
 
 def set_debug_toolbar(settings):
     try:
@@ -106,7 +102,6 @@ def set_debug_toolbar(settings):
     except e:
         print(e)
         return
-    print(settings.TEMPLATES)
     settings.INSTALLED_APPS.append("debug_toolbar")
     settings.MIDDLEWARE.insert(0, "debug_toolbar.middleware.DebugToolbarMiddleware")
     settings.MIDDLEWARE.append("examples.middleware.debug_reverse_override.DebugReverseOverrideMiddleware")
@@ -139,7 +134,7 @@ def main():
             "forget to activate a virtual environment?"
         ) from exc
 
-    settings.EXAMPLES = find_and_parse_entrypoints(EXAMPLES_DIR)
+    settings.EXAMPLE_GROUPS, settings.EXAMPLES = find_and_parse_entrypoints(EXAMPLES_DIR)
     set_templates(settings.TEMPLATES, settings.EXAMPLES)
     urls = "examples.urls"
     settings.ROOT_URLCONF = urls
@@ -148,6 +143,7 @@ def main():
         EXAMPLES_DIR / "static/",
     ]
     settings.INSTALLED_APPS.append("django.contrib.staticfiles")
+    settings.INSTALLED_APPS.append("examples.core")
     set_debug_toolbar(settings)
     command = ["django", "testserver"]
     for fixture in get_all_fixtures(settings):

@@ -1,0 +1,6 @@
+{
+  "name": "Max count",
+  "description": "The bloglist tag and its maximum amount of items in a list.",
+  "group": "bloglist",
+  "path": "bloglist/max-count"
+}

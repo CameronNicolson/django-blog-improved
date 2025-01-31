@@ -1,19 +1,3 @@
-"""
-URL configuration for examples.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.1/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
 from django.urls import path, re_path
 from django.views.generic import RedirectView, TemplateView
@@ -21,24 +5,44 @@ from django.http import HttpResponse, Http404
 from django.shortcuts import render
 from django.conf import settings 
 
+from django.http import Http404
+
+groups = getattr(settings, "EXAMPLE_GROUPS", [])
 examples = getattr(settings, "EXAMPLES", [])
 
 def dynamic_template_view(request, *args, **kwargs):
     # Get the last part of the URL and construct the template name
-    title = kwargs["last_part"]
-    template_name = f"{title}.html"
+    example_group = kwargs["group_name"]
+    example_name = kwargs["example_name"]
+    ident = str(example_group + example_name).lower()
+    example_data = examples[ident]
+    title = example_data["name"]
+    template_name = f"{example_name}.html"
     try:
-        return render(request, template_name, context={"title": title})
+        return render(request, template_name, context={"title": title, **example_data, "breadcrumbs": (("Home", "/"), (f"{example_group}", f"/{example_group}/"),
+            (f"{title}", None))})
     except Exception as e:
         raise e
+
+def group_view(request, group_name):
+    try:
+        group_items = groups[group_name]
+    except:
+        raise Http404
+    title = group_name
+    context = { "title": title, 
+               "group_items": group_items, 
+               "breadcrumbs": (("Home", "/"),(f"{group_name}", None),)}
+    return render(request, "group.html", context)
 
 def dummy_view(request, slug=None):
     return HttpResponse(f"You are accessing: {request.path} on the Examples server")
 
 urlpatterns = [
-    path("", TemplateView.as_view(template_name="index.html", extra_context={"examples": examples})),
+        path("", TemplateView.as_view(template_name="index.html", extra_context={"examples": groups})),
     path("favicon.ico", RedirectView.as_view(url="/static/img/favicon.ico", permanent=True)),
-    re_path(r"^.*/(?P<last_part>[^/]+)/?$", dynamic_template_view),
+    re_path(r"^(?P<group_name>[a-z]+)/$", group_view),
+    re_path(r"^(?P<group_name>[^/]+)/(?P<example_name>[^/]+)/?$", dynamic_template_view),
     path("<slug:slug>/", dummy_view, name="post_detail"),
 ]
 
