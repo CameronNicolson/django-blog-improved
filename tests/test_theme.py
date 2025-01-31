@@ -1,5 +1,5 @@
 from django.test import TestCase
-from blog_improved.themes.base.theme import WidthNegotiator
+from blog_improved.utils.math import RangeClamper
 from blog_improved.themes.base.base_theme import BaseTheme
 
 class TestTheme(TestCase):
@@ -31,55 +31,36 @@ class TestTheme(TestCase):
                 70: "seven-tenth",
                 100: "full"
             },
-            width_negotiator=WidthNegotiator(0)
         )
 
     def test_one_quarter(self):
         basetheme = BaseTheme()
-        actual_width = basetheme.find_width(25)
-        self.assertEqual(actual_width, "one-quarter")
+        actual_width = basetheme.width_scale[25]
+        self.assertEqual(actual_width, "3")
 
     def test_one_third(self): 
         basetheme = BaseTheme()
-        actual_width = basetheme.find_width(38)
-        self.assertEqual(actual_width, "one-third")
+        actual_width = basetheme.width_scale[33]
+        self.assertEqual(actual_width, "4")
 
     def test_full(self):
         basetheme = BaseTheme()
-        actual_width = basetheme.find_width(100)
-        self.assertEqual(actual_width, "full")
+        actual_width = basetheme.width_scale[100]
+        self.assertEqual(actual_width, "12")
 
     def test_within_offset(self):
         basetheme = BaseTheme()
-        actual_width = basetheme.find_width(11)
-        self.assertEqual(actual_width, "one-quarter")
+
+        with self.assertRaises(KeyError):
+            actual_width = basetheme.width_scale[11]
 
     def test_zero(self): 
         basetheme = BaseTheme()
-        actual_width = basetheme.find_width(0)
-        self.assertEqual(actual_width, None)
+        with self.assertRaises(KeyError):
+            actual_width = basetheme.width_scale[0]
 
     def test_over(self):
         basetheme = BaseTheme()
-        actual_width = basetheme.find_width(200)
-        self.assertEqual(actual_width, None)
+        with self.assertRaises(KeyError):
+            actual_width = basetheme.width_scale[200]
 
-    def test_none_type(self):
-        basetheme = BaseTheme()
-        expected = ValueError
-        self.assertRaises(expected, basetheme.find_width, None)
-
-    def test_negative_integer(self):
-        theme = self.neggytheme
-        actual_width = theme.find_width(-20)
-        self.assertEqual(actual_width, "minus-quarter")
-
-    def test_negative_scale(self):
-        theme = self.neggytheme
-        actual_width = theme.find_width(-50)
-        self.assertEqual(actual_width, "minus-half")
-
-    def test_negative_scale_again(self):
-        theme = self.neggytheme
-        actual_width = theme.find_width(0)
-        self.assertEqual(actual_width, "minus-quarter")
