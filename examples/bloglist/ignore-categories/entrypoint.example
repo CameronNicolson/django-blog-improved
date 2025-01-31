@@ -1,0 +1,6 @@
+{
+  "name": "ignore categories",
+  "description": "The bloglist template ignoring specified blog categories.",
+  "group": "bloglist",
+  "path": "bloglist/ignore-categories"
+}

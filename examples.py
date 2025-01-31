@@ -24,6 +24,7 @@ def find_and_parse_entrypoints(path: Path):
     # Recursively search for 'entrypoint.example' files
     for file in path.rglob("entrypoint.example"):
         if file.is_file():
+            print(file)
             try:
                 # Parse the JSON content of the file
                 with file.open('r', encoding='utf-8') as f:
@@ -69,12 +70,18 @@ def get_all_fixtures(settings):
 
 def set_templates(templates, examples):
     # The new directory to add
+    print("examples")
+    print(examples)
     default_template_dir = EXAMPLES_DIR / "templates"
     new_template_dirs = [default_template_dir]
     # Get the templates from examples
     for example in examples:
         template_dir = example["path"]
+        print("ttttemplate_dir")
+        print(template_dir)
         if template_dir and (EXAMPLES_DIR / template_dir).exists():
+            print("hi")
+            print(template_dir)
             new_template_dirs.append(EXAMPLES_DIR / template_dir)
     # Get the existing template directories from the settings
     template_dirs = []
@@ -89,6 +96,9 @@ def set_templates(templates, examples):
                 if "DIRS" in template_config:
                     template_config["DIRS"].append(template)
                     break
+    print("tempalte dirs")
+    print(new_template_dirs)
+    print(template_dirs)
 
 def set_debug_toolbar(settings):
     try:

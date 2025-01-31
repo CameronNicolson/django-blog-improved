@@ -2,6 +2,7 @@ from django import template
 from django.template import Context, Template
 from django.template import Node, TemplateSyntaxError
 from django.db.models.query import QuerySet
+from django.db.models import Q
 from blog_improved.models import Post, Status
 from blog_improved.utils.strings import split_string, convert_str_kwargs_to_list
 from blog_improved.query_request.query import QueryRequest, FilterQueryRequest
@@ -96,7 +97,7 @@ class MultiKeywordArgument(ClassyTagsMultiKeywordArgument):
                 if resolved_value:  # Only proceed if resolved_value is not empty or None
                     list_values = [TemplateConstant(item) for item in resolved_value.split(',')]
                     # Initialize the ListValue with the first item, if any
-                    template_list = ListValue(list_values[0]) if list_values else ListValue('')
+                    template_list = ListValue(list_values[0]) if list_values else ListValue()
                     # Append remaining values, if any
                     template_list.extend(list_values[1:])
                     # Update options with the new ListValue
@@ -140,7 +141,7 @@ class DictWithListValue(dict, StringValue):
 class BlogListTag(Tag):
     name = "bloglist"
     options = Options(
-        MultiKeywordArgument("bloglist_options", resolve=False, required=False, commakwarg=["category"])
+        MultiKeywordArgument("bloglist_options", resolve=False, required=False, commakwarg=["category", "ignore_category"]),
     )
 
     def __init__(self, parser, tokens):
@@ -152,6 +153,7 @@ class BlogListTag(Tag):
             options.setdefault("max_count", TemplateConstant("-1"))
             options.setdefault("featured_count", TemplateConstant("-1"))
             options.setdefault("category", ListValue(TemplateConstant("all")))
+            options.setdefault("ignore_category", TemplateConstant(""))
             options.setdefault("name", TemplateConstant("bloglist"))
             options.setdefault("featured", TemplateConstant(False))
             options["max_count"] = IntegerValue(options["max_count"]) 
@@ -163,7 +165,7 @@ class BlogListTag(Tag):
         finally:
             return super().render(context)
 
-    def render_tag(self, context, name, max_count, featured_count, category, featured):
+    def render_tag(self, context, name, max_count, featured_count, category, featured, ignore_category):
         layout_name = "standard_3by3"
         if max_count < 0:
             layout = POST_LIST_GRID_PRESETS[layout_name]
@@ -171,6 +173,7 @@ class BlogListTag(Tag):
         posts = PostListQueryRequest()\
                     .max_size(max_count)\
                     .categories(category)\
+                    .ignored(tuple(("category__name", "exact", ic,) for ic in ignore_category))\
                     .featured(featured)\
                     .number_of_featured(featured_count)\
                     .status(1)\

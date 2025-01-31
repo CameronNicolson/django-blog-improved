@@ -171,3 +171,49 @@ class BlogListTagTestCase(TestCase):
         rendered_featured_count = len(rendered_list.find_all("article", attrs={"class": "article--featured"}))
 
         self.assertEqual(rendered_featured_count, 2) 
+
+
+    def test_bloglisttag_empty_valeu_ignored_categories(self):
+        template_string = '{% load blog_tags %}{% bloglist ignore_category="" %}'
+        template = Template(template_string)
+        context = Context({})
+        rendered_html = template.render(context)
+   # Parse both HTML strings
+        rendered = BeautifulSoup(rendered_html, 'html.parser')
+        # Check the `ul` element with id `latest-news__list`
+        rendered_list = rendered.find(id="bloglist")
+        self.assertTrue(rendered_list is not None)
+        rendered_posts_count = BlogListTagTestCase.count_post_items(rendered_list)
+        self.assertEqual(rendered_posts_count, 9) 
+
+    def test_bloglisttag_ignore_specific_category(self):
+        # Render without ignoring any category
+        template_string_all = '{% load blog_tags %}{% bloglist %}'
+        template_all = Template(template_string_all)
+        context = Context({})
+        rendered_html_all = template_all.render(context)
+        rendered_all = BeautifulSoup(rendered_html_all, 'html.parser')
+
+        # Count occurrences of the category class "article__category"
+        category_elements = rendered_all.find_all(class_="article__category")
+                # Count occurrences of the category class "article__category" containing the text "colors"
+        category_elements = rendered_all.find_all(class_="article__category")
+        total_categories = len(category_elements)
+        total_color_categories = sum(1 for elem in category_elements if "colors" in elem.get_text(strip=True).lower())
+
+        # Render with ignore_category="color"
+        template_string_ignore = '{% load blog_tags %}{% bloglist ignore_category="colors" %}'
+        template_ignore = Template(template_string_ignore)
+        rendered_html_ignore = template_ignore.render(context)
+        rendered_ignore = BeautifulSoup(rendered_html_ignore, 'html.parser')
+
+        # Check the `ul` element with id `bloglist` still exists
+        rendered_list_ignore = rendered_ignore.find(id="bloglist")
+        self.assertTrue(rendered_list_ignore is not None)
+
+        # Count occurrences of "article__category" containing "colors" in the ignored list
+        ignored_category_elements = rendered_ignore.find_all(class_="article__category")
+        total_color_categories_ignored = sum(1 for elem in ignored_category_elements if "colors" in elem.get_text(strip=True).lower())
+
+        # Ensure that after ignoring "colors," no articles have the "colors" category
+        self.assertEqual(total_color_categories_ignored, 0)

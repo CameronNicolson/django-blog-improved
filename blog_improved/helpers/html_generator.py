@@ -504,11 +504,12 @@ class BlogHtmlFactory(MarkupFactory):
         if category:
             divider_text_node = TextNode(" - ")
             category_text_node = TextNode(category)
-            category_text_node = bool_wrapper(self._markup, article_url, "hyperlink", {"href": category, "class": "article__category-link"}, category_text_node)
+            category_text_node = bool_wrapper(self._markup, article_url, "hyperlink", {"href": category, "class": "article__category article__category--link"}, category_text_node)
             try:
                 category_text_node.attrs["rel"] = "category"
             except:
-                pass
+                category_inline_container = self._markup.create_node("inline_container", {"class": "article__category"})
+                category_inline_container.add_child(category_text_node)
             meta_node.add_child(divider_text_node)
             context_node = self._markup.create_node("inline_container", {"class": "visually-hidden"})
             context_node.add_child(TextNode("In the category:"))
