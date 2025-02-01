@@ -104,11 +104,6 @@ class MultiKeywordArgument(ClassyTagsMultiKeywordArgument):
                     options = (key, template_list)
         return options
 
-    def _is_a_comma_list(self, token):
-        comma_list = str(token)
-        result = True if "," in comma_list else False
-        return result
-
 class DictWithListValue(dict, StringValue):
     def __init__(self, value):
         new_dict = value
@@ -121,9 +116,6 @@ class DictWithListValue(dict, StringValue):
         dict.__init__(self, new_dict)
 
     def clean(self, value):
-        #        items = next(iter(value.values()))
-       # if not isinstance(items, list):
-        #    return self.error(value, "clean")
         return value
 
     def resolve(self, context):
@@ -151,12 +143,16 @@ class BlogListTag(Tag):
         try:
             options = self.kwargs.pop("%s_options" % self.name)
             options.setdefault("max_count", TemplateConstant("-1"))
+            # empty strings in max_count will be counted as "-1"
+            if not bool(str(options["max_count"].resolve(None))):
+                options["max_count"] = TemplateConstant("-1")
             options.setdefault("featured_count", TemplateConstant("-1"))
             options.setdefault("category", ListValue(TemplateConstant("all")))
             options.setdefault("ignore_category", TemplateConstant(""))
             options.setdefault("name", TemplateConstant("bloglist"))
             options.setdefault("featured", TemplateConstant(False))
             options["max_count"] = IntegerValue(options["max_count"]) 
+
             options["featured_count"] = IntegerValue(options["featured_count"]) 
             options["name"] = StringValue(options["name"])
             self.kwargs = options

@@ -63,6 +63,21 @@ class BlogListTagTestCase(TestCase):
         rendered_list = rendered.find(id="bloglist")
         self.assertTrue(rendered_list is not None)
 
+    def test_bloglisttag_empty_max_count(self):
+        template_string = '{% load blog_tags %}{% bloglist max_count="" %}'
+        template = Template(template_string)
+        context = Context({})
+        render = template.render(context) 
+        rendered = BeautifulSoup(render, 'html.parser') 
+        rendered_list = rendered.find(id="bloglist")
+        self.assertTrue(rendered_list is not None)
+        # Count the number of <li> elements within the <ul>
+        expected_post_count = BlogListTagTestCase.count_post_items(rendered_list)
+        print(rendered_list)
+        self.assertEqual(expected_post_count, 9)
+ 
+
+
     def test_bloglisttag_multiple_categories(self):
         expected_html = self.load_fixture("bloglist_multiple_categories.html") 
         template_string = '{% load blog_tags %}{% bloglist max_count="22" category="colors,programming" %}'
