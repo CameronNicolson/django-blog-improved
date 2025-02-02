@@ -1,0 +1,154 @@
+[
+  {
+    "model": "taggit.tag",
+    "pk": 1,
+    "fields": {
+      "name": "entertainment",
+      "slug": "entertainment"
+    }
+  },
+  {
+    "model": "blog_improved.post",
+    "pk": 1,
+    "fields": {
+      "title": "Web Series: Episode 2",
+      "headline": "This is the summary of Episode 2.",
+      "author": 1,
+      "status": 1,
+      "created_on": "2025-01-27T18:02:44Z",
+      "updated_on": "2025-01-27T18:02:44Z",
+      "published_on": "2025-01-27T18:02:44Z",
+      "is_featured": true,
+      "category": 1,
+      "slug": "ep2"
+    }
+  },
+  {
+    "model": "blog_improved.post",
+    "pk": 2,
+    "fields": {
+      "title": "Web Series: Episode 3",
+      "headline": "This is the summary of Episode 3.",
+      "author": 1,
+      "status": 1,
+      "created_on": "2025-01-28T18:02:44Z",
+      "updated_on": "2025-01-28T18:02:44Z",
+      "published_on": "2025-01-28T18:02:44Z",
+      "is_featured": false,
+      "category": 1,
+      "slug": "ep3"
+    }
+  },
+  {
+    "model": "blog_improved.post",
+    "pk": 3,
+    "fields": {
+      "title": "Web Series: Episode 4",
+      "headline": "This is the summary of Episode 4.",
+      "author": 1,
+      "status": 1,
+      "created_on": "2025-01-29T18:02:44Z",
+      "updated_on": "2025-01-28T18:02:44Z",
+      "published_on": "2025-01-29T18:02:44Z",
+      "is_featured": false,
+      "category": 1,
+      "slug": "ep4"
+    }
+  },
+  {
+    "model": "blog_improved.post",
+    "pk": 4,
+    "fields": {
+      "title": "Web Series: Episode 5",
+      "headline": "This is the summary of Episode 5.",
+      "author": 1,
+      "status": 1,
+      "created_on": "2025-01-30T18:02:44Z",
+      "updated_on": "2025-01-30T18:02:44Z",
+      "published_on": "2025-01-30T18:02:44Z",
+      "is_featured": false,
+      "category": 1,
+      "slug": "ep5"
+    }
+  },
+  {
+    "model": "blog_improved.post",
+    "pk": 5,
+    "fields": {
+      "title": "Web Series: Episode 1",
+      "headline": "This is the summary of Episode 1.",
+      "author": 1,
+      "status": 1,
+      "created_on": "2025-01-31T18:02:44Z",
+      "updated_on": "2025-01-31T18:02:44Z",
+      "published_on": "2025-01-31T18:02:44Z",
+      "is_featured": false,
+      "category": 1,
+      "slug": "ep1"
+    }
+  },
+  {
+    "model": "blog_improved.post",
+    "pk": 6,
+    "fields": {
+      "title": "Web Series: Episode 6",
+      "headline": "This is the summary of Episode 6.",
+      "author": 1,
+      "status": 1,
+      "created_on": "2025-02-01T18:02:44Z",
+      "updated_on": "2025-02-01T18:02:44Z",
+      "published_on": "2025-02-01T18:02:44Z",
+      "is_featured": false,
+      "category": 1,
+      "slug": "ep6"
+    }
+  },
+  {
+    "model": "blog_improved.post",
+    "pk": 7,
+    "fields": {
+      "title": "Web Series: Episode 7",
+      "headline": "This is the summary of Episode 7.",
+      "author": 1,
+      "status": 1,
+      "created_on": "2025-02-02T18:02:44Z",
+      "updated_on": "2025-02-02T18:02:44Z",
+      "published_on": "2025-02-02T18:02:44Z",
+      "is_featured": false,
+      "category": 1,
+      "slug": "ep7"
+    }
+  },
+  {
+    "model": "blog_improved.post",
+    "pk": 8,
+    "fields": {
+      "title": "Web Series: Episode 9",
+      "headline": "This is the summary of Episode 9.",
+      "author": 1,
+      "status": 1,
+      "created_on": "2025-02-03T18:02:44Z",
+      "updated_on": "2025-02-03T18:02:44Z",
+      "published_on": "2025-02-03T18:02:44Z",
+      "is_featured": false,
+      "category": 1,
+      "slug": "ep9"
+    }
+  },
+  {
+    "model": "blog_improved.post",
+    "pk": 9,
+    "fields": {
+      "title": "Web Series: Episode 8",
+      "headline": "This is the summary of Episode 8.",
+      "author": 1,
+      "status": 1,
+      "created_on": "2025-02-04T18:02:44Z",
+      "updated_on": "2025-02-04T18:02:44Z",
+      "published_on": "2025-02-04T18:02:44Z",
+      "is_featured": false,
+      "category": 1,
+      "slug": "ep8"
+    }
+  }
+]

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Django's command-line utility for administrative tasks."""
+"""Django's examples runner."""
 import os
 import sys
 from pathlib import Path
@@ -8,7 +8,7 @@ import json
 BASE_DIR = Path(__file__).resolve().parent 
 EXAMPLES_DIR = BASE_DIR / "examples"
 
-def find_and_parse_entrypoints(path: Path):
+def find_and_parse_entrypoints(path: Path, settings: dict):
     """
     Recursively look for files named 'entrypoint.example' in the given path,
     parse their JSON contents into a single dict, and append to a list.
@@ -30,13 +30,32 @@ def find_and_parse_entrypoints(path: Path):
                 with file.open('r', encoding='utf-8') as f:
                     data = json.load(f)
                     if isinstance(data, dict):  # Ensure it's a dictionary
-                        ident = data["path"].replace("/", "").lower() 
+                        path = data["path"].split("/")[:2]
+                        group = path[0]
+                        name = path[1]
+                        ident = str(group + name).lower()
                         entries[ident] = data
                         try:
                             group_name = data["group"]
                             groups[group_name].append(data)
                         except KeyError:
                             groups[data["group"]] = list([data])
+                        for fixture_dir in settings.FIXTURE_DIRS:
+                            parts = str(fixture_dir).split("/")[-3:]
+                            # discard last part which is "fixture"
+                            if ident in "".join([parts[0], parts[1]]):
+                                entries[ident]["fixtures"] = {"fixture_path": fixture_dir}
+                                if os.path.isdir(fixture_dir):
+                        # Iterate through all .json files in the directory
+                                    for filename in os.listdir(fixture_dir):
+                                        if filename.endswith(".json"):
+                                            try: 
+                                                entries[ident]["fixtures"]["files"].append(filename)
+                                            except KeyError:
+                                                entries[ident]["fixtures"]["files"] = [filename]
+                        else:
+                            print(f"Skipped: no fixtures in {ident} example directory.")
+
                     else:
                         print(f"Skipped {file}: JSON is not a dictionary.")
             except json.JSONDecodeError as e:
@@ -44,6 +63,16 @@ def find_and_parse_entrypoints(path: Path):
             except Exception as e:
                 print(f"Unexpected error with {file}: {e}")
     return (groups, entries)
+
+def find_example_fixtures_dirs(root_dir, settings):
+    fixture_dirs = []
+    for dirpath, dirnames, _ in os.walk(root_dir):
+        if "fixtures" in dirnames:
+            fixture_dirs.append(Path(os.path.abspath(os.path.join(dirpath, "fixtures"))))
+    for f in fixture_dirs:
+        settings.FIXTURE_DIRS.append(f)
+
+    return fixture_dirs
 
 # Get all fixture paths from FIXTURE_DIRS
 def get_all_fixtures(settings):
@@ -54,7 +83,6 @@ def get_all_fixtures(settings):
 
     # Function to determine the sort order
     preferred = lambda fixture: fixture_order.index(fixture.split("/")[-1]) if fixture.split("/")[-1] in fixture_order else len(fixture_order)
-
     for fixture_dir in settings.FIXTURE_DIRS:
         # List all files and directories in the root folder
         for entry in os.listdir(fixture_dir):
@@ -96,13 +124,74 @@ def set_templates(templates, examples):
                     template_config["DIRS"].append(template)
                     break
 
+def create_sample_databases(settings):
+    """
+    Dynamically adds a new database, runs migrations, and loads fixtures.
+
+    Args:
+        ident (str): The identifier for the database entry.
+        entries (dict): The dictionary containing fixture details.
+    """
+    from django.core.management import execute_from_command_line, call_command
+
+    entries = settings.EXAMPLES or []
+    for key, entry in entries.items():
+        fixture_path = None
+        fixture_files = None 
+        if "fixtures" in entry and "fixture_path" in entry["fixtures"]:
+            fixture_path = entry["fixtures"]["fixture_path"]
+            fixture_files = entry["fixtures"]["files"]
+        if fixture_path == None:
+            continue
+        # Ensure the directory exists
+        if not os.path.isdir(fixture_path):
+            print(f"Warning: Fixture path '{fixture_path}' does not exist.")
+            return
+
+        # Generate the new database name
+        ident = key
+        db_name = f"{key}_db"
+
+        # Add new database dynamically
+        settings.DATABASES[db_name] = {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "examples" / "data" / f"{key}.sqlite3",
+            "TEST": {
+            "NAME": BASE_DIR / "examples" / "data" / f"{key}.sqlite3",
+            "MIGRATE": True
+            }
+        }
+        entry["database"] = db_name
+
+        print(f"Added database '{db_name}' at {settings.DATABASES[db_name]['NAME']}")
+
+        # Set the default database to the new database
+        settings.DATABASES["default"]["NAME"] = settings.DATABASES[db_name]["NAME"]
+        settings.DATABASES["default"]["TEST"] = {
+        "NAME": settings.DATABASES[db_name]["NAME"],
+        "MIGRATE": True,
+        }
+    
+        # Run migrations for the new database
+        execute_from_command_line(["django", "migrate", "--run-syncdb"])
+  
+        full_fixture_paths = [os.path.join(fixture_path, filename) for filename in fixture_files]
+
+        if fixture_files:
+            call_command("loaddata", *full_fixture_paths)
+        else:
+            print(f"No JSON fixtures found in.")
+
 def set_debug_toolbar(settings):
     try:
         from debug_toolbar import toolbar
-    except e:
+    except Exception as e:
         print(e)
+        traceback.print_exc()
         return
+    settings.DATABASE_ROUTERS = ["examples.middleware.database_middleware.DatabaseSwitcher"]
     settings.INSTALLED_APPS.append("debug_toolbar")
+    settings.MIDDLEWARE.append("examples.middleware.database_middleware.DynamicDatabaseMiddleware")
     settings.MIDDLEWARE.insert(0, "debug_toolbar.middleware.DebugToolbarMiddleware")
     settings.MIDDLEWARE.append("examples.middleware.debug_reverse_override.DebugReverseOverrideMiddleware")
 
@@ -133,8 +222,8 @@ def main():
             "available on your PYTHONPATH environment variable? Did you "
             "forget to activate a virtual environment?"
         ) from exc
-
-    settings.EXAMPLE_GROUPS, settings.EXAMPLES = find_and_parse_entrypoints(EXAMPLES_DIR)
+    example_fixtures = find_example_fixtures_dirs("examples", settings)
+    settings.EXAMPLE_GROUPS, settings.EXAMPLES = find_and_parse_entrypoints(EXAMPLES_DIR, settings)
     set_templates(settings.TEMPLATES, settings.EXAMPLES)
     urls = "examples.urls"
     settings.ROOT_URLCONF = urls
@@ -145,11 +234,39 @@ def main():
     settings.INSTALLED_APPS.append("django.contrib.staticfiles")
     settings.INSTALLED_APPS.append("examples.core")
     set_debug_toolbar(settings)
+
+    settings.DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "examples" / "data" / "default.sqlite3",
+    },
+    "normal": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "examples" / "data" / "default.sqlite3",
+    },
+    }
+    settings.DATABASES["default"]["NAME"] = settings.DATABASES["normal"]["NAME"]
+    try:
+        from django.conf import settings
+        from django.core.management import execute_from_command_line 
+        create_sample_databases(settings)
+    except Exception as e:
+        import traceback
+        print(e)
+        traceback.print_exc()
+        return
+
+    settings.DATABASES["default"]["NAME"] = settings.DATABASES["normal"]["NAME"]
+    settings.DATABASES["default"]["TEST"] = {
+    "NAME": settings.DATABASES["normal"]["NAME"],  # Force it to use db1.sqlite3
+    "MIGRATE": True,
+    }
+
+
     command = ["django", "testserver"]
     for fixture in get_all_fixtures(settings):
         command.append(fixture)
     execute_from_command_line(command)
-
 
 if __name__ == '__main__':
     main()

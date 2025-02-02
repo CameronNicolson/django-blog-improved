@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %} Examples Ignore Categories {% endblock title %}
+{% load blog_tags %}
+
+{% block content %}
+<div class="container">
+<pre class="pre">
+<code class="code">
+  &#123;&#37; bloglist sort='asc' &#37;&#125;
+</code>
+</pre>
+<p>The sort key changes the order which the posts are presented.</p>
+<p>Sort is a choice-based option, the options are:</p> 
+<ol>
+	<li>asc - stands for ascending (a-z)</li>
+	<li>desc - stands for descending (z-a)</li>
+</ol>
+<div id="preview" class="pt-4">
+{% bloglist %}
+</div>
+</div>
+{% endblock %}

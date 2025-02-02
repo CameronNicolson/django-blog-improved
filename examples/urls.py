@@ -35,6 +35,9 @@ def group_view(request, group_name):
                "breadcrumbs": (("Home", "/"),(f"{group_name}", None),)}
     return render(request, "group.html", context)
 
+from django.core.management import call_command
+from django.http import JsonResponse
+
 def dummy_view(request, slug=None):
     return HttpResponse(f"You are accessing: {request.path} on the Examples server")
 
