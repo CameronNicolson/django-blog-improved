@@ -1,3 +1,6 @@
+import warnings
+from datetime import datetime
+from django.conf import settings
 from django import template
 from django.template import Context, Template
 from django.template import Node, TemplateSyntaxError
@@ -7,7 +10,7 @@ from blog_improved.models import Post, Status
 from blog_improved.utils.strings import split_string, convert_str_kwargs_to_list
 from blog_improved.query_request.query import QueryRequest, FilterQueryRequest
 from classytags.core import Tag, Options
-from classytags.values import StrictStringValue, StringValue, ListValue, DictValue
+from classytags.values import ChoiceValue, StrictStringValue, StringValue, ListValue, DictValue
 from classytags.arguments import MultiKeywordArgument as ClassyTagsMultiKeywordArgument
 from classytags.arguments import Argument, KeywordArgument, StringArgument, MultiValueArgument
 from classytags.values import IntegerValue
@@ -130,6 +133,52 @@ class DictWithListValue(dict, StringValue):
                 resolved[key] = resolved_value
         return self.clean(resolved)
 
+from django.utils.dateparse import parse_datetime
+
+class DateTimeValue:
+    errors = {
+        'invalid': "Invalid datetime value: %(value)s",
+    }
+    value_on_error = None
+
+    def __init__(self, var):
+        self.var = var
+        try:
+            self.literal = self.var.literal
+        except AttributeError:
+            self.literal = self.var.token
+
+    def resolve(self, context):
+        resolved = self.var.resolve(context)
+        return self.clean(resolved)
+
+    def clean(self, value):
+        if isinstance(value, datetime):
+            return value  # Already a datetime object
+        
+        if isinstance(value, str):
+            parsed = parse_datetime(value)
+            if parsed is not None:
+                return parsed
+            
+        return self.error(value, 'invalid')
+
+    def error(self, value, category):
+        data = self.get_extra_error_data()
+        data['value'] = repr(value)
+        message = self.errors.get(category, "") % data
+        
+        if settings.DEBUG:
+            raise template.TemplateSyntaxError(message)
+        else:
+            # warnings.warn(message, template.TemplateSyntaxError)
+            return self.value_on_error
+
+    def get_extra_error_data(self):
+        return {}
+
+ChoiceValue.choices.extend(["asc", "desc"])
+
 class BlogListTag(Tag):
     name = "bloglist"
     options = Options(
@@ -142,6 +191,7 @@ class BlogListTag(Tag):
     def render(self, context):
         try:
             options = self.kwargs.pop("%s_options" % self.name)
+            options.setdefault("date_range", TemplateConstant("9999-12-31 23:59:59.999999"))
             options.setdefault("max_count", TemplateConstant("-1"))
             # empty strings in max_count will be counted as "-1"
             if not bool(str(options["max_count"].resolve(None))):
@@ -151,17 +201,25 @@ class BlogListTag(Tag):
             options.setdefault("ignore_category", TemplateConstant(""))
             options.setdefault("name", TemplateConstant("bloglist"))
             options.setdefault("featured", TemplateConstant(False))
+
+            options.setdefault("sort", TemplateConstant(""))
+
+            options["date_range"] = DateTimeValue(options["date_range"])
             options["max_count"] = IntegerValue(options["max_count"]) 
 
             options["featured_count"] = IntegerValue(options["featured_count"]) 
             options["name"] = StringValue(options["name"])
+            try:
+                ChoiceValue(options["sort"]) 
+            except TemplateSyntaxError: 
+                options["sort"] = None
             self.kwargs = options
         except:
             pass
         finally:
             return super().render(context)
 
-    def render_tag(self, context, name, max_count, featured_count, category, featured, ignore_category):
+    def render_tag(self, context, name, max_count, featured_count, category, featured, ignore_category, date_range, sort):
         layout_name = "standard_3by3"
         if max_count < 0:
             layout = POST_LIST_GRID_PRESETS[layout_name]
@@ -169,9 +227,10 @@ class BlogListTag(Tag):
         posts = PostListQueryRequest()\
                     .max_size(max_count)\
                     .categories(category)\
+                    .date_range(date_range)\
+                    .sort(sort)\
                     .ignored(tuple(("category__name", "exact", ic,) for ic in ignore_category))\
-                    .featured(featured)\
-                    .number_of_featured(featured_count)\
+                    .featured(featured, featured_count)\
                     .status(1)\
                     .return_type("values_list")\
                     .build()

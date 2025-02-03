@@ -1,8 +1,10 @@
 from itertools import chain
+from datetime import datetime
 from abc import ABC, abstractmethod
 from enum import Enum
 from django.utils import timezone
-from django.db.models import F, Window, When, Case, Value, IntegerField
+from django.db.models import ExpressionWrapper, DurationField, F, Window, When, Case, Value, IntegerField
+from django.db.models.functions import Now
 from django.db.models.functions import RowNumber
 from blog_improved.query_request.query import FilterQueryRequest, LimitQueryRequest, QueryRequest, QueryRequestSelectValues
 from blog_improved.query_request import AnnotateQueryRequest, SortQueryRequest
@@ -89,6 +91,8 @@ class PostListQueryRequest(PostListBuilder):
 
     def __init__(self):
         self._categories = list()
+        self._date_rnage = None
+        self._sort = None
         self._ignored_cases = tuple()
         self._max_size = None
         self._featured = False
@@ -96,7 +100,16 @@ class PostListQueryRequest(PostListBuilder):
         self._return_type = "instances"
         self._status = 1
         self._post_fields = ("pk", "title", "headline", "author__username", "published_on", "content", "category__name", "is_featured", "slug", "priority",)
-    
+
+    def date_range(self, date_range):
+        if not isinstance(date_range, datetime):
+            raise TypeError(self.__class__.__name__ + f" the type type(date_range) does not match the required timedate from standard library.")
+        if not date_range == datetime.max:
+            self._date_range = None
+        else:
+            self._date_range = date_range
+        return self
+
     def max_size(self, number):
         if not isinstance(number, (int, float)):
             raise TypeError(self.__class__.__name__ + " takes a standard number type.")
@@ -105,6 +118,10 @@ class PostListQueryRequest(PostListBuilder):
             raise ValueError(f"The value {number} in {self.__class__.__name__}'s max_size must be a positive number")
         else:
             self._max_size = int(number)
+        return self
+
+    def sort(self, sort):
+        self._sort = sort
         return self
 
     def categories(self, categories):
@@ -123,27 +140,27 @@ class PostListQueryRequest(PostListBuilder):
         self._ignored_cases = ignored_cases
         return self
 
-    def featured(self, active):
+    def featured(self, active, amount):
+        active = bool(active)
+        print(active)
+        if not isinstance(active, bool):
+            raise TypeError(self.__class__.__name__ + " takes a standard boolean type.")
         self._featured = active
-        if not self._num_featured:
-            self._num_featured = 1
-
-        self._num_featured = 1
-        return self
-
-    def number_of_featured(self, number):
-        if not isinstance(number, (int, float)):
+        if not isinstance(amount, (int, float)):
             raise TypeError(self.__class__.__name__ + " takes a standard number type.")
-        if number <= 0:
-            if self._num_featured:
-                self._num_featured = 1
-            else:
-                self._num_featured = 0
-        else:
-            self._num_featured = int(number)
+
+        if not amount and self._featured:
+            self._num_featured = 1
+        elif (amount > 0) and self._featured:
+            self._num_featured = amount
+        elif (amount < 0) and self._featured:
+            self._num_featured = 1
+        else: 
+            self._num_featured = 0
 
         if not self._max_size:
            self._max_size = self._num_featured 
+
         return self
 
     def return_type(self, rtype):
@@ -204,11 +221,16 @@ class PostListQueryRequest(PostListBuilder):
                                             lookup_type=lp_type)
 
         request = QueryRequestSelectValues(queryset_request=request, fields=self._post_fields)
+ 
+        if self._sort:
+            request = SortQueryRequest(queryset_request=request, sort_by=["title"], priority=20)
+        else:
+            request = SortQueryRequest(queryset_request=request, sort_by=["priority", "-published_on"], priority=19)
 
-        request = SortQueryRequest(queryset_request=request, sort_by=["priority", "-published_on"], priority=19)
-        nib = Value(PostList.PriorityOrder.NORMAL, output_field=IntegerField())
-        request = AnnotateQueryRequest(queryset_request=request, name="priority", calculation=nib, priority=18)
+        #priority = Case(When(is_featured=True, then=Value(PostList.PriorityOrder.FEATURE, output_field=IntegerField())), default=Value(PostList.PriorityOrder.NORMAL, output_field=IntegerField()), output_field=IntegerField())
 
+        assign_normal_priority = Value(PostList.PriorityOrder.NORMAL, output_field=IntegerField())
+        request = AnnotateQueryRequest(queryset_request=request, name="priority", calculation=assign_normal_priority, priority=18)
 
         if self._max_size:
             request = LimitQueryRequest(queryset_request=request, offset=0, max_limit=self._max_size)
@@ -218,14 +240,18 @@ class PostListQueryRequest(PostListBuilder):
             request.make_request()
             featured_request = QueryRequest("blog_improved", "Post", request.get_methods(), return_type="values_list")
             featured_request.add_selected_fields(request.get_selected_fields())
-            find_priority = Case(When(is_featured=True, then=Value(0)), output_field=IntegerField())
+
+            request = SortQueryRequest(queryset_request=request, sort_by=["time_diff"], priority=21)
+            time_diff=ExpressionWrapper(Now() - F("published_on"), output_field=DurationField())
+            request = AnnotateQueryRequest(queryset_request=request, name="time_diff", calculation=time_diff, priority=17)
+
+            find_priority = Case(When(is_featured=True, then=Value(PostList.PriorityOrder.FEATURE, output_field=IntegerField())), default=Value(PostList.PriorityOrder.NORMAL, output_field=IntegerField()), output_field=IntegerField())
             featured_request = FilterQueryRequest(queryset_request=featured_request, 
                                         lookup_field="is_featured", 
                                         lookup_value=True)
             featured_request = LimitQueryRequest(queryset_request=featured_request, offset=0, max_limit=self._num_featured) 
             featured_request = AnnotateQueryRequest(queryset_request=featured_request, name="priority", calculation=find_priority, priority=18)
-
-    
+           
         request.make_request()
         post_list = None
         if not featured_request:
@@ -246,6 +272,7 @@ class PostListQueryRequest(PostListBuilder):
         priority_pos = last_field + 1
         for item in post_list:
             new_tuple = item[:priority_pos] + item[priority_pos + 1:]
+            print(new_tuple)
             priority_order.append((item[0], item[priority_pos],))
             new_data.append(new_tuple)
         return PostList(post_list=new_data, date_generated=timezone.now(), fetch_posts=request, fetch_categories=None, priority_order=priority_order)
