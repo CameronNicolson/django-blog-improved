@@ -21,8 +21,18 @@
 {% bloglist %}
 
 <h2>Sort by ascending</h2>
-<p>Sort by ascending means arranging items from the smallest or lowest value to the largest or highest value.</p> 
+<p>Sort by ascending means arranging post titles alphabetical order from the lowest value "a" and the largest or highest value is "z".</p> 
 {% bloglist sort='asc' %}
+<h2>Sort by descending</h2>
+<p>Sort by descending means arranging post titles in alphabetical order, lowest value is "z" and the largest or highest value is "a".</p> 
+<pre class="pre">
+<code class="code">
+  &#123;&#37; bloglist sort='desc' &#37;&#125;
+</code>
+</pre>
+
+{% bloglist sort='desc' %}
+
 <h2>Sort and featured</h2>
 <pre class="pre">
 <code class="code">
@@ -40,6 +50,6 @@
 </pre>
 
 {% bloglist sort='asc' featured='True' featured_count='3' %}
-<p>The example above shows the featured posts being dealt chronologically, the most recent "Yearly roundup 2024" is placed at the top, then the remaining sort is done alphabetically. 
+<p>The example above shows 3 featured posts in the top row, together sorted in chronological order (from newest to oldest), the newest feature is "Yearly roundup 2024". Followed by the remaining 6 posts sorted alphabetically. 
 </div>
 {% endblock %}
