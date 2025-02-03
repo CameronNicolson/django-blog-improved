@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block title %} Examples Ignore Categories {% endblock title %}
 {% load blog_tags %}
-
 {% block content %}
 <div class="container">
 <pre class="pre">
@@ -15,8 +14,32 @@
 	<li>asc - stands for ascending (a-z)</li>
 	<li>desc - stands for descending (z-a)</li>
 </ol>
+<p>These options are not case sensitive with uppercase and lowercase both considered equal, such as "DESC" vs "desc" - gives the same result.
+<h2>Standard sorting</h2>
+<p>When the "sort" option is discluded then the posts are arranged by publish dates, with the newest post appearing at the top.</p>
 <div id="preview" class="pt-4">
 {% bloglist %}
+
+<h2>Sort by ascending</h2>
+<p>Sort by ascending means arranging items from the smallest or lowest value to the largest or highest value.</p> 
+{% bloglist sort='asc' %}
+<h2>Sort and featured</h2>
+<pre class="pre">
+<code class="code">
+  &#123;&#37; bloglist sort='asc' featured='True' &#37;&#125;
+</code>
+</pre>
+<p>When combining sort and featuerd options, the lists are generated with both featured and alphabetical sorting. Featured posts bare higher importance to any other list element.</p>
+{% bloglist sort='asc' featured='True' %}
+<p>In this example, the featured title "Yearly Roundup" came before "Web Series" since they are compared based on numerical importance instead of alphabetical.
 </div>
+<pre class="pre">
+<code class="code">
+  &#123;&#37; bloglist sort='asc' featured='True' featured_count='3' &#37;&#125;
+</code>
+</pre>
+
+{% bloglist sort='asc' featured='True' featured_count='3' %}
+<p>The example above shows the featured posts being dealt chronologically, the most recent "Yearly roundup 2024" is placed at the top, then the remaining sort is done alphabetically. 
 </div>
 {% endblock %}

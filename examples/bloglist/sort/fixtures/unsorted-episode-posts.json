@@ -18,7 +18,7 @@
       "created_on": "2025-01-27T18:02:44Z",
       "updated_on": "2025-01-27T18:02:44Z",
       "published_on": "2025-01-27T18:02:44Z",
-      "is_featured": true,
+      "is_featured": false,
       "category": 1,
       "slug": "ep2"
     }
@@ -150,5 +150,54 @@
       "category": 1,
       "slug": "ep8"
     }
-  }
+  },
+  {
+    "model": "blog_improved.post",
+    "pk": 10,
+    "fields": {
+      "title": "Yearly Roundup 2024",
+      "headline": "The entry costs a certain amount.",
+      "author": 1,
+      "status": 1,
+      "created_on": "2024-02-01T18:02:44Z",
+      "updated_on": "2024-02-01T18:11:44Z",
+      "published_on": "2024-02-01T18:11:44Z",
+      "is_featured": true,
+      "category": 1,
+      "slug": "roundup-year-24"
+    }
+  },
+  {
+    "model": "blog_improved.post",
+    "pk": 11,
+    "fields": {
+      "title": "Yearly ABC Roundup",
+      "headline": "The entry costs a certain amount.",
+      "author": 1,
+      "status": 1,
+      "created_on": "2021-11-01T18:02:44Z",
+      "updated_on": "2021-11-01T18:11:44Z",
+      "published_on": "2021-11-01T18:11:44Z",
+      "is_featured": true,
+      "category": 1,
+      "slug": "roundup-year-21"
+    }
+  }, 
+  {
+    "model": "blog_improved.post",
+    "pk": 12,
+    "fields": {
+      "title": "Yearly Roundup 2022",
+      "headline": "The second feature length film.",
+      "author": 1,
+      "status": 1,
+      "created_on": "2022-11-01T18:02:44Z",
+      "updated_on": "2022-11-01T18:11:44Z",
+      "published_on": "2022-11-01T18:11:44Z",
+      "is_featured": true,
+      "category": 1,
+      "slug": "roundup-year-22"
+    }
+  } 
+
 ]
