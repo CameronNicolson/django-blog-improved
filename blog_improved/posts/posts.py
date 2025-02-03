@@ -142,7 +142,6 @@ class PostListQueryRequest(PostListBuilder):
 
     def featured(self, active, amount):
         active = bool(active)
-        print(active)
         if not isinstance(active, bool):
             raise TypeError(self.__class__.__name__ + " takes a standard boolean type.")
         self._featured = active
@@ -223,7 +222,10 @@ class PostListQueryRequest(PostListBuilder):
         request = QueryRequestSelectValues(queryset_request=request, fields=self._post_fields)
  
         if self._sort:
-            request = SortQueryRequest(queryset_request=request, sort_by=["title"], priority=20)
+            sort_field = "title"
+            if self._sort == "desc":
+               sort_field = "-" + sort_field
+            request = SortQueryRequest(queryset_request=request, sort_by=[sort_field], priority=20)
         else:
             request = SortQueryRequest(queryset_request=request, sort_by=["priority", "-published_on"], priority=19)
 
@@ -272,7 +274,6 @@ class PostListQueryRequest(PostListBuilder):
         priority_pos = last_field + 1
         for item in post_list:
             new_tuple = item[:priority_pos] + item[priority_pos + 1:]
-            print(new_tuple)
             priority_order.append((item[0], item[priority_pos],))
             new_data.append(new_tuple)
         return PostList(post_list=new_data, date_generated=timezone.now(), fetch_posts=request, fetch_categories=None, priority_order=priority_order)
