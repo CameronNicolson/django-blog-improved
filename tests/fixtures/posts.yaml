@@ -354,8 +354,8 @@
     status: 1
     category: 7
     slug: mazda-rx-7
-- name: featured transport post
-  description: cars
+- name: featured event post
+  description: A category event marked as featured
   model: blog_improved.post
   pk: 26
   fields:
@@ -370,3 +370,36 @@
     status: 1
     category: 9
     slug: gnu-release
+- name: Orange post
+  description: category grouping color
+  model: blog_improved.post
+  pk: 27
+  fields: 
+    title: The color orange facts
+    headline: Orange represents
+    content: "Facts about orange"
+    author: 2
+    created_on: 2024-03-22T10:10:10.00000+00:00 
+    published_on: 2024-03-22T10:10:10.00000+00:00
+    updated_on: 2024-03-22T10:10:10.00000+00:00
+    status: 1
+    category: 11
+    slug: color-orange
+    cover_art: 1
+- name: blue post
+  description: category grouping color
+  model: blog_improved.post
+  pk: 28
+  fields: 
+    title: The color blue facts
+    headline: Blue represents
+    content: "Facts about blue"
+    author: 2
+    created_on: 2024-04-22T10:10:10.00000+00:00 
+    published_on: 2024-04-22T10:10:10.00000+00:00
+    updated_on: 2024-04-22T10:10:10.00000+00:00
+    status: 1
+    category: 11
+    is_featured: True
+    slug: color-blue
+    cover_art: 1
