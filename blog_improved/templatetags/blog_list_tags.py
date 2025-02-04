@@ -183,6 +183,8 @@ class BlogListTag(Tag):
     name = "bloglist"
     options = Options(
         MultiKeywordArgument("bloglist_options", resolve=False, required=False, commakwarg=["category", "ignore_category"]),
+        "as",
+        Argument("varname", required=False, resolve=False)
     )
 
     def __init__(self, parser, tokens):
@@ -190,7 +192,9 @@ class BlogListTag(Tag):
     
     def render(self, context):
         try:
-            options = self.kwargs.pop("%s_options" % self.name)
+            options = self.kwargs.pop("%s_options" % self.name) 
+
+            options.setdefault("varname", TemplateConstant(False))
             options.setdefault("date_range", TemplateConstant("9999-12-31 23:59:59.999999"))
             options.setdefault("max_count", TemplateConstant("-1"))
             # empty strings in max_count will be counted as "-1"
@@ -209,6 +213,10 @@ class BlogListTag(Tag):
 
             options["featured_count"] = IntegerValue(options["featured_count"]) 
             options["name"] = StringValue(options["name"])
+
+            variable_name = self.kwargs.get("varname", TemplateConstant(False)) 
+            options["varname"] = variable_name
+
             try:
                 ChoiceValue(options["sort"]) 
             except TemplateSyntaxError: 
@@ -219,7 +227,7 @@ class BlogListTag(Tag):
         finally:
             return super().render(context)
 
-    def render_tag(self, context, name, max_count, featured_count, category, featured, ignore_category, date_range, sort):
+    def render_tag(self, context, name, max_count, featured_count, category, featured, ignore_category, date_range, sort, varname=None):
         layout_name = "standard_3by3"
         if max_count < 0:
             layout = POST_LIST_GRID_PRESETS[layout_name]
@@ -241,6 +249,9 @@ class BlogListTag(Tag):
         markup.build_grid()
         markup.generate_html(layout_type="row")
         html = markup.get_rendered()
+        if varname:
+            context[varname] = html
+            return ""
         return html
 
 
