@@ -232,6 +232,7 @@ class BlogListTag(Tag):
         if max_count < 0:
             layout = POST_LIST_GRID_PRESETS[layout_name]
             max_count = layout["rows"] * layout["columns"]
+
         posts = PostListQueryRequest()\
                     .max_size(max_count)\
                     .categories(category)\
@@ -240,16 +241,21 @@ class BlogListTag(Tag):
                     .ignored(tuple(("category__name", "exact", ic,) for ic in ignore_category))\
                     .featured(featured, featured_count)\
                     .status(1)\
-                    .return_type("values_list")\
-                    .build()
-        
+                    .return_type("values_list")
+        if max_count > 0:        
+            posts = posts.build()
+        else: 
+            print("it was zero")
+            posts = []
         markup = create_post_list_markup(name, posts, 
                                          layout_name, 
                                          HTML_FACTORY_INSTANCE)
         markup.build_grid()
         markup.generate_html(layout_type="row")
         html = markup.get_rendered()
+        print(html)
         if varname:
+            print(varname)
             context[varname] = html
             return ""
         return html
