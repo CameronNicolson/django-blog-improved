@@ -57,10 +57,10 @@ def merge_attributes(sgml_attrs: dict, themed_attrs: dict) -> dict:
     merged = {}
 
     for key, attr_data in sgml_attrs.items():
-        base_value = attr_data.get('value', '')  # Get the SGML attribute value
-        theme_value = themed_attrs.get(key, '')  # Get the theme attribute value
+        base_value = attr_data.get("value", "")  # Get the SGML attribute value
+        theme_value = themed_attrs.get(key, "")  # Get the theme attribute value
 
-    if key == 'class':
+    if key == "class":
         # Concatenate class values with space separation, ignoring None or empty strings
          merged_value = " ".join(filter(None, [base_value, theme_value])).strip()
     else:
@@ -90,7 +90,6 @@ def integrate_theme_with_generator(theme, generator):
     for key, component in registered_components:
         # Merge attributes for the component
         merged_attrs, default_attrs = get_merged_attributes(theme, component)
-
         if not merged_attrs:
             continue
 
@@ -215,19 +214,23 @@ class ThemableSgmlAttributes(SgmlAttributes):
                 raise KeyError(f"Cannot add new attribute '{key}' after initialization.")
             processor = self._attributes[key].processor  # Use the existing processor
             if key == "class":
-                lookup_style = self.lookup_styles.get(value, False)
-            else:
-                lookup_style = False
-            if lookup_style:
-                # Replace with a ThemableSgmlAttributeEntry if needed
-                self._attributes[key] = ThemableSgmlAttributeEntry(
-                    name=key, processor=processor, theme=self.theme, initial_value=value
-                )
+                if isinstance(value, str):
+                    lookup_style = value.strip().split(" ")
+                else:
+                    lookup_style = value
+
+                for name in lookup_style:
+                    theme_style = self.lookup_styles.get(name, False)
+                    base_value = name
+                    if theme_style:
+                        self._attributes[key] = ThemableSgmlAttributeEntry(
+                        name=key, processor=processor, theme=self.theme, initial_value=name
+                        )
             else:
                 # Replace with a regular SgmlAttributeEntry
                 self._attributes[key] = SgmlAttributeEntry(
-                    name=key, processor=processor, initial_value=value
-                )
+                        name=key, processor=processor, initial_value=value
+                        )
 
 def get_theme_width_map():
     theme = get_theme()

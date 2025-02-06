@@ -153,7 +153,7 @@ class PostListMarkup:
         sgml = self._sgml
 
         list_node = sgml.create_node("unordered_list", {
-            "class": "posts",
+            "class": "posts list",
             "id":   f"{self._name}"  
         })
 
