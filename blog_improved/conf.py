@@ -1,4 +1,9 @@
 from django.conf import settings
+from blog_improved.posts.post_list_markup_presets import layout_presets 
+
+LAYOUT_POSTLIST = getattr(settings, "BLOG_LAYOUT_POSTLIST", None)
+
+#layout_preset["default"] = layout_preset[LAYOUT_POSTLIST]
 
 USER_PUBLIC_PROFILE = getattr(settings, "BLOG_USER_PUBLIC_PROFILE", True)
 AUTHOR_DEFAULT_GROUP = getattr(settings, "BLOG_AUTHOR_DEFAULT_GROUP", "author")
@@ -36,4 +41,5 @@ def set_dynamic_settings(settings):
                 pass
             else:
                 settings["INSTALLED_APPS"].append(app)
+
 

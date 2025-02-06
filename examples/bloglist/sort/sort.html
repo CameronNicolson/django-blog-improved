@@ -1,5 +1,9 @@
 {% extends "base.html" %}
-{% block title %} Examples Ignore Categories {% endblock title %}
+{% load static %}
+{% block title %} Examples Sorting Postlist {% endblock title %}
+{% block extra_head %} 
+<link rel="stylesheet" href="{% static 'css/bloglist.css' %}" />
+{% endblock extra_head %}
 {% load blog_tags %}
 {% block content %}
 <div class="container">

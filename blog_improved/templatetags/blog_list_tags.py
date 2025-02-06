@@ -19,7 +19,7 @@ from django.template.base import Variable, VariableDoesNotExist
 from blog_improved.posts.posts import PostListQueryRequest
 from blog_improved.posts.post_list_markup import PostListMarkup
 from blog_improved.helpers.html_generator import BlogHtmlFactory, HtmlGenerator, create_blog_html_factory
-from blog_improved.posts.post_list_markup_presets import create_post_list_markup, POST_LIST_GRID_PRESETS
+from blog_improved.posts.post_list_markup_presets import create_post_list_markup, layout_presets
 from django.apps import apps
 
 # Access the AppConfig instance
@@ -177,7 +177,6 @@ class DateTimeValue:
     def get_extra_error_data(self):
         return {}
 
-ChoiceValue.choices.extend(["asc", "desc"])
 
 class BlogListTag(Tag):
     name = "bloglist"
@@ -190,10 +189,22 @@ class BlogListTag(Tag):
     def __init__(self, parser, tokens):
         super().__init__(parser, tokens)
     
+    @property
+    def _sort_choice(self):
+        ChoiceValue.choices = ["asc", "desc"]
+        return ChoiceValue
+
+    @property
+    def _format_layout_choice(self):
+        ChoiceValue.choices = ["grid", "list"]
+        return ChoiceValue
+
     def render(self, context):
         try:
             options = self.kwargs.pop("%s_options" % self.name) 
 
+            options.setdefault("layout_format", TemplateConstant("grid"))
+            options.setdefault("layout", TemplateConstant("default"))
             options.setdefault("varname", TemplateConstant(False))
             options.setdefault("date_range", TemplateConstant("9999-12-31 23:59:59.999999"))
             options.setdefault("max_count", TemplateConstant("-1"))
@@ -218,7 +229,8 @@ class BlogListTag(Tag):
             options["varname"] = variable_name
 
             try:
-                ChoiceValue(options["sort"]) 
+                self._sort_choice(options["sort"])
+                self._format_layout_choice(options["layout_format"])
             except TemplateSyntaxError: 
                 options["sort"] = None
             self.kwargs = options
@@ -227,10 +239,17 @@ class BlogListTag(Tag):
         finally:
             return super().render(context)
 
-    def render_tag(self, context, name, max_count, featured_count, category, featured, ignore_category, date_range, sort, varname=None):
-        layout_name = "standard_3by3"
+    def _get_layout(self, name): 
+        layout = None
+        try: 
+            layout = layout_presets[name]
+        except KeyError:
+            raise TemplateSyntaxError(f"The provided layout {name} does not exist.")
+        return layout 
+
+    def render_tag(self, context, name, max_count, featured_count, category, featured, ignore_category, date_range, sort, layout, layout_format, varname=None):
+        layout = self._get_layout(layout)
         if max_count < 0:
-            layout = POST_LIST_GRID_PRESETS[layout_name]
             max_count = layout["rows"] * layout["columns"]
 
         posts = PostListQueryRequest()\
@@ -245,17 +264,14 @@ class BlogListTag(Tag):
         if max_count > 0:        
             posts = posts.build()
         else: 
-            print("it was zero")
             posts = []
         markup = create_post_list_markup(name, posts, 
-                                         layout_name, 
+                                         layout, 
                                          HTML_FACTORY_INSTANCE)
         markup.build_grid()
-        markup.generate_html(layout_type="row")
+        markup.generate_html(layout_type=layout_format)
         html = markup.get_rendered()
-        print(html)
         if varname:
-            print(varname)
             context[varname] = html
             return ""
         return html

@@ -1,0 +1,6 @@
+{
+  "name": "Layout",
+  "description": "Layout for a bloglist.",
+  "group": "bloglist",
+  "path": "bloglist/layout"
+}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %} Examples Bloglist Layout {% endblock title %}
+{% load blog_tags %}
+
+{% block content %}
+<div class="container">
+<pre class="pre">
+<code class="code">
+  &#123;&#37; bloglist layout='standard_4by4' &#37;&#125;
+</code>
+</pre>
+<div id="preview-non-default-layout" class="pt-4">
+{% bloglist layout='standard_4by4' %}
+</div>
+<pre class="pre">
+<code class="code">
+  &#123;&#37; bloglist layout='standard_4by4' &#37;&#125;
+</code>
+</pre>
+<div id="preview-list-format" class="pt-4">
+{% bloglist layout_format='list' %}
+</div>
+
+</div>
+{% endblock %}

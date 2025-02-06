@@ -186,6 +186,8 @@ ELEMENTS = {
                               ),
 
     "p": ElementDefinition(name="P", content=ContentModel(elements=["%inline;"], group_repetition=RepetitionControl("*")), tag_omission_rules=OmissionRule("-", "O")),
+    "ul": ElementDefinition(name="UL", content=ContentModel(elements=["LI"], group_repetition=RepetitionControl("+")), tag_omission_rules=OmissionRule("-", "-")),
+    "li": ElementDefinition(name="LI", content=ContentModel(elements=["%flow;"], group_repetition=RepetitionControl("*")), tag_omission_rules=OmissionRule("-", "O")),
     }
 
 
@@ -200,8 +202,8 @@ class HtmlGenerator(SgmlGenerator):
             "container": self._element_composer(ELEMENTS["div"], COREATTRS),
             "inline_container": self._element_composer(ELEMENTS["span"], COREATTRS),
             "paragraph": self._element_composer(ELEMENTS["p"], COREATTRS), 
-            #            "list": self._element_composer("ul", COREATTRS),
-            #            "list_item": self._element_composer("li", COREATTRS),
+            "unordered_list": self._element_composer(ELEMENTS["ul"], COREATTRS),
+            "list_item": self._element_composer(ELEMENTS["li"], COREATTRS),
             #            "ordered_list": self._element_composer("ol", COREATTRS),
             #            "image": self._element_composer("img", COREATTRS),
             #            "vertical-space": self._element_composer("br", COREATTRS, tag_omissions="- O"),
@@ -456,7 +458,7 @@ class BlogHtmlFactory(MarkupFactory):
         
     def create_list(self, items, ident:str = ""):
         ident = ident + "__list" if ident else "list"
-        list_node = self._markup.create_node("list", {"id": ident})
+        list_node = self._markup.create_node("unordered_list", {"id": ident})
         for item in items:
             list_item = self._markup.create_node("list_item", 
             {"class": f"{ident}-item"})

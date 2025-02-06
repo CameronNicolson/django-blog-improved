@@ -15,7 +15,10 @@
 </pre>
 <p>The bloglist supports organising featured posts. When marking a bloglist as featured, this results in pinning featured posts at the top of the list, making it more visible.</p>
 <p>Moreover, featured posts gets additional CSS styling and differentiates each post -- meaning that featured posts have unique styling compared with normal posts.</p>
-<div class="p-3 mb-2 bg-primary-subtle text-primary-emphasis">Extra CSS has been applied to the demo. Notably, the "featured" block is intended for presentation.</div>
+<div class="p-3 mb-2 bg-primary-subtle text-primary-emphasis">
+	<p class="fw-bold">Note</p>
+	<p>Extra CSS has been applied to this demo. Notably, the "featured" block is intended for presentation.</p>
+</div>
 <div id="preview" class="pt-4">
 {% bloglist featured='True' %}
 </div>
@@ -26,7 +29,7 @@
   &#123;&#37; bloglist featured='True' featured_count='4' &#37;&#125;
 </code>
 </pre>
-<div id="preview" class="pt-4">
+<div id="preview-max-count-four" class="pt-4">
 {% bloglist featured='True' featured_count='4' %}
 </div>
 <h2>Using filters and featured</h2>

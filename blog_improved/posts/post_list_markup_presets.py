@@ -1,6 +1,6 @@
 from blog_improved.posts.post_list_markup import PostListMarkup
 
-POST_LIST_GRID_PRESETS = {
+layout_presets = {
     "standard_3by3": {
         "rows": 3,
         "columns": 3,
@@ -13,10 +13,15 @@ POST_LIST_GRID_PRESETS = {
     },
 }
 
+# Grab the first key available
+try: 
+    default_preset = next(iter(layout_presets)) 
+    layout_presets["default"] = layout_presets[default_preset]
+except StopIteration:
+    layout_presets["default"] = {}
+
 # Function to fetch preset and construct the object
-def create_post_list_markup(name, posts, preset_name, sgml):
-    # Fetch the preset configuration
-    preset = POST_LIST_GRID_PRESETS.get(preset_name)
+def create_post_list_markup(name, posts, preset, sgml):
     if not preset:
         raise ValueError(f"Preset '{preset_name}' not found.")
 

@@ -6,7 +6,6 @@ from blog_improved.helpers.html_generator import MarkupFactory, SgmlGenerator, S
 from blog_improved.themes.settings import get_theme
 from blog_improved.posts.posts import PostList
 from blog_improved.utils.strings import string_bound
-from blog_improved import urls
 from django.urls import reverse
 from blog_improved.presentations.presentation_strategy import Rect
 
@@ -32,8 +31,8 @@ class PostListMarkup:
         self._sgml = sgml
         self._container = None
         self._layouts = {
-                "row": self._default_layout,
-                "flat": self._flat_layout
+                "grid": self._default_layout,
+                "list": self._flat_layout
         }
     
     def generate_item_title(self, text, hyperlink, level=1):
@@ -92,7 +91,7 @@ class PostListMarkup:
 
         self._grid = matrix
 
-    def generate_html(self, layout_type: str = "row"):
+    def generate_html(self, layout_type: str = "grid"):
         """
         Generate HTML for the structured layout based on a layout type.
         """
@@ -153,7 +152,7 @@ class PostListMarkup:
         """
         sgml = self._sgml
 
-        list_node = sgml.create_node("list", {
+        list_node = sgml.create_node("unordered_list", {
             "class": "posts",
             "id":   f"{self._name}"  
         })
@@ -163,7 +162,7 @@ class PostListMarkup:
                 if cell.content:
                     article_node = self.create_post_article(cell)
                     list_item_node = sgml.create_node(
-                        "list_item", {"class": f"posts__item w{cell.width}"}
+                        "list_item", {"class": "posts__item"}
                     )
                     list_item_node.add_child(article_node)
                     list_node.add_child(list_item_node)
