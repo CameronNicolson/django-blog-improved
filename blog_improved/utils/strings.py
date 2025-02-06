@@ -64,7 +64,7 @@ def convert_str_kwargs_to_list(func):
 
 class StringAppender(str):
     def __init__(self, value=None):
-        self._value = value
+        self._value = value    
 
     def __add__(self, other):
         other = " " + other
@@ -72,11 +72,6 @@ class StringAppender(str):
 
     def __iadd__(self, other):
         return self + other
-   #     if self._value:
-    #        other = f"{self._value} {other}" 
-     #   else:
-      #      self._value = other
-       # return self + 
 
     def get_value(self):
         return self._value
