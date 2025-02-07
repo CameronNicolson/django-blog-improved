@@ -5,12 +5,12 @@ layout_presets = {
     "standard_3by3": GridLayout(
         rows=3,
         columns=3,
-        row_width=(33,33,33,),
+        column_width=(33,33,33,),
         ),
     "standard_4by4": GridLayout(
         rows=4,
         columns=4,
-        row_width=(25,25,25,25,),
+        column_width=(25,25,25,25,),
         ),
 }
 
@@ -32,6 +32,6 @@ def create_post_list_markup(name, posts, preset, sgml):
         posts=posts,
         rows=preset.rows,
         columns=preset.columns,
-        proportions=preset.row_width,
+        proportions=preset.column_width,
         sgml=sgml,
     )

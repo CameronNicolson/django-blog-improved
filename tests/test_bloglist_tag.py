@@ -2,7 +2,7 @@ import io
 from pathlib import Path
 from django.test import TestCase
 from bs4 import BeautifulSoup
-from django.template import Context, Template
+from django.template import Context, Template, TemplateSyntaxError
 
 class BlogListTagTestCase(TestCase):
     fixtures = ["media.yaml", "tags.yaml", "users.yaml", "redirects.yaml", "groups.yaml", "posts.yaml"]
@@ -76,7 +76,26 @@ class BlogListTagTestCase(TestCase):
         print(rendered_list)
         self.assertEqual(expected_post_count, 9)
  
+    def test_bloglisttag_undefined_layout(self):
+        bad_layout = "bad"
+        template_string = "{% load blog_tags %}{% bloglist layout='" + bad_layout + "' %}"
+        template = Template(template_string)
+        context = Context({})
+        with self.assertRaisesRegex(TemplateSyntaxError, f"The provided layout {bad_layout} is not a registered layout."):
+            template.render(context)
 
+    def test_bloglisttag_runtime_register_layout(self):
+        from blog_improved.posts.post_list_markup_presets import layout_presets
+        from blog_improved.presentation import GridLayout
+
+        new_layout = "yummy"
+        layout_presets[new_layout] = GridLayout(rows=14, columns=11)
+        template_string = "{% load blog_tags %}{% bloglist layout='" + new_layout + "' %}"
+        
+        template = Template(template_string)
+        context = Context({})
+        template.render(context)
+ 
 
     def test_bloglisttag_multiple_categories(self):
         expected_html = self.load_fixture("bloglist_multiple_categories.html") 

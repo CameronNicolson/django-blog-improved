@@ -20,7 +20,8 @@ class PostListMarkup:
     def __init__(self, name:str, posts: list, rows:int, columns:int, proportions:iter, sgml: MarkupFactory):
         if not rows or not columns:
             raise ValueError()
-        
+        if proportions is None:
+           proportions = tuple(((100 / columns) for _ in range(1, columns)))
         self._name = name
         self._rows = rows
         self._columns = columns
