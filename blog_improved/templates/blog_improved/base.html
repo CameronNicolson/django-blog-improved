@@ -29,7 +29,6 @@
     document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');
     // @license-end
   </script>
-  {% include "blog_improved/partials/header.html" %}
  {% block brand_bar %}
   {% endblock brand_bar %}
   <a href="#main-content" class="govuk-skip-link" data-module="govuk-skip-link">Skip to main content</a>
@@ -45,8 +44,6 @@
         </div>
       </div>
     </div>
-    <!-- Footer -->
-    {% include "blog_improved/partials/footer.html" with pages=navigation %}
  {% block closing_body_scripts %}
     <script src="{% static 'js/spongy-frontend-1.0.3.min.js' %}"></script>
     <script>
