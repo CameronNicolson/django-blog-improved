@@ -14,7 +14,7 @@ from blog_improved.utils.strings import (
 from blog_improved.utils.time import convert_to_iso8601
 from blog_improved.utils.urls import starts_with_uri    
 from blog_improved.utils.math import RangeClamper
-from blog_improved.presentations.presentation_strategy import PresentationStrategy, Rect
+from blog_improved.presentation.presentation_strategy import PresentationStrategy, Rect
 
 
 @strip_whitespace

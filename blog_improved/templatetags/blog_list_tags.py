@@ -223,7 +223,7 @@ CommaSeperatableMultiKeywordArgument("bloglist_options", resolve=False, required
     def render_tag(self, context, name, max_count, featured_count, category, featured, ignore_category, date_range, sort, layout, layout_format, varname=None):
         layout = self._get_layout(layout)
         if max_count < 0:
-            max_count = layout["rows"] * layout["columns"]
+            max_count = layout.rows * layout.columns
 
         posts = PostListQueryRequest()\
                     .max_size(max_count)\

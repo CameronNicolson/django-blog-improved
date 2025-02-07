@@ -7,7 +7,7 @@ from blog_improved.themes.settings import get_theme
 from blog_improved.posts.posts import PostList
 from blog_improved.utils.strings import string_bound
 from django.urls import reverse
-from blog_improved.presentations.presentation_strategy import Rect
+from blog_improved.presentation.presentation_strategy import Rect
 
 @dataclass
 class ListCell:

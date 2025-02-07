@@ -1,16 +1,17 @@
+from blog_improved.presentation import GridLayout
 from blog_improved.posts.post_list_markup import PostListMarkup
 
 layout_presets = {
-    "standard_3by3": {
-        "rows": 3,
-        "columns": 3,
-        "proportions": (33, 33, 33),
-    },
-    "standard_4by4": {
-        "rows": 4,
-        "columns": 4,
-        "proportions": (25, 25, 25, 25),
-    },
+    "standard_3by3": GridLayout(
+        rows=3,
+        columns=3,
+        row_width=(33,33,33,),
+        ),
+    "standard_4by4": GridLayout(
+        rows=4,
+        columns=4,
+        row_width=(25,25,25,25,),
+        ),
 }
 
 # Grab the first key available
@@ -29,8 +30,8 @@ def create_post_list_markup(name, posts, preset, sgml):
     return PostListMarkup(
         name=name,
         posts=posts,
-        rows=preset["rows"],
-        columns=preset["columns"],
-        proportions=preset["proportions"],
+        rows=preset.rows,
+        columns=preset.columns,
+        proportions=preset.row_width,
         sgml=sgml,
     )
