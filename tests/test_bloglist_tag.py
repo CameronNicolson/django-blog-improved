@@ -84,6 +84,17 @@ class BlogListTagTestCase(TestCase):
         with self.assertRaisesRegex(TemplateSyntaxError, f"The provided layout {bad_layout} is not a registered layout."):
             template.render(context)
 
+    def test_default_layout_option(self):
+        from blog_improved.templatetags.blog_list_tags import BlogListTag 
+        from blog_improved.posts.post_list_markup_presets import layout_presets
+        expected_layout = layout_presets["default"]
+        self.assertEqual(expected_layout.rows, 3)
+        self.assertEqual(expected_layout.columns, 3)
+        actual_layout = BlogListTag._get_layout(self, "default")
+        self.assertEqual(expected_layout, actual_layout)
+
+
+
     def test_bloglisttag_runtime_register_layout(self):
         from blog_improved.posts.post_list_markup_presets import layout_presets
         from blog_improved.presentation import GridLayout

@@ -217,7 +217,7 @@ CommaSeperatableMultiKeywordArgument("bloglist_options", resolve=False, required
         try: 
             layout = layout_presets[name]
         except KeyError:
-            raise TemplateSyntaxError(f"The provided layout {name} does not exist.")
+            raise TemplateSyntaxError(f"The provided layout {name} is not a registered layout.")
         return layout 
 
     def render_tag(self, context, name, max_count, featured_count, category, featured, ignore_category, date_range, sort, layout, layout_format, varname=None):
