@@ -21,7 +21,7 @@ class SortQueryRequest(QueryRequestDecorator):
         """
         Apply the sorting to the QuerySet.
         """
-        sort_method = ("order_by", tuple(self._sort_by), {}, self._priority)
+        sort_method = ("order_by", self._sort_by, {}, self._priority)
         self.get_request().get_methods().append(sort_method)
 
         return self._queryset_request.make_request()

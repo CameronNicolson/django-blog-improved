@@ -192,7 +192,7 @@ CommaSeperatableMultiKeywordArgument("bloglist_options", resolve=False, required
             options.setdefault("name", TemplateConstant("bloglist"))
             options.setdefault("featured", TemplateConstant(False))
 
-            options.setdefault("sort", TemplateConstant(""))
+            options.setdefault("sort", TemplateConstant("model"))
 
             options["date_range"] = DateTimeValue(options["date_range"])
             options["max_count"] = IntegerValue(options["max_count"]) 
@@ -252,22 +252,6 @@ CommaSeperatableMultiKeywordArgument("bloglist_options", resolve=False, required
             context[varname] = html
             return ""
         return html
-
-
-def bloglist(parser, token):
-    # add visibility if not provided by tag
-    if kwargs.get("visibility") == None:
-        kwargs["visibility"] = Status.name_to_id("publish")
-    for key, arg in kwargs.items():
-        BlogListTagParams(key, arg)
-    # OK we have came to the decision to use the register.tag() the parser
-    # make the kwarg into function pointer and its args
-
-
-    requests = translate_kwargs(kwargs)
-    initial_request = QueryRequest("blog_improved", "Post", [])
-    bob = apply_sequence_queryset_request(initial_request, requests) 
-    return {} 
 
 def querysetfilter(func):
     """

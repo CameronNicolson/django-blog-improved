@@ -2,12 +2,14 @@ from itertools import chain
 from datetime import datetime
 from abc import ABC, abstractmethod
 from enum import Enum
+from django.apps import apps
 from django.utils import timezone
 from django.db.models import ExpressionWrapper, DurationField, F, Window, When, Case, Value, IntegerField
 from django.db.models.functions import Now
 from django.db.models.functions import RowNumber
 from blog_improved.query_request.query import FilterQueryRequest, LimitQueryRequest, QueryRequest, QueryRequestSelectValues
 from blog_improved.query_request import AnnotateQueryRequest, SortQueryRequest
+
 
 class PostList(list):
     
@@ -257,9 +259,17 @@ class PostListQueryRequest(PostListQueryBuilder):
  
         if self._sort:
             sort_field = "title"
-            if self._sort == "desc":
-               sort_field = "-" + sort_field
-            request = SortQueryRequest(queryset_request=request, sort_by=[sort_field], priority=20)
+            if self._sort == "model":
+                model = apps.get_model("blog_improved", "Post")
+                sort_field = model._meta.ordering or ["-published_on"]
+            elif self._sort == "desc":
+                sort_field = "-" + sort_field
+                sort_field = [sort_field]
+            elif self._sort == "asc":
+                sort_field = [sort_field]
+            else:
+                sort_field = None
+            request = SortQueryRequest(queryset_request=request, sort_by=sort_field, priority=20)
         else:
             request = SortQueryRequest(queryset_request=request, sort_by=["priority", "-published_on"], priority=19)
 
