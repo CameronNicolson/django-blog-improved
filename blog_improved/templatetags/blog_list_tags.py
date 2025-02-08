@@ -151,8 +151,8 @@ class DateTimeValue:
         return {}
 
 
-class BlogListTag(Tag):
-    name = "bloglist"
+class PostListTag(Tag):
+    name = "postlist"
     service_filters = PostListQueryService() 
 
     options = Options(
