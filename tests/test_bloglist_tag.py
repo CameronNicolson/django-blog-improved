@@ -260,3 +260,19 @@ class BlogListTagTestCase(TestCase):
 
         # Ensure that after ignoring "colors," no articles have the "colors" category
         self.assertEqual(total_color_categories_ignored, 0)
+
+    def test_default_layout_option(self):
+        from blog_improved.templatetags.blog_list_tags import BlogListTag 
+        from blog_improved.posts.posts import PostListQueryRequest
+        def gaming_service(query):
+            query.featured(True, 3).max_size(50)
+        BlogListTag.service_filters.register_service("gaming", gaming_service)
+        posts = PostListQueryRequest()
+
+        self.assertEqual(posts._max_size, None)
+        self.assertEqual(posts._featured, False)
+        self.assertEqual(posts._num_featured, None)
+        BlogListTag.service_filters.apply_service("gaming", posts)
+        self.assertEqual(posts._max_size, 50)
+        self.assertEqual(posts._num_featured, 3)
+        self.assertEqual(posts._featured, True)

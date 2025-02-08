@@ -59,16 +59,22 @@ class IgnoreCase:
         self.ignore_value = ignore_value
 
 
-class PostListBuilder(ABC):
+class PostListQueryBuilder(ABC):
+
     @abstractmethod
     def categories(self, categories):
         pass
-
+    
     @abstractmethod
-    def featured(self, active):
+    def date_range(self, date_range):
         pass
 
-    def number_of_featured(self, number):
+    @abstractmethod
+    def featured(self, active, amount):
+        pass
+    
+    @abstractmethod
+    def sort(self, sort_type):
         pass
 
     @abstractmethod
@@ -87,7 +93,35 @@ class PostListBuilder(ABC):
     def status(self, status):
         pass
 
-class PostListQueryRequest(PostListBuilder):
+    @abstractmethod
+    def build(self) -> QueryRequest:
+        pass
+
+class PostListQueryService:
+    _registry = {}
+
+    @classmethod
+    def register_service(cls, name, service_func):
+        """ Register a custom filter """
+        cls._registry[name] = service_func
+
+    def apply_service(self, name, postlist: PostListQueryBuilder):
+        """ Apply a registered filter if available """
+        if name in self._registry:
+            return self._registry[name](postlist)
+        raise ValueError(f"Filter '{filter_name}' is not registered.")
+
+    def all_latest_posts(self, postlist: PostListQueryBuilder):
+        postlist.category(False)\
+                .ignore(False)\
+                .date_range(False)\
+                .max_size(False)\
+                .featured(False)\
+                .number_of_featured(False)\
+                .status(1)\
+                .return_type(False)
+
+class PostListQueryRequest(PostListQueryBuilder):
 
     def __init__(self):
         self._categories = list()
@@ -228,8 +262,6 @@ class PostListQueryRequest(PostListBuilder):
             request = SortQueryRequest(queryset_request=request, sort_by=[sort_field], priority=20)
         else:
             request = SortQueryRequest(queryset_request=request, sort_by=["priority", "-published_on"], priority=19)
-
-        #priority = Case(When(is_featured=True, then=Value(PostList.PriorityOrder.FEATURE, output_field=IntegerField())), default=Value(PostList.PriorityOrder.NORMAL, output_field=IntegerField()), output_field=IntegerField())
 
         assign_normal_priority = Value(PostList.PriorityOrder.NORMAL, output_field=IntegerField())
         request = AnnotateQueryRequest(queryset_request=request, name="priority", calculation=assign_normal_priority, priority=18)

@@ -16,7 +16,7 @@ from classytags.arguments import Argument, KeywordArgument, StringArgument, Mult
 from classytags.values import IntegerValue
 from classytags.utils import TemplateConstant
 from django.template.base import Variable, VariableDoesNotExist
-from blog_improved.posts.posts import PostListQueryRequest
+from blog_improved.posts.posts import PostListQueryRequest, PostListQueryService
 from blog_improved.posts.post_list_markup import PostListMarkup
 from blog_improved.helpers.html_generator import BlogHtmlFactory, HtmlGenerator, create_blog_html_factory
 from blog_improved.posts.post_list_markup_presets import create_post_list_markup, layout_presets
@@ -153,6 +153,8 @@ class DateTimeValue:
 
 class BlogListTag(Tag):
     name = "bloglist"
+    service_filters = PostListQueryService() 
+
     options = Options(
 CommaSeperatableMultiKeywordArgument("bloglist_options", resolve=False, required=False, delimiter=",", commakwargs=["category", "ignore_category"]),
         "as",
@@ -175,7 +177,7 @@ CommaSeperatableMultiKeywordArgument("bloglist_options", resolve=False, required
     def render(self, context):
         try:
             options = self.kwargs.pop("%s_options" % self.name) 
-
+            options.setdefault("custom_filter", TemplateConstant(""))
             options.setdefault("layout_format", TemplateConstant("grid"))
             options.setdefault("layout", TemplateConstant("default"))
             options.setdefault("varname", TemplateConstant(False))
@@ -220,13 +222,15 @@ CommaSeperatableMultiKeywordArgument("bloglist_options", resolve=False, required
             raise TemplateSyntaxError(f"The provided layout {name} is not a registered layout.")
         return layout 
 
-    def render_tag(self, context, name, max_count, featured_count, category, featured, ignore_category, date_range, sort, layout, layout_format, varname=None):
+    def render_tag(self, context, name, max_count, featured_count, category, featured, ignore_category, date_range, sort, layout, layout_format, custom_filter, varname=None):
         layout = self._get_layout(layout)
+        posts = PostListQueryRequest()
         if max_count < 0:
             max_count = layout.rows * layout.columns
-
-        posts = PostListQueryRequest()\
-                    .max_size(max_count)\
+        if custom_filter:
+            posts = self.service_filters("custom_filter", posts)
+        else:
+            posts.max_size(max_count)\
                     .categories(category)\
                     .date_range(date_range)\
                     .sort(sort)\
