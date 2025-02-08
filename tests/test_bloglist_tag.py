@@ -93,8 +93,6 @@ class BlogListTagTestCase(TestCase):
         actual_layout = BlogListTag._get_layout(self, "default")
         self.assertEqual(expected_layout, actual_layout)
 
-
-
     def test_bloglisttag_runtime_register_layout(self):
         from blog_improved.posts.post_list_markup_presets import layout_presets
         from blog_improved.presentation import GridLayout
