@@ -1,0 +1,6 @@
+{
+  "name": "Max count",
+  "description": "The postlist tag and its maximum amount of items in a list.",
+  "group": "postlist",
+  "path": "postlist/max-count"
+}

@@ -1,6 +1,0 @@
-{
-  "name": "Categories",
-  "description": "The bloglist template filtering by specific categories.",
-  "group": "bloglist",
-  "path": "bloglist/categories"
-}

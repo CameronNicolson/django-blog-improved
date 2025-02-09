@@ -1,0 +1,6 @@
+{
+  "name": "Sorting the postlist",
+  "description": "The postlist tag and sorting its items in alphabetic order.",
+  "group": "postlist",
+  "path": "postlist/sort"
+}

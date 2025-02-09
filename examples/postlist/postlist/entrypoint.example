@@ -1,0 +1,6 @@
+{
+  "name": "Postlist",
+  "description": "The postlist template tag with no arguments",
+  "group": "postlist",
+  "path": "postlist/postlist"
+}

@@ -1,6 +1,0 @@
-{
-  "name": "Bloglist",
-  "description": "The bloglist template tag with no arguments",
-  "group": "bloglist",
-  "path": "bloglist/bloglist"
-}

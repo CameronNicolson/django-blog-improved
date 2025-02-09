@@ -2,18 +2,18 @@
 {% load static %}
 {% load blog_tags %}
 {% block extra_head %}
-<link rel="stylesheet" href="{% static 'css/bloglist.css' %}" />
+<link rel="stylesheet" href="{% static 'css/postlist.css' %}" />
 {% endblock %}
 {% block content %}
 <div class="container">
 <pre class="pre">
 <code class="code">
-  &#123;&#37; bloglist &#37;&#125;
+  &#123;&#37; postlist &#37;&#125;
 </code>
 </pre>
 
 <div id="preview" class="pt-4">
-{% bloglist %}
+{% postlist %}
 </div>
 </div>
 {% endblock %}

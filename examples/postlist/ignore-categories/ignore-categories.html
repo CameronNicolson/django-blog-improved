@@ -6,23 +6,23 @@
 <div class="container">
 <pre class="pre">
 <code class="code">
-  &#123;&#37; bloglist ignore_category='colors' &#37;&#125;
+  &#123;&#37; postlist ignore_category='colors' &#37;&#125;
 </code>
 </pre>
 
 <div id="preview" class="pt-4">
-{% bloglist ignore_category='colors' %}
+{% postlist ignore_category='colors' %}
 </div>
 <div class="mt-5">
 	<h3> Multiple values </h3>
 	<p> It's possible to ignore more than one category at a given time by using a set of comma seperated values. </p>
 <pre class="pre">
 <code class="code">
-  &#123;&#37; bloglist ignore_category='event,colors,self improvement' &#37;&#125;
+  &#123;&#37; postlist ignore_category='event,colors,self improvement' &#37;&#125;
 </code>
 </pre>
 
-{% bloglist ignore_category='event,colors,self improvement' %}
+{% postlist ignore_category='event,colors,self improvement' %}
 
 </div>
 <div class="mt-5">
@@ -30,16 +30,16 @@
 <p>When ignore_category's value is empty then the database instruction to ignore categories is skipped.</p>
 <pre class="pre">
 <code class="code">
-  &#123;&#37; bloglist ignore_category='' &#37;&#125;
+  &#123;&#37; postlist ignore_category='' &#37;&#125;
 </code>
 </pre>
 <p>This is useful when using a template variable and the variable does not have a known or assigned value yet.</p>
 <pre class="pre">
 <code class="code">
-  &#123;&#37; bloglist ignore_category='&#123;&#123; MY_VAR &#125;&#125;' &#37;&#125;
+  &#123;&#37; postlist ignore_category='&#123;&#123; MY_VAR &#125;&#125;' &#37;&#125;
 </code>
 </pre>
-{% bloglist ignore_category='' %}
+{% postlist ignore_category='' %}
 </div>
 </div>
 {% endblock %}

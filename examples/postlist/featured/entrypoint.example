@@ -1,0 +1,6 @@
+{
+  "name": "Featured",
+  "description": "Showing featured posts with the postlist tag.",
+  "group": "postlist",
+  "path": "postlist/featured"
+}

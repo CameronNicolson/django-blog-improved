@@ -1,6 +1,0 @@
-{
-  "name": "Sorting the bloglist",
-  "description": "The bloglist tag and sorting its items in alphabetic order.",
-  "group": "bloglist",
-  "path": "bloglist/sort"
-}

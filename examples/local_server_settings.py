@@ -110,5 +110,5 @@ STATICFILES_DIRS = [
 
 FIXTURE_DIRS = [
     ROOT_DIR / "admin_login.json",
-    ROOT_DIR / "bloglist" / "headlines" / "fixtures" / "bloglist_headlines.json"
+    ROOT_DIR / "postlist" / "headlines" / "fixtures" / "postlist_headlines.json"
 ]

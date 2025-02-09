@@ -2,14 +2,14 @@
 {% load static %}
 {% block title %} Examples Sorting Postlist {% endblock title %}
 {% block extra_head %} 
-<link rel="stylesheet" href="{% static 'css/bloglist.css' %}" />
+<link rel="stylesheet" href="{% static 'css/postlist.css' %}" />
 {% endblock extra_head %}
 {% load blog_tags %}
 {% block content %}
 <div class="container">
 <pre class="pre">
 <code class="code">
-  &#123;&#37; bloglist sort='asc' &#37;&#125;
+  &#123;&#37; postlist sort='asc' &#37;&#125;
 </code>
 </pre>
 <p>The sort key changes the order which the posts are presented.</p>
@@ -22,38 +22,38 @@
 <h2>Standard sorting</h2>
 <p>When the "sort" option is discluded then the posts are arranged by publish dates, with the newest post appearing at the top.</p>
 <div id="preview" class="pt-4">
-{% bloglist %}
+{% postlist %}
 
 <h2>Sort by ascending</h2>
 <p>Sort by ascending means arranging post titles alphabetical order from the lowest value "a" and the largest or highest value is "z".</p> 
-{% bloglist sort='asc' %}
+{% postlist sort='asc' %}
 <h2>Sort by descending</h2>
 <p>Sort by descending means arranging post titles in alphabetical order, lowest value is "z" and the largest or highest value is "a".</p> 
 <pre class="pre">
 <code class="code">
-  &#123;&#37; bloglist sort='desc' &#37;&#125;
+  &#123;&#37; postlist sort='desc' &#37;&#125;
 </code>
 </pre>
 
-{% bloglist sort='desc' %}
+{% postlist sort='desc' %}
 
 <h2>Sort and featured</h2>
 <pre class="pre">
 <code class="code">
-  &#123;&#37; bloglist sort='asc' featured='True' &#37;&#125;
+  &#123;&#37; postlist sort='asc' featured='True' &#37;&#125;
 </code>
 </pre>
 <p>When combining sort and featuerd options, the lists are generated with both featured and alphabetical sorting. Featured posts bare higher importance to any other list element.</p>
-{% bloglist sort='asc' featured='True' %}
+{% postlist sort='asc' featured='True' %}
 <p>In this example, the featured title "Yearly Roundup" came before "Web Series" since they are compared based on numerical importance instead of alphabetical.
 </div>
 <pre class="pre">
 <code class="code">
-  &#123;&#37; bloglist sort='asc' featured='True' featured_count='3' &#37;&#125;
+  &#123;&#37; postlist sort='asc' featured='True' featured_count='3' &#37;&#125;
 </code>
 </pre>
 
-{% bloglist sort='asc' featured='True' featured_count='3' %}
+{% postlist sort='asc' featured='True' featured_count='3' %}
 <p>The example above shows 3 featured posts in the top row, together sorted in chronological order (from newest to oldest), the newest feature is "Yearly roundup 2024". Followed by the remaining 6 posts sorted alphabetically. 
 </div>
 {% endblock %}
