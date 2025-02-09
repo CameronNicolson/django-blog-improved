@@ -80,7 +80,7 @@ This is typical practice, perhaps obvious to some, but I want to emphasis that -
 
 ![GPLv3 Logo](https://www.gnu.org/graphics/gplv3-with-text-136x68.png "AGPLv3 Logo")
 
-All files are copyright of 2023-2024 Cameron Nicolson, unless stated otherwise.
+All files are copyright of 2023-2025 Cameron Nicolson, unless stated otherwise.
 
 Django Blog Improved is released under GPLv3. 
 We conventionally placed the license in a file called [LICENSE](./LICENSE).
