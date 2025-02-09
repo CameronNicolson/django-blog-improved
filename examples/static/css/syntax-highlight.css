@@ -1,0 +1,33 @@
+pre {
+   background: #F6F8FA;
+   border-radius: 0.3em;
+   overflow: auto;
+   width: auto;
+   padding: 10px 22px;
+   max-height: 600px;
+   border: 0;
+   word-wrap: normal;
+}
+
+code {
+    display: inline;
+    color: black;
+    margin: 0;
+    padding: 0;
+    overflow: show; 
+    font:12px Monaco,Consolas,"Andale  Mono","DejaVu Sans Mono",monospace
+    word-break: normal;
+    word-wrap: normal;
+}
+
+pre, code {
+    white-space: pre-wrap; /* Ensures wrapping while preserving line breaks */
+    word-wrap: break-word; /* Prevents long lines from overflowing */
+}
+
+
+.one-line-code {
+
+    white-space: pre;
+    white-space: nowrap;
+}

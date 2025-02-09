@@ -11,13 +11,13 @@ from blog_improved.conf import HOMEPAGE_LATESTPOSTS_SIZE as default_limit
 from blog_improved.utils.urls import starts_with_uri, URLBuilder
 from django.db.models.query import QuerySet
 from model_utils.managers import InheritanceQuerySet
-from blog_improved.templatetags.blog_list_tags import bloglist
+from blog_improved.templatetags.post_list import PostlistTag
 
 DEFAULT_POST_STATUS = "PUBLISH"
 
 register = template.Library()
 
-register.simple_tag(bloglist)
+register.tag("postlist", PostlistTag)
 
 @register.simple_tag(takes_context=True)
 def url_gen(context, subpath="", baseUrl="", trailing_slash=True):

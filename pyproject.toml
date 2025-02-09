@@ -31,6 +31,7 @@ classifiers = [
 ]
 dependencies = [
   "Django==5.1.3",
+  "django-classy-tags==4.1.0",
   "django-crispy-forms==1.9.2",
   "crispy-forms-gds==0.2.4",
   "django-model-utils==4.5.1",
@@ -48,7 +49,8 @@ dynamic = ["version"]
 [project.optional-dependencies]
 tests = [
   "python-lorem==1.1.2",
-  "PyYAML==6.0.1"
+  "PyYAML==6.0.1",
+  "beautifulsoup4==4.12.3"
 ]
 [project.urls]
 Documentation = "https://cameronnicolson.github.io/django-blog-improved/"
