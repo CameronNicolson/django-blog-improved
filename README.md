@@ -1,15 +1,11 @@
 # Django Blog Improved
 
-A free web-based engine for creating and managing blogs.
+A collection of django template tags which supports a blogging platform underneath. This modular design allows developers to use only the blogging elements they need without scarifying a preexisting setup. 
 
 ### Highlights 
-* User-friendly interface to upload and manage your blogs
-* Share posts online for the world to see
-* Made to look great on mobile, tablet, and desktops
-* Supports both Non-JavaScript and JavaScript browsers 
-* Minimal Python
-* Django framework support
-* Tech-friendly Docs
+* Common blogging class models (Post, Categories, Media, User Profile)
+* _postlist_ tag 
+* configure pages - author and author group pages
 
 ## Table of contents
 
@@ -26,12 +22,14 @@ A free web-based engine for creating and managing blogs.
 
 * `Python 3.10` or greater
 
-* `PIP` most versions work 
+* `PIP 23.0` or greater 
+
+* `Django 4.2` or greater
 
 ## Install 
 
 ### Compile from source
-Gain a copy of the source code.
+Get a copy of the source code.
 ```
 # download via git
 git clone https://github.com/CameronNicolson/django-blog-improved
@@ -45,36 +43,25 @@ pip install -e .
 ```
 ## Testing
 Install the testing tools using pip: 
+
 ```
-pip install -r requirements/local.txt
+pip install -r tests/requirements.txt
 ```
-(optional) If you want lorem ipsum text, this script can expand dummy data. 
-```
-python populate_tests.py
-```
+
 Run all blog tests with:
 ```
-python -m django test --setting "tests.settings"
+python runtests.py
 ```
 
 If a test fails, please consider reporting: [Report an Issue](https://github.com/CameronNicolson/django-blog-improved/issues).
 
 Read the documentation: [Docs website](https://cameronnicolson.github.io/django-blog-improved/).
 
-## Getting involved
-Any questions or queries, please contact: github.cameron@nicolson.scot
-
 ### How to contribute?
 
-See what's planned on the project's roadmap: [roadmap website](https://cameronnicolson.github.io/django-blog-improved/dev/roadmap.html), essentially that is my Todo / hopeful wishes.
+See what's planned on the project's roadmap: [roadmap website](https://cameronnicolson.github.io/django-blog-improved/roadmap.html), essentially that is my Todo / hopeful wishes.
 
 You are invited to assign yourself to a task!
-
-### Credits
-
-Upon receiving your shared code. You retain your own copyright to all code submissions. Your credits also appear alongside the changes.
-
-This is typical practice, perhaps obvious to some, but I want to emphasis that -- anyone wanting to help will be treated with utmost respect.
 
 # License
 
