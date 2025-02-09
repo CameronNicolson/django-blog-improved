@@ -9,9 +9,10 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+
+permissions:
+  contents: write  # Ensure write permissions for pushing
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs: 
@@ -39,5 +40,9 @@ jobs:
           cd docs/
           sphinx-build -b html source build
       - name: Run ghp-import
-        run: | 
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
           ghp-import -n -p -f docs/build/
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
