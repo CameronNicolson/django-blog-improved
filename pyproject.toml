@@ -39,7 +39,7 @@ dependencies = [
   "phonenumberslite==8.12.48",
   "pycodestyle==2.8.0",
   "sqlparse==0.4.2",
-  "django-redirects==0.5.0",
+  "django-redirects==0.6.0",
 ]
 dynamic = ["version"]
 [project.optional-dependencies]

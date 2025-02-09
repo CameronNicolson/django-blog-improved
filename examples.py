@@ -186,9 +186,10 @@ def set_debug_toolbar(settings):
     try:
         from debug_toolbar import toolbar
     except Exception as e:
+        import traceback
         print(e)
         traceback.print_exc()
-        return
+        return exit(1)
     settings.DATABASE_ROUTERS = ["examples.middleware.database_middleware.DatabaseSwitcher"]
     settings.INSTALLED_APPS.append("debug_toolbar")
     settings.MIDDLEWARE.append("examples.middleware.database_middleware.DynamicDatabaseMiddleware")
