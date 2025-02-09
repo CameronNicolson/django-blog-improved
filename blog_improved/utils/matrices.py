@@ -1,5 +1,13 @@
 from dataclasses import dataclass
-from typing import NamedTuple
+from enum import Enum
+from typing import Any, List, Iterator, NamedTuple
+
+# Top-level function to call __has_next__ on an iterable
+def hasnext(iterable, next_type=None):
+    if hasattr(iterable, '__has_next__'):
+        return iterable.__has_next__(next_type)
+    raise TypeError(f"Object of type {type(iterable).__name__} does not support hasnext")
+
 
 @dataclass
 class LayoutMetrics:
@@ -11,6 +19,129 @@ class LayoutMetrics:
 class ProcessedLayout:
     values: list[int]
     max_value: int
+
+class TraversalType(Enum):
+    NONE = 0
+    ROW = 1
+    COLUMN = 2
+    ROW_AND_COLUMN = 3
+
+class MatrixIterator(Iterator):
+    def __init__(self, matrix: List[List[Any]]):
+        self._matrix = matrix
+        self._curr_row = 0
+        self._curr_column = 0
+
+    def __iter__(self):
+        self._curr_row = 0
+        self._curr_column = 0
+        return self
+
+    def _advance(self):
+        """Advance to the next element."""
+        self._curr_column += 1
+        if self._curr_column >= len(self._matrix[self._curr_row]):
+            self._curr_column = 0
+            self._curr_row += 1
+
+    def __next__(self):
+        if not self.__has_next__(TraversalType.ROW_AND_COLUMN):
+            raise StopIteration()
+        value = self._matrix[self._curr_row][self._curr_column]
+        self._advance()  # Move to the next position
+        return value
+
+    def __has_next__(self, next_type=TraversalType.ROW_AND_COLUMN):
+        """Check if there is a next element based on traversal type."""
+        if next_type == TraversalType.ROW:
+            # Check if there are more rows to traverse
+            return self._curr_row + 1 < len(self._matrix)
+        elif next_type == TraversalType.COLUMN:
+            # Check if there are more columns in the current row
+            return (self._curr_column + 1) < len(self._matrix[self._curr_row])
+        elif next_type == TraversalType.ROW_AND_COLUMN:
+            # Check if there's another element in any direction
+            return (
+                self._curr_row < len(self._matrix) and
+                self._curr_column < len(self._matrix[self._curr_row])
+            )
+        return False
+ 
+class RowIterator:
+    def __init__(self, matrix: List[List[int]]):
+        self.matrix = matrix
+        self.row = 0
+        self.col = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.row >= len(self.matrix):
+            raise StopIteration
+
+        value = self.matrix[self.row][self.col]
+        if self.col + 1 < len(self.matrix[self.row]):
+            self.col += 1
+        else:
+            self.row += 1
+            self.col = 0
+
+        return value
+
+
+class ColumnIterator:
+    def __init__(self, matrix: List[List[int]]):
+        self.matrix = matrix
+        self.row = 0
+        self.col = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.col >= len(self.matrix[0]):
+            raise StopIteration
+
+        value = self.matrix[self.row][self.col]
+        if self.row + 1 < len(self.matrix):
+            self.row += 1
+        else:
+            self.row = 0
+            self.col += 1
+
+        return value
+
+class Matrix(list):
+    def __init__(self, initial_data:list, rows=None, columns=None, iterator:Iterator=MatrixIterator, traverse:int=3):
+        super().__init__(initial_data)
+        if rows is None or columns is None:
+            raise ValueError()
+        self._rows = rows
+        self._columns = columns
+        self._iter = iterator
+        self._traversal_type = traverse
+
+    def __iter__(self):
+        return self._iter(self)
+
+    def rows(self):
+        """Return rows as a list of lists."""
+        return super().__iter__()
+   
+    def append(self, value):
+        current_row = len(self)
+        if current_row > self._rows:
+            return IndexError("Out of bounds")
+
+        if not self:
+            super().insert(0, [])
+        current_col = len(self[-1])
+        if current_col >= self._columns:
+            super().append([])
+            current_row += 1
+            current_col = 0
+        self[current_row-1].append(value)
 
 def process_layout(layout: tuple) -> ProcessedLayout:
     """
@@ -75,16 +206,14 @@ def round_down(numerator, denominator):
     d, m = divmod(numerator, denominator)
     return int(d)
 
-def create_matrix(layout: tuple, process_layout=process_layout, step=0) -> list[int]:
-    strict_layout = process_layout(layout) 
-    metrics = calc_layout_metrics(strict_layout)
+def create_matrix(data:list, metrics: LayoutMetrics, step=0) -> list[int]:
     max_size = (metrics.columns * metrics.rows)
     start_step = step
     matrix = list()
 
     def _build_matrix(step, 
                 max_size, columns, rows, 
-                matrix, strict_layout, index):
+                matrix, data):
         if step == max_size:
             return matrix
         row = round_down(step, columns)
@@ -95,11 +224,10 @@ def create_matrix(layout: tuple, process_layout=process_layout, step=0) -> list[
          	matrix.append([
                 None for _ in range(columns)
             ])
-        if (row < strict_layout.values[column]):
-            value = index
-            matrix[row][column] = value
-            index = index + 1
-        return _build_matrix(step + 1, max_size, columns, rows, matrix, strict_layout, index)
+        value = data[step]
+        matrix[row][column] = value
+        return _build_matrix(step + 1, max_size, columns, rows, matrix, data)
 
-    return _build_matrix(start_step, max_size, metrics.columns, metrics.rows, matrix, strict_layout, 1)
+    matrix_data = _build_matrix(start_step, max_size, metrics.columns, metrics.rows, matrix, data)
+    return Matrix(matrix_data, metrics.columns, metrics.rows)
 

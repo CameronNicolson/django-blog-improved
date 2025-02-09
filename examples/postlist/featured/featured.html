@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Examples Postlist Featured {% endblock title %}
+{% block extra_head %} 
+<link rel="stylesheet" href="{% static 'css/postlist.css' %}" />
+{% endblock extra_head %}
+{% load blog_tags %}
+
+{% block content %}
+<div class="container">
+<pre class="pre">
+<code class="code">
+  &#123;&#37; postlist featured='True' &#37;&#125;
+</code>
+</pre>
+<p>The postlist supports organising featured posts. When marking a postlist as featured, this results in pinning featured posts at the top of the list, making it more visible.</p>
+<p>Moreover, featured posts gets additional CSS styling and differentiates each post -- meaning that featured posts have unique styling compared with normal posts.</p>
+<div class="p-3 mb-2 bg-primary-subtle text-primary-emphasis">
+	<p class="fw-bold">Note</p>
+	<p>Extra CSS has been applied to this demo. Notably, the "featured" block is intended for presentation.</p>
+</div>
+<div id="preview" class="pt-4">
+{% postlist featured='True' %}
+</div>
+<p>Enabling featured properties is directly tied to both the model's feature attribute and a postlist count. The default featured count is 1. For example, the post titled "Mazda RX-7" is actually inside the database under featured, however it's position in this example was greater than the count, therefore anything greater skips the featured properties.</p>
+<h2>Featured count</h2>
+<pre class="pre">
+<code class="code">
+  &#123;&#37; postlist featured='True' featured_count='4' &#37;&#125;
+</code>
+</pre>
+<div id="preview-max-count-four" class="pt-4">
+{% postlist featured='True' featured_count='4' %}
+</div>
+<h2>Using filters and featured</h2>
+<pre class="pre">
+<code class="code">
+  &#123;&#37; postlist featured='True' category='colors' &#37;&#125;
+</code>
+</pre>
+<p>The formula to gather featured posts is calculated by the current filter being applied to the postlist. Since a postlist can be filtered by date or category, the associated feature will be similar.</p>
+<div id="preview" class="pt-4">
+{% postlist featured='True' category='colors' %}
+</div>
+<h2>Showing only featured posts</h2>
+<p>Sometimes as a publisher you want a streamline of features. The postlist tag can easily support this scenario when combining the max_count option..</p>
+<pre class="pre">
+<code class="code">
+  &#123;&#37; postlist featured='True' featured_count='1' max_count='1' &#37;&#125;
+</code>
+</pre>
+<div id="preview" class="pt-4">
+{% postlist featured='True' featured_count='1' max_count='1' %}
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %} Examples Postlist Name {% endblock title %}
+{% load blog_tags %}
+
+{% block content %}
+<div class="container">
+<pre class="pre">
+<code class="code">
+  &#123;&#37; postlist name='myfirstblog' &#37;&#125;
+</code>
+</pre>
+<div id="preview" class="pt-4">
+{% postlist name='my_first_postlist' max_count='1' as firstlist %}
+<pre>
+<code>
+{{ firstlist|escape|lower|slice:':140' }}
+...
+</code>
+</pre>
+</div>
+<p>In the example, the id of posts has evaluted to "my_first_postlist" based off the name option.</p>
+<p>Naming postlists is useful when you want to target markup in your documents.</p>
+<pre class="pre">
+<code class="code">
+  &#123;&#37; postlist name='news' &#37;&#125;
+  &#123;&#37; postlist name='music' &#37;&#125;
+  &#123;&#37; postlist name='sport' &#37;&#125;
+</code>
+</pre>
+
+</div>
+{% endblock %}

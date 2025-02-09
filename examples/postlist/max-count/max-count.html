@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %} Examples Ignore Categories {% endblock title %}
+{% load blog_tags %}
+
+{% block content %}
+<div class="container">
+<pre class="pre">
+<code class="code">
+  &#123;&#37; postlist max_count='3' &#37;&#125;
+</code>
+</pre>
+<p>The max_count key limits the number of items being returned.</p>
+<p>The tag supports limiting the count at the database level. For example, SQL invokes its <b>LIMIT</b> clause. Generally this is better for performance.</p> 
+<div id="preview" class="pt-4">
+{% postlist max_count='3' %}
+</div>
+<h2>Setting zero max count</h2>
+<pre class="pre">
+<code class="code">
+  &#123;&#37; postlist max_count='0' &#37;&#125;
+</code>
+</pre>
+
+<p>Setting max count to 0 will produce an empty container and list.</p>
+{% postlist max_count='0' as zero_posts %}
+<pre>
+<code>
+  {{ zero_posts|escape|lower }}
+</code>
+</pre>
+</div>
+{% endblock %}

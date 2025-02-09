@@ -9,7 +9,7 @@
     email: alice@email.local
     is_active: true
     is_staff: true
-    is_superuser: True
+    is_superuser: true
     first_name: Alice
     last_name: Smith
     date_joined: 2023-01-01T08:16:59.844560+00:00
