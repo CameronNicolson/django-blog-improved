@@ -3,7 +3,8 @@ from django.contrib.auth.models import Group, User
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.sites.models import Site
 from django.utils.html import format_html
-from .models import BlogGroup, Contact, Comment, EmailAddress, Post, PostViaGit, PostShoutout, Media, TagGroup, UserProfile, SiteSettings
+from blog_improved.models import BlogGroup, Contact, EmailAddress, Media, TagGroup, UserProfile, SiteSettings
+from blog_improved.posts.models import Post, PostViaGit, PostShoutout
 from taggit.models import Tag
 from django.db.models import Prefetch
 from redirects.models import Redirect
@@ -60,18 +61,7 @@ class PostGitAdmin(PostAdmin):
 class PostShoutoutAdmin(PostAdmin):
     fields = ("title", "headline", "content", "author", "category", "status", "is_featured", "cover_art", "redirect_url")
     prepopulated_fields = {} 
-
-
-@admin.register(Comment)
-class CommentAdmin(admin.ModelAdmin):
-    list_display = ("name", "body", "post", "created_on", "active")
-    list_filter = ("active", "created_on")
-    search_fields = ("name", "email", "body")
-    actions = ["approve_comments"]
-
-    def approve_comments(self, request, queryset):
-        queryset.update(active=True)
-    
+   
 @admin.register(Media)
 class MediaAdmin(admin.ModelAdmin):
     pass
