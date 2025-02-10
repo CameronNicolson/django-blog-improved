@@ -10,6 +10,41 @@ from django.http import Http404
 groups = getattr(settings, "EXAMPLE_GROUPS", [])
 examples = getattr(settings, "EXAMPLES", [])
 
+
+def inject_slug(append_to, slug_key):
+    index = 0
+    slugs = ["django-reinhardt", "sleep"]
+    slug_key = slug_key or "slug"
+    append_to = append_to or "slug"
+
+    def _func(request, context, *args, **kwargs):
+        # Ensure request starts with slug="post"
+        if not hasattr(request, "slug"):
+            request.slug = "post"
+
+        # Append or override slug with cycling values
+        nonlocal index
+        request.slug = slugs[index]
+        print(f"Injected slug: {request.slug}")  # Debugging output
+
+        # Cycle through slugs
+        index = (index + 1) % len(slugs)
+        context.update({f"{append_to}": {f"{slug_key}": request.slug}})
+        return (request, context)
+
+    return _func
+
+MIXINS = {"postpost": (inject_slug("post", "slug"),)}
+
+def apply_additional_mixins(ident, request, context, *args, **kwargs):
+    try:
+        mixins = MIXINS[ident]
+    except:
+        return request, context
+    for mixin in mixins:
+        request, context = mixin(request, context, *args, **kwargs)
+    return request, context
+
 def dynamic_template_view(request, *args, **kwargs):
     # Get the last part of the URL and construct the template name
     example_group = kwargs["group_name"]
@@ -18,9 +53,13 @@ def dynamic_template_view(request, *args, **kwargs):
     example_data = examples[ident]
     title = example_data["name"]
     template_name = f"{example_name}.html"
+    context = {}
+    request, context = apply_additional_mixins(ident, request, context)
     try:
-        return render(request, template_name, context={"title": title, **example_data, "breadcrumbs": (("Home", "/"), (f"{example_group}", f"/{example_group}/"),
-            (f"{title}", None))})
+        example_data = {"title": title, **example_data, "breadcrumbs": (("Home", "/"), (f"{example_group}", f"/{example_group}/"),
+            (f"{title}", None))}
+        context.update(example_data)
+        return render(request, template_name, context=context)
     except Exception as e:
         raise e
 

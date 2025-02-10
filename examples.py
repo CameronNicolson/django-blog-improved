@@ -172,6 +172,7 @@ def create_sample_databases(settings):
         "MIGRATE": True,
         }
     
+        execute_from_command_line(["django", "makemigrations"])
         # Run migrations for the new database
         execute_from_command_line(["django", "migrate", "--run-syncdb"])
   
