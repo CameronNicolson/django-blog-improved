@@ -39,7 +39,6 @@ class TextNode(MarkupNode):
     markup_format = "plaintext"
 
     def __init__(self, text):
-        print(text)
         self._text = text
 
     def render(self) -> str:
@@ -116,8 +115,7 @@ class HtmlNode(MarkupNode):
 
             children_strings.append(str(rendered_child))  # Convert to string and add to list
 
-            children = "".join(children_strings)  # Join the strings at the end
-
+        children = "".join(children_strings)
 
         return f"<{open_tag}{attributes}>{children}</{end_tag}>"
 
