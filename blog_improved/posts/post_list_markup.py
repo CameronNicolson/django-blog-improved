@@ -2,12 +2,14 @@ from typing import Callable, List, Optional
 from blog_improved.utils.matrices import Matrix, create_matrix, LayoutMetrics, TraversalType, hasnext
 from blog_improved.utils.hetero_data_wrapper import HeteroDataWrapper
 from dataclasses import dataclass
-from blog_improved.helpers.html_generator import MarkupFactory, SgmlGenerator, SgmlNode
+from blog_improved.formatters.markup import MarkupFactory
+from blog_improved.formatters.html.html_generator import SgmlGenerator
 from blog_improved.themes.settings import get_theme
 from blog_improved.posts.posts import PostList
 from blog_improved.utils.strings import string_bound
 from django.urls import reverse
 from blog_improved.presentation.presentation_strategy import Rect
+from blog_improved.formatters.markup import MarkupNode
 
 @dataclass
 class ListCell:
@@ -30,6 +32,7 @@ class PostListMarkup:
         self._grid = list()
         self._rendered = None
         self._sgml = sgml
+        print(type(sgml))
         self._container = None
         self._layouts = {
                 "grid": self._default_layout,
@@ -97,16 +100,20 @@ class PostListMarkup:
         Generate HTML for the structured layout based on a layout type.
         """
         layout_strategy = self._layouts.get(layout_type)
+        print("what the fuck")
+        print(layout_strategy)
         if layout_strategy is None:
             raise ValueError(f"Unknown layout type: {layout_type}")
         self.generate_html_str(layout_strategy=layout_strategy)
 
-    def generate_html_str(self, layout_strategy: Optional[Callable[[List[List[ListCell]]], SgmlNode]] = None):
+    def generate_html_str(self, layout_strategy: Optional[Callable[[List[List[ListCell]]], MarkupNode]] = None):
         """
         Generate HTML for the structured layout.
         A layout strategy determines how rows and cells are transformed into HTML nodes.
         """
         sgml = self._sgml
+        print("the sgml")
+        print(type(sgml))
         if self._container is None:
             container = sgml.create_node("container")
             sgml.assign_class(container, "contaienr")
@@ -119,7 +126,7 @@ class PostListMarkup:
         self._container.add_child(posts_node)
         self._rendered = self._container.render()
 
-    def _default_layout(self, grid: List[List[ListCell]]) -> SgmlNode:
+    def _default_layout(self, grid: List[List[ListCell]]) -> MarkupNode:
         """
         Default strategy: Each row becomes a <div>, and each cell becomes a <div> inside that row.
         """
@@ -147,7 +154,7 @@ class PostListMarkup:
 
         return parent_node
 
-    def _flat_layout(self, grid: List[List[ListCell]]) -> SgmlNode:
+    def _flat_layout(self, grid: List[List[ListCell]]) -> MarkupNode:
         """
         Flat layout strategy: All cells are treated as a single list (e.g., for <ul>/<li>).
         """
@@ -170,7 +177,7 @@ class PostListMarkup:
 
         return list_node
     
-    def create_post_article(self, cell: ListCell) -> SgmlNode:
+    def create_post_article(self, cell: ListCell) -> MarkupNode:
         """Create an article node for a given cell."""
         sgml = self._sgml
         post_data = HeteroDataWrapper(cell.content, start=1)

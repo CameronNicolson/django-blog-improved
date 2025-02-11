@@ -1,9 +1,6 @@
 from django.conf import settings
-from blog_improved.posts.post_list_markup_presets import layout_presets 
 
 LAYOUT_POSTLIST = getattr(settings, "BLOG_LAYOUT_POSTLIST", None)
-
-#layout_preset["default"] = layout_preset[LAYOUT_POSTLIST]
 
 USER_PUBLIC_PROFILE = getattr(settings, "BLOG_USER_PUBLIC_PROFILE", True)
 AUTHOR_DEFAULT_GROUP = getattr(settings, "BLOG_AUTHOR_DEFAULT_GROUP", "author")
@@ -42,4 +39,21 @@ def set_dynamic_settings(settings):
             else:
                 settings["INSTALLED_APPS"].append(app)
 
+#####################
+# FORMATTER SETTINGS
+#####################
+_env_settings = {}
 
+def set_env_settings(settings_dict):  # Function to populate settings
+    global _env_settings
+    _env_settings.update(settings_dict)  # Merge with existing settings
+
+def get_env_setting(setting_name):
+    return _env_settings.get(setting_name)
+
+
+FORMATTER_OPTIONS = getattr(settings, "BLOG_FORMATTER", {})
+
+SGML_GENERATOR = FORMATTER_OPTIONS.get("sgml_generator", "html")
+PRESENTATION_STRATEGY = FORMATTER_OPTIONS.get("presentation_strategy", "inline")
+LAYOUT_PRESETS = FORMATTER_OPTIONS.get("layout_presets", "fallback")
