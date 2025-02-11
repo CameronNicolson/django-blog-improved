@@ -2,7 +2,7 @@ from django.apps import apps
 from django.template import TemplateSyntaxError
 from classytags.core import Tag, Options
 from classytags.arguments import Argument
-from classytags.values import ChoiceValue, ListValue, StringValue, IntegerValue
+from classytags.values import ChoiceValue, DictValue, ListValue, StringValue, StrictStringValue, IntegerValue
 from classytags.utils import TemplateConstant
 from blog_improved.vendor.classytags.arguments import CommaSeperatableMultiKeywordArgument 
 from blog_improved.vendor.classytags.values import DateTimeValue
@@ -26,22 +26,44 @@ class PostTag(Tag):
         return self.post_model
 
     def render(self, context):
-        options = {}
-        slug = context.get("post", {}).get("slug", None)
-        if slug:
-            slug = TemplateConstant(slug)
-        else:
-            slug = StringValue(TemplateConstant(""))
+        try:
+            options = self.kwargs.pop("post_options")
+        except KeyError:
+            options = {}
 
-        options["slug"] = slug
+        post = context.get("post", {})
+
+        # Determine if title is present and short-circuit if found
+        if post.get("title"):
+            options["pre_fetched"] = IntegerValue(TemplateConstant(1))
+            self.kwargs = options
+            return super().render(context)
+
+        # Continue lookup logic only if title is not found
+        id_value = options.get("id")
+        slug_value = post.get("slug")
+
+        lookup_key, lookup_value = ("id", id_value) if id_value else ("slug", slug_value)
+        lookup = DictValue({lookup_key: TemplateConstant(lookup_value)}) if lookup_value else StringValue(TemplateConstant(None))
+
+        # Store values in options and proceed
+        options["lookup"] = lookup
+        options["pre_fetched"] = IntegerValue(TemplateConstant(0))  # Explicitly mark as not pre-fetched
         self.kwargs = options
         return super().render(context)
 
-    def render_tag(self, context, slug):
+    def render_tag(self, context, lookup, pre_fetched):
         post = None
-        if slug:
-            post = self.model.objects.get(slug=slug)
-        if post:
+
+        if lookup is None and pre_fetched is False:
+            return ""
+
+        if pre_fetched:
+            post = context.get("post")
+        else:
+            post = self.model.objects.get(**lookup)
+
+        try:
             markup = get_env().blog_factory
             html = markup.create_article(
                 title=post.title,
@@ -55,5 +77,9 @@ class PostTag(Tag):
                 article_url=None
         )
             return html.render()
-
+        except KeyError as error:
+            if hasattr(error, 'message'):
+                return TemplateSyntaxError(error.message)
+            else:
+                raise error
         return ""
