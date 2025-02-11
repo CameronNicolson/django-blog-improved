@@ -8,11 +8,9 @@ from blog_improved.vendor.classytags.arguments import CommaSeperatableMultiKeywo
 from blog_improved.vendor.classytags.values import DateTimeValue
 from blog_improved.posts.posts import PostListQueryRequest, PostListQueryService
 from blog_improved.posts.post_list_markup import PostListMarkup
-from blog_improved.helpers.html_generator import BlogHtmlFactory, HtmlGenerator, create_blog_html_factory
 from blog_improved.posts.post_list_markup_presets import create_post_list_markup, layout_presets
 from blog_improved.posts.models import Post as post_model
-
-HTML_FACTORY_INSTANCE = create_blog_html_factory()
+from blog_improved.formatters.env import get_env
 
 class PostTag(Tag):
     name = "post"
@@ -42,9 +40,20 @@ class PostTag(Tag):
     def render_tag(self, context, slug):
         post = None
         if slug:
-
-            post = self.model.objects.filter(slug=slug)
+            post = self.model.objects.get(slug=slug)
         if post:
-            return "we found you"
+            markup = get_env().blog_factory
+            html = markup.create_article(
+                title=post.title,
+                headline=post.headline,
+                author=False,
+                author_homepage=False,
+                date=post.published_on,
+                body_content=post.content,
+                category=post.category,
+                featured=post.is_featured,
+                article_url=None
+        )
+            return html.render()
 
-        return "didnt find"
+        return ""
