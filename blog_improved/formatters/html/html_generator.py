@@ -13,6 +13,7 @@ from blog_improved.utils.time import convert_to_iso8601
 from blog_improved.utils.urls import starts_with_uri    
 from blog_improved.utils.math import RangeClamper
 from blog_improved.presentation.presentation_strategy import PresentationStrategy, Rect
+from blog_improved.presentation.inline_presentation import InlinePresentation
 from ..markup import MarkupFactory, MarkupNode
 from blog_improved.sgml.sgml import SgmlComponent
 
@@ -267,7 +268,7 @@ class BlogHtmlFactory(MarkupFactory):
                 markup_generator: HtmlGenerator,
                 presentation_strategy: PresentationStrategy = None):
         self._markup = markup_generator
-        self._presentation = presentation_strategy or InlinePresentationStrategy()
+        self._presentation = presentation_strategy or InlinePresentation()
 
     def assign_identifier(self, element: SgmlComponent, 
                           ident: str):
