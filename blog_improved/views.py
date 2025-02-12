@@ -8,7 +8,6 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from blog_improved.conf import HOMEPAGE_LATESTPOSTS_SIZE as latest_post_limit
 from .models import BlogGroup, Post, PostViaGit, PostShoutout, UserProfile, Status
-from .forms import FilterForm
 from taggit.models import Tag
 from django.db.models.base import ModelBase
 from django.db.models import Q, QuerySet
@@ -123,87 +122,6 @@ class AuthorPage(ListView):
         context["profile"] = list(create_user_list(users, self.get_queryset()))
         context["group"] = BlogGroup.objects.get(name=self.kwargs["group"])
         return context
-
-
-class PostList(ListView):
-    paginate_by = 10
-    template_name = "blog_improved/pages/posts/post_list.html"
-    
-    def post(self, request, *args, **kwargs):
-        # category tags passed by POST request
-        form = FilterForm(request.POST)
-        if form.is_valid():
-            cat_list = form.cleaned_data["category"]
-            return redirect("post_list")
-            if len(cat_list) > 0: 
-                cats = get_list_or_404(Tag.objects.filter(pk__in=cat_list))
-                cat_list_str = str()
-                for i in range(len(cat_list)):
-                    cat_list_str += cats[i].name
-                    if i+1 < len(cat_list):
-                        cat_list_str += ","
-                return redirect(f"/search?cat={cat_list_str}")
-        self.object_list = self.get_queryset()
-        context = self.get_context_data()
-        context["filter_form"] = form
-        return render(request, "blog_improved/pages/posts/post_list.html", context)
-
-    def get(self, request, *args, **kwargs):
-        # categories in request string, seperated by comma
-        req_cats = self.request.GET.get("cat") or None
-        if req_cats is not None:
-            self.request.categories = req_cats.split(",")  
-        else:
-            self.request.categories = []
-        return super().get(request, *args, **kwargs)
-
-    def get_queryset(self):
-        # if GET is empty then show all posts 
-        if self.request.POST or not self.request.GET or self.request.GET.get("page"):
-            all_posts = Post.public.all().select_subclasses(PostShoutout)
-            posts_cleaned = filter_classes(all_posts, (PostShoutout,))
-            return list_to_queryset(Post, posts_cleaned)
-        try:
-            # get all categories in string
-            cats = [cat for cat in self.request.categories if cat != ""]
-            # only filter by category if string parameters are detected
-            if len(cats) > 0:
-                # get posts with a matching category
-                all_posts = Post.public.filter(category__name__in=cats).select_subclasses(PostShoutout)
-                # here we are removing PostShoutous from posts list
-                posts_cleaned = filter_classes(all_posts, (PostShoutout,))
-                # build new queryset with list above
-                return list_to_queryset(Post, posts_cleaned)
-            return Post.objects.none()
-        except AttributeError:
-            raise Http404
-        return Post.objects.none()
-        
-
-    def get_context_data(self, **kwargs):
-        context = {}
-        # Find all tags that were inside the request
-        try:
-            categories = self.request.categories 
-        except AttributeError:
-            categories = []
-        if len(categories) > 0:
-            cat_ids = []
-            for cat_name in categories:
-                cat_ids.append(str(Tag.objects.get(name=cat_name).pk))
-            # pass all found tags to the FilterForm
-            context["filter_form"] = FilterForm(initial={"category": cat_ids})
-        else: 
-            context["filter_form"] = FilterForm()
-        context["total_post_count"] = self.get_queryset().count()
-        context["search_title"] = "Posts"
-        try: 
-            context["filter_categories"] = categories
-            # send query context for the Next/Prev pagination
-            context["query"] = self.request.GET.get("cat")
-        except KeyError:
-            return context
-        return super(PostList, self).get_context_data(**context)
 
 class PostView(DetailView, AccessStatusMixin, SingleObjectMixin):
     template_name = "blog_improved/pages/posts/post_detail.html"

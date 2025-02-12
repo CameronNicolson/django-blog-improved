@@ -2,7 +2,6 @@ from django.core.exceptions import PermissionDenied
 from django.contrib.auth import get_user_model
 from django.test import TestCase, Client, RequestFactory
 from blog_improved.models import Post, User, Tag
-from blog_improved.views import PostList
 from django.urls import reverse
 from django.db import IntegrityError
 from pathlib import Path
@@ -66,25 +65,6 @@ class TestPosts(TestCase):
                 print("no status field")
                 print(post["fields"])
         return (post_draft, post_public, post_private, post_unlisted, post_redirect,)
-
-    def test_post_list_GET_true(self):
-        client = Client()
-        response = client.get(reverse("post_list"))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "blog_improved/pages/posts/post_list.html")
-
-    def test_redirects_vacant_from_post_list_true(self):
-        request = RequestFactory().get("all-posts/")
-        view = PostList()
-        view.request = request
-        qs = view.get_queryset()
-        num_of_posts_in_queryset = qs.count()
-        public = self.post_public_count
-        redirect = self.post_redirect_count
-        # A post list is:
-        # all posts saved as public minus redirect links
-        num_expected_posts_in_fixtures = public - redirect 
-        self.assertEqual(num_of_posts_in_queryset, num_expected_posts_in_fixtures)
 
     def test_post_identical_slug_errors(self):
         # testing it raises exception 
