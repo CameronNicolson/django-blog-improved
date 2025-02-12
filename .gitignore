@@ -338,3 +338,5 @@ tags
 
 # git
 .gitattributes
+
+examples/data
