@@ -1,3 +1,5 @@
+Plug-and-play blogging for your Django project.
+
 # Django Blog Improved
 
 A collection of django template tags which supports a blogging platform underneath. This modular design allows developers to use only the blogging elements they need without scarifying a preexisting setup. 
