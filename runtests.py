@@ -57,7 +57,8 @@ def verify_package(package_name: str) -> None:
 
 def check_dependencies():
     required_pkgs = [
-            "yaml"
+            "yaml",
+             "bs4"
     ]
     for pkg in required_pkgs:
         try:
@@ -65,8 +66,8 @@ def check_dependencies():
         except ImportError:
             print(f"{pkg} library was not found and is required"\
                 " by the tests. \nDid you remember to install the"\
-                + "dependencies? \nTry running "\
-                + "pip install \"django-blog-improved[tests]\" .")
+                + " dependencies? \nTry running "\
+                + "pip install -r tests/requirements.txt")
             exit(0)
 
 if __name__ == "__main__":
