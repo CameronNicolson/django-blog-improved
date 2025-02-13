@@ -14,7 +14,7 @@ from blog_improved.utils.urls import starts_with_uri
 from blog_improved.utils.math import RangeClamper
 from blog_improved.presentation.presentation_strategy import PresentationStrategy, Rect
 from blog_improved.presentation.inline_presentation import InlinePresentation
-from ..markup import MarkupFactory, MarkupNode
+from ..markup import MarkupFactory, MarkupNode, CaseSensitivity
 from blog_improved.sgml.sgml import SgmlComponent
 
 
@@ -37,7 +37,9 @@ def CDATA(value):
     return value
 
 class TextNode(MarkupNode):
+    case_sensitivity = CaseSensitivity.INSENSITIVE
     markup_format = "plaintext"
+    children = None
 
     def __init__(self, text):
         self._text = text
@@ -48,6 +50,7 @@ class TextNode(MarkupNode):
 class HtmlNode(MarkupNode):
     node_counter = 0
     markup_format = "html"
+    case_sensitivity = CaseSensitivity.INSENSITIVE
 
     def __init__(self, 
                  name: str,
@@ -105,20 +108,22 @@ class HtmlNode(MarkupNode):
         end_tag = self.end_tag()
         
         children_strings = []  # List to store the rendered children as strings
-
-        for child in self.children:
-            rendered_child = child.render()  # Get the rendered output (could be an object)
-
-            print(f"Child type: {type(child)}")
-            print(f"Rendered child type: {type(rendered_child)}")
-            print(f"Rendered child: {rendered_child}")  # Print the rendered output
-            print(f"Rendered child (string): {str(rendered_child)}")  # Print string conversion
-
+          
+        for child in self.children:           
+            rendered_child = child.render() # Get the rendered output (could be an object)
             children_strings.append(str(rendered_child))  # Convert to string and add to list
 
         children = "".join(children_strings)
-
+        
+        case_sensitive = lambda s: s 
+        if self.compare_case(self.component.tag):
+            case_sensitive = lambda s: s.lower()
+        open_tag = case_sensitive(open_tag)
+        end_tag = case_sensitive(open_tag)
+        attributes = case_sensitive(attributes)
+        
         return f"<{open_tag}{attributes}>{children}</{end_tag}>"
+            
 
 class SgmlGenerator(ABC):
 
@@ -298,7 +303,7 @@ class BlogHtmlFactory(MarkupFactory):
             list_node.append(list_item)
         return list_node
 
-    def create_article(self, title: str, headline: str, author: str, author_homepage:str, date: std_datetime, body_content: str, category:str, featured:bool, article_url:str) -> HtmlNode:
+    def create_article(self, title: str, headline: str, author: str, author_homepage:str, date: std_datetime, body_content: str, category:str, featured:bool, article_url:str, content:str) -> HtmlNode:
         from blog_improved.utils.sgml import bool_wrapper
 
         article_node = self._markup.create_node("article", attributes={"class": "article"})
