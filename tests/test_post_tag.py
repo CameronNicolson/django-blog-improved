@@ -1,5 +1,6 @@
 import io
 from datetime import datetime, timezone
+from classytags.exceptions import TooManyArguments
 from pathlib import Path
 from django.test import TestCase
 from bs4 import BeautifulSoup
@@ -49,7 +50,7 @@ class PostTagTestCase(TestCase):
                                      hour=11, minute=22, second=33, microsecond=444555, tzinfo=timezone.utc)
         self.assertEqual(article_datetime, expected_datetime)
         rendered_author = rendered.find(class_="article__author")
-        xpected_author = rendered_expected.find(class_="article__author")
+        expected_author = rendered_expected.find(class_="article__author")
         try:
             article_author_text = rendered_author.text  
             expected_author_text = expected_author.text
@@ -62,3 +63,42 @@ class PostTagTestCase(TestCase):
         expected_author = rendered_expected.find(class_="article__content") 
         self.assertTrue(rendered_content)
 
+    def test_post_tag_id_only_arg(self):
+        template_string = '{% load blog_tags %}{% post 14 %}'
+        template = Template(template_string)
+        context = Context({}) 
+        rendered_html = template.render(context)
+        rendered = BeautifulSoup(rendered_html, "html.parser") 
+
+        rendered_article_exists = rendered.find(class_="article")
+        self.assertTrue(rendered_article_exists)
+        self.assertTrue(bool(rendered.find(class_="article__title")))
+        self.assertTrue(bool(rendered.find(class_="article__author")))
+        self.assertTrue(bool(rendered.find(class_="article__category")))
+        self.assertTrue(bool(rendered.find(class_="article__time--published-date")))
+
+    def test_post_tag_no_id_or_slug(self):
+        template_string = '{% load blog_tags %}{% post %}'
+        template = Template(template_string)
+        context = Context({}) 
+        with self.assertRaisesRegex(
+            TemplateSyntaxError,
+            r"Neither id nor slug was provided\."
+        ):
+            rendered_html = template.render(context) 
+
+    def test_post_tag_invalid_id(self):
+        template_string = '{% load blog_tags %}{% post 999999999 %}'
+        template = Template(template_string)
+        context = Context({}) 
+        with self.assertRaisesRegex(
+            TemplateSyntaxError,
+            r"No matching records found"
+        ):
+            rendered_html = template.render(context) 
+
+    def test_post_tag_multiple_id_args(self):
+        template_string = '{% load blog_tags %}{% post 12 22 hi %}'
+        with self.assertRaises(TooManyArguments):
+            template = Template(template_string)
+ 
