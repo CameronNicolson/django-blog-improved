@@ -1,0 +1,6 @@
+{
+  "name": "Post by Id",
+  "description": "A single post by it's primary key.",
+  "group": "post",
+  "path": "post/post-by-id"
+}
