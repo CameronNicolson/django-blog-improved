@@ -32,7 +32,6 @@ class PostListMarkup:
         self._grid = list()
         self._rendered = None
         self._sgml = sgml
-        print(type(sgml))
         self._container = None
         self._layouts = {
                 "grid": self._default_layout,
@@ -100,8 +99,6 @@ class PostListMarkup:
         Generate HTML for the structured layout based on a layout type.
         """
         layout_strategy = self._layouts.get(layout_type)
-        print("what the fuck")
-        print(layout_strategy)
         if layout_strategy is None:
             raise ValueError(f"Unknown layout type: {layout_type}")
         self.generate_html_str(layout_strategy=layout_strategy)
@@ -112,8 +109,6 @@ class PostListMarkup:
         A layout strategy determines how rows and cells are transformed into HTML nodes.
         """
         sgml = self._sgml
-        print("the sgml")
-        print(type(sgml))
         if self._container is None:
             container = sgml.create_node("container")
             sgml.assign_class(container, "contaienr")
@@ -191,7 +186,8 @@ class PostListMarkup:
             body_content=post_data["content"],
             category=post_data["category"],
             featured=(post_data["featured"] and priority == 0),
-            article_url=self.generate_post_link("title", slug=post_data["slug"])
+            article_url=self.generate_post_link("title", slug=post_data["slug"]),
+            content=post_data["content"]
     )
 
     def get_rendered(self) -> str:

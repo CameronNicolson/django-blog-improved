@@ -11,6 +11,7 @@ from blog_improved.posts.post_list_markup import PostListMarkup
 from blog_improved.posts.post_list_markup_presets import create_post_list_markup, layout_presets
 from blog_improved.posts.models import Post as post_model
 from blog_improved.formatters.env import get_env
+from django.urls import reverse
 
 class PostTag(Tag):
     name = "post"
@@ -61,20 +62,20 @@ class PostTag(Tag):
         if pre_fetched:
             post = context.get("post")
         else:
-            post = self.model.objects.get(**lookup)
-
+            post = self.model.objects.select_related("author").get(**lookup)
         try:
             markup = get_env().blog_factory
             html = markup.create_article(
                 title=post.title,
                 headline=post.headline,
-                author=False,
+                author=post.author.get_full_name(),
                 author_homepage=False,
                 date=post.published_on,
                 body_content=post.content,
                 category=post.category,
                 featured=post.is_featured,
-                article_url=None
+                article_url=None,
+                content=post.content
         )
             return html.render()
         except KeyError as error:

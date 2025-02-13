@@ -41,9 +41,17 @@ class TextNode(MarkupNode):
     markup_format = "plaintext"
     children = None
 
+    @property
+    def parent(self):
+        return None
+
+    @parent.setter
+    def parent(self, node):
+        return
+
     def __init__(self, text):
         self._text = text
-
+    
     def render(self) -> str:
         return self._text
 
@@ -349,6 +357,8 @@ class BlogHtmlFactory(MarkupFactory):
             except:
                 category_inline_container = self._markup.create_node("inline_container", {"class": "article__category"})
                 category_inline_container.add_child(category_text_node)
+                category_text_node = category_inline_container
+
             meta_node.add_child(divider_text_node)
             context_node = self._markup.create_node("inline_container", {"class": "visually-hidden"})
             context_node.add_child(TextNode("In the category:"))
@@ -358,6 +368,11 @@ class BlogHtmlFactory(MarkupFactory):
         if len(meta_node.children) > 0:
             article_node.add_child(meta_node)
 
+        if content:
+            content_node = self._markup.create_node("container", attributes={"class": "article__content"})
+            content_node.add_child(TextNode(content))
+            article_node.add_child(content_node)
+ 
         return article_node
 
     def create_node(self, tag_type: str, attributes: Optional[Dict[str, Any]] = None, **kwargs) -> HtmlNode:
