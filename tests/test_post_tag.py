@@ -12,7 +12,21 @@ class PostTagTestCase(TestCase):
         file = Path.cwd() / "tests" / "fixtures" / "html" / filename
         with open(file, "r") as f:
             return f.read()
-      
+       
+    def test_post_tag_missing_post(self):
+        template_string = '{% load blog_tags %}{% post %}'
+        template = Template(template_string)
+        context = Context({"post": {"slug": "bad-request"}})
+        with self.assertRaises(TemplateSyntaxError):
+            rendered_html = template.render(context)
+
+    def test_post_tag_empty_slug(self):
+        template_string = '{% load blog_tags %}{% post %}'
+        template = Template(template_string)
+        context = Context({"post": {"slug": ""}})
+        with self.assertRaises(TemplateSyntaxError):
+            rendered_html = template.render(context)
+
     def test_post_tag_no_args(self):
         expected_html = self.load_fixture("single_post_valid.html") 
         template_string = '{% load blog_tags %}{% post %}'

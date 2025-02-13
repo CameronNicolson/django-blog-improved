@@ -1,4 +1,6 @@
+import sys 
 from django.apps import apps
+from django.core.exceptions import ObjectDoesNotExist
 from django.template import TemplateSyntaxError
 from classytags.core import Tag, Options
 from classytags.arguments import Argument
@@ -43,8 +45,14 @@ class PostTag(Tag):
         # Continue lookup logic only if title is not found
         id_value = options.get("id")
         slug_value = post.get("slug")
-
+        
         lookup_key, lookup_value = ("id", id_value) if id_value else ("slug", slug_value)
+        if lookup_value is "":
+                raise TemplateSyntaxError(
+                    f"{sys.modules[__name__].__name__} {self.__class__.__name__}: {lookup_key}'s value \"{lookup_value}\" is malformed or missing."
+                    )
+            
+
         lookup = DictValue({lookup_key: TemplateConstant(lookup_value)}) if lookup_value else StringValue(TemplateConstant(None))
 
         # Store values in options and proceed
@@ -62,7 +70,12 @@ class PostTag(Tag):
         if pre_fetched:
             post = context.get("post")
         else:
-            post = self.model.objects.select_related("author").get(**lookup)
+            try:
+                post = self.model.objects.select_related("author").get(**lookup)
+            except ObjectDoesNotExist:
+                raise TemplateSyntaxError(
+                    f"{sys.modules[__name__].__name__} {self.__class__.__name__}: No matching records found for {self.model} lookup '{lookup}'."
+                 )
         try:
             markup = get_env().blog_factory
             html = markup.create_article(
