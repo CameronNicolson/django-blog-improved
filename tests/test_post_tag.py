@@ -64,7 +64,7 @@ class PostTagTestCase(TestCase):
         self.assertTrue(rendered_content)
 
     def test_post_tag_id_only_arg(self):
-        template_string = '{% load blog_tags %}{% post 14 %}'
+        template_string = '{% load blog_tags %}{% post id=14 %}'
         template = Template(template_string)
         context = Context({}) 
         rendered_html = template.render(context)
@@ -88,7 +88,7 @@ class PostTagTestCase(TestCase):
             rendered_html = template.render(context) 
 
     def test_post_tag_invalid_id(self):
-        template_string = '{% load blog_tags %}{% post 999999999 %}'
+        template_string = '{% load blog_tags %}{% post id=999999999 %}'
         template = Template(template_string)
         context = Context({}) 
         with self.assertRaisesRegex(
@@ -98,7 +98,34 @@ class PostTagTestCase(TestCase):
             rendered_html = template.render(context) 
 
     def test_post_tag_multiple_id_args(self):
-        template_string = '{% load blog_tags %}{% post 12 22 hi %}'
+        template_string = '{% load blog_tags %}{% post id="12" 22 hi %}'
         with self.assertRaises(TooManyArguments):
             template = Template(template_string)
  
+    def test_post_tag_multiple_template_calls(self):
+        post_tags = ["post id=22", "post id=23", "post id=17"]
+        template_string = "{% load blog_tags %}"
+        template_string = template_string + " ".join( "{% " + tag + " %} " for tag in post_tags)
+        template = Template(template_string)
+        context = Context({})  
+        rendered_html = template.render(context) 
+        rendered = BeautifulSoup(rendered_html, "html.parser") 
+        article_elements = rendered.find_all(class_="article")
+        expected_total_articles = len(post_tags)
+        total_articles = len(article_elements)
+        self.assertEqual(total_articles, expected_total_articles)
+        prev_title = []
+        # Checks all titles were unique 
+        for n, elem in enumerate(article_elements):
+            # Find title
+            title = elem.find(class_="article__title")
+            self.assertTrue(bool(title))
+            self.assertEqual(len(prev_title), n)
+            self.assertFalse(title.text in prev_title)
+            prev_title.append(title.text)
+
+
+
+
+       
+
