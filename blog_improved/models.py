@@ -34,11 +34,6 @@ class Status(models.IntegerChoices):
         raise ValueError(f"Unknown status with name '{name}'")
  
 
-def user_profile_choice_code(public_status):
-    if public_status:
-        return 1
-    return 2
-
 def set_upload_directory(instance, filename):
     updir = "" # upload directory string
     match instance.mediatype:
@@ -80,32 +75,8 @@ class Media(models.Model):
     def __str__(self):
         return "Media {} {}".format(self.mediatype, self.title)
 
-class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    bio = models.TextField(max_length=500, blank=True)
-    location = models.CharField(max_length=30, blank=True)
-    website = models.URLField(blank=True)
-
-    avatar = models.ForeignKey(Media, on_delete=models.SET_NULL, blank=True, null=True)
-
-    status = models.IntegerField(
-        choices=Status.choices, 
-        default=user_profile_choice_code(
-                USER_PUBLIC_PROFILE
-            ) 
-        )
-
-    def __str__(self):
-        return "{0} Intimate Details".format(self.user.username).title()
-
 class TagGroup(models.Model):
     tags = TaggableManager()
-
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        new_profile = UserProfile.objects.create(user=instance)
-        new_profile.save()
 
 class Contact(models.Model):
     name = models.CharField(max_length=200, blank=False)

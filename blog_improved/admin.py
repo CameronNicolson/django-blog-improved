@@ -3,7 +3,8 @@ from django.contrib.auth.models import Group, User
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.sites.models import Site
 from django.utils.html import format_html
-from blog_improved.models import BlogGroup, Contact, EmailAddress, Media, TagGroup, UserProfile, SiteSettings
+from blog_improved.models import BlogGroup, Contact, EmailAddress, Media, TagGroup, SiteSettings 
+from blog_improved.authors.models import UserProfile
 from blog_improved.posts.models import Post, PostViaGit, PostShoutout
 from taggit.models import Tag
 from django.db.models import Prefetch
