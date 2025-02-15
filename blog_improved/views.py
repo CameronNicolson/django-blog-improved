@@ -8,7 +8,8 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from blog_improved.conf import HOMEPAGE_LATESTPOSTS_SIZE as latest_post_limit
 from blog_improved.posts.models import Post, PostViaGit, PostShoutout
-from blog_improved.models import BlogGroup, UserProfile, Status
+from blog_improved.models import BlogGroup, Status
+from blog_improved.authors.models import UserProfile
 from taggit.models import Tag
 from django.db.models.base import ModelBase
 from django.db.models import Q, QuerySet

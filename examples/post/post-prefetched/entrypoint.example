@@ -1,0 +1,6 @@
+{
+  "name": "Post prefetched",
+  "description": "Rendering a post tag with context data containing a post value.",
+  "group": "post",
+  "path": "post/post-prefetched"
+}

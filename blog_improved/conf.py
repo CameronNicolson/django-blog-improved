@@ -8,6 +8,10 @@ HOMEPAGE_LATESTPOSTS_SIZE = getattr(settings, "BLOG_HOMEPAGE_LATESTPOSTS_SIZE", 
 
 FALLBACK_THEME = "fallback"
 
+
+def is_public_profile_active():
+    return USER_PUBLIC_PROFILE
+
 def get_theme_settings():
     theme = getattr(settings, "BLOG_THEME", FALLBACK_THEME)
     return theme
