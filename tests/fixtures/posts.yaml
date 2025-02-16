@@ -111,14 +111,7 @@
     updated_on: 2022-06-03T14:11:00.0+00:00
     status: 1
     category: 1
-    collabaration_mode: 1
     slug: coding-project
-- name: attach git 
-  model: blog_improved.postviagit
-  pk: 7
-  fields: 
-    collabaration_mode: 1
-    associated_git_repository: https://codeberg.org/spongycake/django-blog-improved
 # redirect links
 - name: video redirect link
   model: blog_improved.postshoutout
@@ -403,3 +396,17 @@
     is_featured: True
     slug: color-blue
     cover_art: 1
+- name: most-recent-hotdog
+  description: Part of a group of posts named Hot Dog Competition
+  model: blog_improved.post
+  pk: 29
+  fields:
+    title: Hot Dog Competition 2025
+    content: lorem(1)
+    author: 1
+    created_on: 2025-02-13T14:04:00.0+00:00
+    published_on: 2025-02-13T14:11:00.0+00:00
+    updated_on: 2025-02-14T13:48:10.0+00:00 
+    status: 1
+    category: 9
+    slug: hot-dog-competition-2025

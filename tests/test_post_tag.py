@@ -1,14 +1,40 @@
 import io
+from django.urls import path, reverse
+from django.views.generic import TemplateView
 from datetime import datetime, timezone
 from classytags.exceptions import TooManyArguments
 from pathlib import Path
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from bs4 import BeautifulSoup
 from django.template import Context, Template, TemplateSyntaxError
+from blog_improved.posts.models import Post
+from django.template import engines
+
+urlpatterns = []
+
+TEST_TEMPLATES = {
+    "BACKEND": "django.template.backends.django.DjangoTemplates",
+    "DIRS": [],  # No actual directory needed
+    "APP_DIRS": False,  # Disable automatic file-based templates
+    "OPTIONS": {
+        "loaders": [("django.template.loaders.locmem.Loader", {
+            "single_post.html": """
+            {% load blog_tags %}
+            <!DOCTYPE html>
+            <html>
+            <head><title>{{ title }}</title></head>
+            <body>
+                {% post %}
+            </body>
+            </html>
+            """
+        })]
+    },
+}
 
 class PostTagTestCase(TestCase):
     fixtures = ["media.yaml", "tags.yaml", "users.yaml", "redirects.yaml", "groups.yaml", "posts.yaml"]
-
+    
     def load_fixture(self, filename):
         file = Path.cwd() / "tests" / "fixtures" / "html" / filename
         with open(file, "r") as f:
@@ -125,7 +151,44 @@ class PostTagTestCase(TestCase):
             prev_title.append(title.text)
 
 
+    @override_settings(ROOT_URLCONF=__name__, TEMPLATES=[TEST_TEMPLATES])
+    def test_post_tag_prefetch_valid(self):
+        from django.urls import path
+        from django.views.generic import TemplateView
 
+        hot_dog_posts = Post.objects.filter(title__icontains="hot dog").order_by("-published_on")
+        self.assertEqual(len(hot_dog_posts), 2)
+        newest_post = hot_dog_posts.first()
+        actual_post_year = newest_post.published_on.year
+        expected_post_year = 2025
+        self.assertEqual(actual_post_year, expected_post_year)
+        urlpatterns.append(path("hot-dog-competition/",
+                        TemplateView.as_view(
+                        template_name="single_post.html",
+                        extra_context={"post": newest_post, 
+                                       "title": "hot dog comp"},
+                    ),
+                    name="hot_dog_event"
+                )
+        )
 
-       
+        response = self.client.get(reverse("hot_dog_event"))
+        self.assertEqual(response.status_code, 200) 
+        rendered_html = response.rendered_content
+        rendered = BeautifulSoup(rendered_html, "html.parser") 
+        expected_heading = "Hot Dog Competition 2025"
+        actual_heading = rendered.find(class_="article__title").text
+        self.assertEqual(actual_heading, expected_heading)
+        actual_author = rendered.find(class_="article__author").text
+        expected_author = "alice"
+        self.assertEqual(actual_author, expected_author)
 
+    def test_post_tag_missing_author(self):
+        context_missing_author = {"post": {"title": "Anonymous", "headline": "We are legion"}} 
+        template_string = '{% load blog_tags %}{% post %}'
+        template = Template(template_string)
+        context = Context(context_missing_author)
+        rendered_html = template.render(context)
+        rendered = BeautifulSoup(rendered_html, "html.parser") 
+        actual_author = rendered.find(class_="article__author")
+        self.assertTrue(actual_author == None)

@@ -5,7 +5,7 @@ from django.contrib.sites.models import Site
 from django.utils.html import format_html
 from blog_improved.models import BlogGroup, Contact, EmailAddress, Media, TagGroup, SiteSettings 
 from blog_improved.authors.models import UserProfile
-from blog_improved.posts.models import Post, PostViaGit, PostShoutout
+from blog_improved.posts.models import Post, PostShoutout
 from taggit.models import Tag
 from django.db.models import Prefetch
 from redirects.models import Redirect
@@ -48,15 +48,6 @@ class PostAdmin(admin.ModelAdmin):
 
     def get_changeform_initial_data(self, request):
         return {'author': request.user}
-
-@admin.register(PostViaGit)
-class PostGitAdmin(PostAdmin):
-    fields = ("title", "slug", "headline", "content", "author", "category", "tags", "status", "is_featured", "cover_art", "collabaration_mode", "associated_git_repository")
-    list_display = ("title",)
-
-    def get_queryset(self, request):
-        return super().get_queryset(request).prefetch_related("tags")
-
 
 @admin.register(PostShoutout)
 class PostShoutoutAdmin(PostAdmin):

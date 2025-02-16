@@ -9,6 +9,63 @@ from django.db.models.functions import Now
 from django.db.models.functions import RowNumber
 from blog_improved.query_request.query import FilterQueryRequest, LimitQueryRequest, QueryRequest, QueryRequestSelectValues
 from blog_improved.query_request import AnnotateQueryRequest, SortQueryRequest
+from .models import Post as PostModel
+from dataclasses import dataclass
+from datetime import datetime
+from pathlib import Path
+
+@dataclass
+class File:
+    url: str
+    path: Path
+
+@dataclass
+class Category:
+    name: str
+    description: str
+
+@dataclass
+class User:
+    first_name: str
+    last_name: str
+    username: str
+
+@dataclass
+class Media:
+    mediatype: str
+    title: str
+    file: File 
+    upload_user: User
+
+@dataclass
+class Post:
+    """A standardized Post structure used across the application."""
+    status: int
+    slug: str
+    title: str
+    author: str
+    content: str
+    published_on: datetime
+    created_on: datetime
+    updated_on: datetime
+    is_featured: bool
+    headline: str
+    cover_art: Media
+    category: Category
+    tags: list[Category]
+
+def validate_post_model():
+    """Ensures the Post model's fields match expected attributes."""
+    post_db_fields = {field.name for field in PostModel._meta.get_fields() if not field.auto_created}  # Get model fields
+    standard_fields = set(Post.__annotations__.keys())
+
+    missing_in_post = standard_fields - post_db_fields
+    extra_in_post = post_db_fields - standard_fields
+
+    if missing_in_post or extra_in_post:
+        raise AssertionError(f"Post model and StandardPost are out of sync!\n"
+                             f"Post that has extra to Post db model: {missing_in_post}\n"
+                             f"Unimplemented from Post db model: {extra_in_post}")
 
 
 class PostList(list):
@@ -319,3 +376,5 @@ class PostListQueryRequest(PostListQueryBuilder):
             priority_order.append((item[0], item[priority_pos],))
             new_data.append(new_tuple)
         return PostList(post_list=new_data, date_generated=timezone.now(), fetch_posts=request, fetch_categories=None, priority_order=priority_order)
+
+validate_post_model()

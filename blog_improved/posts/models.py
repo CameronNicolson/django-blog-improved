@@ -37,17 +37,6 @@ class Post(Model):
         default=Status.DRAFT
     )
 
-    class CollabrationMode(IntegerChoices):
-        NO = 0, ('No')
-        YES = 1, ('Yes')
-
-        __empty__ = ('(Unknown)')
-
-    collabaration_mode = IntegerField(
-        choices=CollabrationMode.choices,
-        default=CollabrationMode.NO,
-    )
-
     title = CharField(max_length=200, unique=True)
     slug = SlugField(max_length=200, unique=True)
     author = ForeignKey(
@@ -97,20 +86,6 @@ class Post(Model):
     def get_absolute_url(self):
         return reverse("post_detail", kwargs={"slug": str(self.slug)})
 
-class PostViaGit(Post):
-    associated_git_repository = URLField()
-
-    def save(self, *args, **kwargs):
-        if self.collabaration_mode == Post.CollabrationMode.__empty__:
-            raise ValueError("Posts using Git require collabration to be turned on")
-        return super().save(*args, **kwargs)
-
-    class Meta:
-        verbose_name_plural = "Posts with Git"
-
-    def __str__(self):
-        return self.title
-
 class PostShoutout(Post):
     redirect_url = URLField()
 
@@ -120,26 +95,8 @@ class PostShoutout(Post):
     def get_absolute_url(self):
         return self.redirect_url
 
-@receiver(post_save, sender=Post)
-def upgrade_to_collab_mode(sender, instance, *args, **kwargs):
-        # Make Post into PostViaGit when Collab is on
-        if instance.collabaration_mode == 1:
-            try:
-                PostViaGit.objects.get(post_ptr_id=instance.id)
-            except ObjectDoesNotExist:
-                instance = PostViaGit(post_ptr=instance)
-                instance.save_base(raw=True)
-
-@receiver(post_save, sender=PostViaGit)
-def remove_collab_mode(sender, instance, created, *args, **kwargs):
-    if created:
-        return 
-    if instance.collabaration_mode == Post.CollabrationMode.NO:
-        instance.delete(keep_parents=True)
-
 @receiver(pre_save, sender=PostShoutout)
 def update_postredirect_slug(sender, instance, **kwargs):
     instance.slug = "{0}s-shoutout".format(slugify(instance.title))
     return instance
-
 

@@ -7,7 +7,7 @@ from django.views.generic.detail import SingleObjectMixin
 from django.urls import reverse
 from django.contrib.auth.models import User
 from blog_improved.conf import HOMEPAGE_LATESTPOSTS_SIZE as latest_post_limit
-from blog_improved.posts.models import Post, PostViaGit, PostShoutout
+from blog_improved.posts.models import Post, PostShoutout
 from blog_improved.models import BlogGroup, Status
 from blog_improved.authors.models import UserProfile
 from taggit.models import Tag
@@ -144,7 +144,7 @@ class PostView(DetailView, AccessStatusMixin, SingleObjectMixin):
         context["crumbs"] = [("Home", reverse("home"),),("Posts", reverse("post_list"),),(post.title, None,)]
         
         if operator.eq(post.collabaration_mode, Post.CollabrationMode.YES):    
-            post = get_object_or_404(PostViaGit, post_ptr_id=post.pk)
+            post = get_object_or_404(post_ptr_id=post.pk)
         context["post"] = post
         return context
 

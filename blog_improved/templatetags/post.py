@@ -14,7 +14,9 @@ from blog_improved.posts.post_list_markup_presets import create_post_list_markup
 from blog_improved.posts.models import Post as post_model
 from blog_improved.models import Status
 from blog_improved.formatters.env import get_env
-from blog_improved.authors.models import cast_user_to_postauthor  
+from blog_improved.authors.models import cast_user_to_postauthor, PostAuthor
+from blog_improved.posts.posts import Post
+from blog_improved.utils.normalise import normalise_post_entry
 
 class PostTag(Tag):
     name = "post"
@@ -32,19 +34,19 @@ class PostTag(Tag):
         return self.post_model
 
     def render(self, context):
-        post = context.get("post", {})
-
-        # Determine if title is present and short-circuit if found
-        if post.get("title"):
+        post_context = context.get("post", {})
+        post = normalise_post_entry(post_context) 
+        context["post"] = post or {}
+        # Determine if a post is present and return if found
+        if post and post.title:
             self.kwargs["pre_fetched"] = IntegerValue(TemplateConstant(1))
-            self.kwargs["slug"] = StringValue(TemplateConstant(post.get("slug")))
-            self.kwargs["post_id"] = IntegerValue(TemplateConstant(post.get("id")))
+            self.kwargs["slug"] = StringValue(TemplateConstant(post.slug))
+            self.kwargs["post_id"] = TemplateConstant(None)
             self.kwargs["lookup"] = DictValue({})
             return super().render(context)
+
         id_value = self.kwargs.get("post_id", {}).setdefault("id", TemplateConstant(None))
-        slug_value = StringValue(
-                TemplateConstant(post.get("slug")
-                ))
+        slug_value = StringValue(TemplateConstant(post_context.get("slug", None)))
         self.kwargs["slug"] = slug_value 
         lookup_key, lookup_value = None, None
         if id_value.resolve(context):
@@ -63,20 +65,20 @@ class PostTag(Tag):
  
         lookup = DictValue({lookup_key: lookup_value}) if lookup_value else TemplateConstant(None)
 
-            # Store values in options and proceed
+        # Store values in options and proceed
         self.kwargs["lookup"] = lookup
         self.kwargs["pre_fetched"] = IntegerValue(TemplateConstant(0))          # Explicitly mark as not pre-fetched
         return super().render(context)
 
     def render_tag(self, context, lookup, pre_fetched, post_id, slug):
+        markup = get_env().blog_factory
         post = None
 
         if lookup is None and pre_fetched is False:
             return ""
 
         if pre_fetched:
-            post_data = context.get("post")
-            post = self.model(**post_data)
+            post = context.get("post")
         else:
             try:
                 post = self.model.objects.select_related("author__userprofile").get(**lookup)
@@ -86,8 +88,9 @@ class PostTag(Tag):
                  )
         try:
             cloak_name = True
-            markup = get_env().blog_factory
-            author_profile = getattr(post.author, "userprofile", None)
+            author_profile = False
+            if post.author:
+                author_profile = getattr(post.author, "userprofile", None)
             if author_profile:
                 cloak_name = True if author_profile.status == Status.PRIVATE.value else False
 
