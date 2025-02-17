@@ -33,7 +33,7 @@ TEST_TEMPLATES = {
 }
 
 class PostTagTestCase(TestCase):
-    fixtures = ["media.yaml", "tags.yaml", "users.yaml", "redirects.yaml", "groups.yaml", "posts.yaml"]
+    fixtures = ["media.yaml", "tags.yaml", "users.yaml", "userprofiles.yaml", "redirects.yaml", "groups.yaml", "posts.yaml"]
     
     def load_fixture(self, filename):
         file = Path.cwd() / "tests" / "fixtures" / "html" / filename
@@ -192,3 +192,49 @@ class PostTagTestCase(TestCase):
         rendered = BeautifulSoup(rendered_html, "html.parser") 
         actual_author = rendered.find(class_="article__author")
         self.assertTrue(actual_author == None)
+
+    def test_post_empty_post_context(self):
+        context_empty_post = {"post": {}} 
+        template_string = '{% load blog_tags %}{% post %}'
+        template = Template(template_string)
+        context = Context(context_empty_post)
+
+        with self.assertRaisesRegex(
+            TemplateSyntaxError,
+            r"Neither id nor slug was provided\."
+        ):
+            rendered_html = template.render(context) 
+
+
+    def test_post_id_with_no_value(self):
+        context_empty_post = {"post": {}} 
+        template_string = '{% load blog_tags %}{% post id="" %}'
+        template = Template(template_string)
+        context = Context(context_empty_post)
+
+        with self.assertRaisesRegex(
+            TemplateSyntaxError,
+            r"Neither id nor slug was provided\."
+        ):
+            rendered_html = template.render(context) 
+
+    def test_post_tag_slug_no_post(self):
+        template_string = '{% load blog_tags %}{% post %}'
+        template = Template(template_string)
+        context = Context({"post": {"slug": "/this-not-exist/"}})
+        with self.assertRaises(TemplateSyntaxError):
+            rendered_html = template.render(context)
+
+    def test_post_tag_public_profile_author(self):
+        # Expect the first and last name of a user 
+        # with a public profile 
+        template_string = '{% load blog_tags %}{% post id=30 %}'
+        template = Template(template_string)
+        context = Context()
+        rendered_html = template.render(context)
+        rendered = BeautifulSoup(rendered_html, "html.parser") 
+        rendered_name_node = rendered.find(class_="article__author-name")
+        self.assertTrue(bool(rendered_name_node))
+        expected_name = "Bjarne Stroustrup"
+        actual_name = rendered_name_node.text
+        self.assertEqual(actual_name, expected_name)

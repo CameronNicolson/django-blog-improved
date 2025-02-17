@@ -333,11 +333,12 @@ class BlogHtmlFactory(MarkupFactory):
         meta_node = self._markup.create_node("container", attributes={"class": "article__meta"})
 
         if author: 
-            author_node = self._markup.create_node("address", attributes={"class": "article__author"})
-            author_text_node = TextNode(f"{author}")
-            author_text_node = bool_wrapper(self._markup, author_homepage, "hyperlink", {"href": author_homepage}, author_text_node)
-
-            author_node.add_child(author_text_node)
+            author_node = self._markup.create_node("container", attributes={"class": "article__author"})
+            author_name_node = self._markup.create_node("inline_container", attributes={"class": "article__author-name"})
+            author_name_text_node = TextNode(f"{author}")
+            
+            author_name_node.add_child(author_name_text_node)
+            author_node.add_child(author_name_node)
             meta_node.add_child(author_node)
 
         if date:

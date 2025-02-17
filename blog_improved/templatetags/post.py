@@ -89,17 +89,19 @@ class PostTag(Tag):
         try:
             cloak_name = True
             author_profile = False
+            author_url = None
             if post.author:
                 author_profile = getattr(post.author, "userprofile", None)
             if author_profile:
                 cloak_name = True if author_profile.status == Status.PRIVATE.value else False
+                author_url = author_profile.url
 
             author = cast_user_to_postauthor(post.author)
             html = markup.create_article(
                 title=post.title,
                 headline=post.headline,
                 author=author.get_display_name(cloak_name),
-                author_homepage=False,
+                author_homepage=author_url,
                 date=post.published_on,
                 body_content=post.content,
                 category=post.category,

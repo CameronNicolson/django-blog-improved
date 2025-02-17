@@ -1,0 +1,9 @@
+- name: bjarne-public-profile 
+  description: User with a public profile
+  model: blog_improved.userprofile
+  pk: 1
+  fields:
+    bio: Bjarne Stroustrup is a Danish computer scientist and the inventor of the C++ programming language 
+    status: 1
+    user: 4
+    url: author/cppmaster/ 

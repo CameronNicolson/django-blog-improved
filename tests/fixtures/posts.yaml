@@ -410,3 +410,17 @@
     status: 1
     category: 9
     slug: hot-dog-competition-2025
+- name: cpp-event
+  description:
+  model: blog_improved.post
+  pk: 30
+  fields:
+    title: C++ Conference
+    content: lorem(1)
+    author: 4
+    created_on: 2025-02-15T14:04:00.0+00:00
+    published_on: 2025-02-15T14:11:00.0+00:00
+    updated_on: 2025-02-14T15:48:10.0+00:00 
+    status: 1
+    category: 9
+    slug: cpp-conference

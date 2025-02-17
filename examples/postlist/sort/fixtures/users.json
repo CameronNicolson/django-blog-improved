@@ -16,7 +16,7 @@
 	"pk": 1, 
 	"fields": {
 	"location": "UK",
-	"website": "mywebsite.local",
+	"url": "mywebsite.local",
 	"status": 1,
 	"bio": "bio",
 	"user": 1

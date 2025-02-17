@@ -27,11 +27,6 @@ class PostAuthor(User):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._cloak_identity = True
-
-    def cloak_identity(self, active):
-        """Sets the temporary cloak identity flag."""
-        self._cloak_identity = active  # Temporarily store in instance memory
 
     def get_display_name(self, cloak):
         """Returns the appropriate display name based on the cloak setting."""
@@ -43,7 +38,7 @@ class UserProfile(Model):
     user = OneToOneField(User, on_delete=CASCADE)
     bio = TextField(max_length=500, blank=True)
     location = CharField(max_length=30, blank=True)
-    website = URLField(blank=True)
+    url = URLField(blank=True)
 
     avatar = ForeignKey(Media, on_delete=SET_NULL, blank=True, null=True)
 
@@ -62,9 +57,5 @@ def cast_user_to_postauthor(user: User) -> PostAuthor:
 
     user_copy = copy.copy(user)  # Avoid mutating the original
     user_copy.__class__ = PostAuthor  # Change the class
-
-    # Manually initialize any PostAuthor-specific attributes
-    if not hasattr(user_copy, '_cloak_identity'):
-        user_copy._cloak_identity = True
 
     return user_copy
