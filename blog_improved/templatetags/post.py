@@ -15,8 +15,9 @@ from blog_improved.posts.models import Post as post_model
 from blog_improved.models import Status
 from blog_improved.formatters.env import get_env
 from blog_improved.authors.models import cast_user_to_postauthor, PostAuthor
-from blog_improved.posts.posts import Post
+from blog_improved.posts.posts import EmptyPost, Post
 from blog_improved.utils.normalise import normalise_post_entry
+from blog_improved.constants import BLOG_POST_CONTEXT_NAME
 
 class PostTag(Tag):
     name = "post"
@@ -34,11 +35,12 @@ class PostTag(Tag):
         return self.post_model
 
     def render(self, context):
-        post_context = context.get("post", {})
+        post_context = context.get(BLOG_POST_CONTEXT_NAME, {})
         post = normalise_post_entry(post_context) 
-        context["post"] = post or {}
-        # Determine if a post is present and return if found
-        if post and post.title:
+        post = post if (post is not None) and (not isinstance(post, EmptyPost)) else post_context
+        #context[BLOG_POST_CONTEXT_NAME] = post or EmptyPost()
+        context[BLOG_POST_CONTEXT_NAME] = post     # Determine if a post is present and return if found
+        if isinstance(post, Post):
             self.kwargs["pre_fetched"] = IntegerValue(TemplateConstant(1))
             self.kwargs["slug"] = StringValue(TemplateConstant(post.slug))
             self.kwargs["post_id"] = TemplateConstant(None)
@@ -46,7 +48,7 @@ class PostTag(Tag):
             return super().render(context)
 
         id_value = self.kwargs.get("post_id", {}).setdefault("id", TemplateConstant(None))
-        slug_value = StringValue(TemplateConstant(post_context.get("slug", None)))
+        slug_value = StringValue(TemplateConstant(post.get("slug", None)))
         self.kwargs["slug"] = slug_value 
         lookup_key, lookup_value = None, None
         if id_value.resolve(context):
@@ -78,7 +80,7 @@ class PostTag(Tag):
             return ""
 
         if pre_fetched:
-            post = context.get("post")
+            post = context.get(BLOG_POST_CONTEXT_NAME)
         else:
             try:
                 post = self.model.objects.select_related("author__userprofile").get(**lookup)

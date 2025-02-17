@@ -37,6 +37,19 @@ class Media:
     file: File 
     upload_user: User
 
+class InstanceCheckMeta(type):
+    def __instancecheck__(self, instance):
+        return isinstance(instance, Post) and instance.is_empty()
+
+class EmptyPost(metaclass=InstanceCheckMeta):
+    """
+    Marker class for an empty Post:
+        isinstance(empty_post, EmptyPost) -> True
+    """
+
+    def __init__(self, *args, **kwargs):
+        raise TypeError("EmptyPost can't be instantiated")
+
 @dataclass
 class Post:
     """A standardized Post structure used across the application."""
@@ -53,6 +66,9 @@ class Post:
     cover_art: Media
     category: Category
     tags: list[Category]
+
+    def is_empty(self) -> bool:
+        return not any([self.title, self.content])
 
 def validate_post_model():
     """Ensures the Post model's fields match expected attributes."""

@@ -8,6 +8,7 @@ from django.test import TestCase, override_settings
 from bs4 import BeautifulSoup
 from django.template import Context, Template, TemplateSyntaxError
 from blog_improved.posts.models import Post
+from blog_improved.constants import BLOG_POST_CONTEXT_NAME as post_key
 from django.template import engines
 
 urlpatterns = []
@@ -43,14 +44,14 @@ class PostTagTestCase(TestCase):
     def test_post_tag_missing_post(self):
         template_string = '{% load blog_tags %}{% post %}'
         template = Template(template_string)
-        context = Context({"post": {"slug": "bad-request"}})
+        context = Context({post_key: {"slug": "bad-request"}})
         with self.assertRaises(TemplateSyntaxError):
             rendered_html = template.render(context)
 
     def test_post_tag_empty_slug(self):
         template_string = '{% load blog_tags %}{% post %}'
         template = Template(template_string)
-        context = Context({"post": {"slug": ""}})
+        context = Context({post_key: {"slug": ""}})
         with self.assertRaises(TemplateSyntaxError):
             rendered_html = template.render(context)
 
@@ -58,7 +59,7 @@ class PostTagTestCase(TestCase):
         expected_html = self.load_fixture("single_post_valid.html") 
         template_string = '{% load blog_tags %}{% post %}'
         template = Template(template_string)
-        context = Context({"post": {"slug": "sleep"}})
+        context = Context({post_key: {"slug": "sleep"}})
         rendered_html = template.render(context)
         rendered = BeautifulSoup(rendered_html, "html.parser") 
         rendered_expected = BeautifulSoup(expected_html, "html.parser")
@@ -165,7 +166,7 @@ class PostTagTestCase(TestCase):
         urlpatterns.append(path("hot-dog-competition/",
                         TemplateView.as_view(
                         template_name="single_post.html",
-                        extra_context={"post": newest_post, 
+                        extra_context={post_key: newest_post, 
                                        "title": "hot dog comp"},
                     ),
                     name="hot_dog_event"
@@ -184,7 +185,7 @@ class PostTagTestCase(TestCase):
         self.assertEqual(actual_author, expected_author)
 
     def test_post_tag_missing_author(self):
-        context_missing_author = {"post": {"title": "Anonymous", "headline": "We are legion"}} 
+        context_missing_author = {post_key: {"title": "Anonymous", "headline": "We are legion"}} 
         template_string = '{% load blog_tags %}{% post %}'
         template = Template(template_string)
         context = Context(context_missing_author)
@@ -194,7 +195,7 @@ class PostTagTestCase(TestCase):
         self.assertTrue(actual_author == None)
 
     def test_post_empty_post_context(self):
-        context_empty_post = {"post": {}} 
+        context_empty_post = {post_key: {}} 
         template_string = '{% load blog_tags %}{% post %}'
         template = Template(template_string)
         context = Context(context_empty_post)
@@ -207,7 +208,7 @@ class PostTagTestCase(TestCase):
 
 
     def test_post_id_with_no_value(self):
-        context_empty_post = {"post": {}} 
+        context_empty_post = {post_key: {}} 
         template_string = '{% load blog_tags %}{% post id="" %}'
         template = Template(template_string)
         context = Context(context_empty_post)
@@ -221,7 +222,7 @@ class PostTagTestCase(TestCase):
     def test_post_tag_slug_no_post(self):
         template_string = '{% load blog_tags %}{% post %}'
         template = Template(template_string)
-        context = Context({"post": {"slug": "/this-not-exist/"}})
+        context = Context({post_key: {"slug": "/this-not-exist/"}})
         with self.assertRaises(TemplateSyntaxError):
             rendered_html = template.render(context)
 
