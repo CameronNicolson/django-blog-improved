@@ -7,7 +7,8 @@ from pathlib import Path
 from django.test import TestCase, override_settings
 from bs4 import BeautifulSoup
 from django.template import Context, Template, TemplateSyntaxError
-from blog_improved.posts.models import Post
+from blog_improved.posts.models import Post as PostModel
+from blog_improved.posts.posts import Post
 from blog_improved.constants import BLOG_POST_CONTEXT_NAME as post_key
 from django.template import engines
 
@@ -157,7 +158,7 @@ class PostTagTestCase(TestCase):
         from django.urls import path
         from django.views.generic import TemplateView
 
-        hot_dog_posts = Post.objects.filter(title__icontains="hot dog").order_by("-published_on")
+        hot_dog_posts = PostModel.objects.filter(title__icontains="hot dog").order_by("-published_on")
         self.assertEqual(len(hot_dog_posts), 2)
         newest_post = hot_dog_posts.first()
         actual_post_year = newest_post.published_on.year
@@ -239,3 +240,34 @@ class PostTagTestCase(TestCase):
         expected_name = "Bjarne Stroustrup"
         actual_name = rendered_name_node.text
         self.assertEqual(actual_name, expected_name)
+    
+    def test_missing_author_in_context(self):
+        post = Post(
+             title="Maintenance Underway",
+             headline="Maintenance is scheduled to end 7AM PST",
+             content="We apologise for any inconvenience.",
+             published_on=datetime(2025,11,12),
+             created_on=datetime(2025,11,12),
+             updated_on=datetime(2025,11,12),
+             slug=None,
+             category=None,
+             is_featured=False,
+             author=None,
+             cover_art=None,
+             tags=[],
+             status=1
+        )
+        template_string = '{% load blog_tags %}{% post %}'
+        template = Template(template_string)
+        context = Context({post_key: post})
+        rendered_html = template.render(context)
+        rendered = BeautifulSoup(rendered_html, "html.parser") 
+        self.assertTrue(len(post.title) > 0)
+        article_title = rendered.find(class_="article__title").text
+        self.assertEqual(article_title, post.title)
+        article_headline = rendered.find(class_="article__headline").text
+        self.assertEqual(article_headline, post.headline)
+        no_author = rendered.find(class_="article__author")
+        self.assertTrue(no_author == None)
+        no_author_name = rendered.find(class_="article__author-name")
+        self.assertTrue(no_author_name == None)
