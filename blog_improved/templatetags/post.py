@@ -38,8 +38,8 @@ class PostTag(Tag):
         post_context = context.get(BLOG_POST_CONTEXT_NAME, {})
         post = normalise_post_entry(post_context) 
         post = post if (post is not None) and (not isinstance(post, EmptyPost)) else post_context
-        #context[BLOG_POST_CONTEXT_NAME] = post or EmptyPost()
-        context[BLOG_POST_CONTEXT_NAME] = post     # Determine if a post is present and return if found
+        context[BLOG_POST_CONTEXT_NAME] = post    
+        # Determine if a post is present and return if found
         if isinstance(post, Post):
             self.kwargs["pre_fetched"] = IntegerValue(TemplateConstant(1))
             self.kwargs["slug"] = StringValue(TemplateConstant(post.slug))
