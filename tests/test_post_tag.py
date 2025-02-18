@@ -272,3 +272,20 @@ class PostTagTestCase(TestCase):
         self.assertTrue(no_author == None)
         no_author_name = rendered.find(class_="article__author-name")
         self.assertTrue(no_author_name == None)
+
+    def test_post_tag_as_variable_updates_context(self):
+        # Initial context
+        context = Context()
+        # Custom var 
+        custom_var = "custom_var"
+        # Template with the custom tag
+        template = Template("{% load blog_tags %}{% post id=1 as " + custom_var + " %}")
+
+        # Render the template
+        rendered_output = template.render(context)
+
+        # Check if the context was updated
+        self.assertIn(custom_var, context)
+        self.assertEqual(context[custom_var].title, "Listen To Your Customers. They Will Tell You All About Sales")
+        self.assertEqual(context[custom_var].author.username, "alice")
+
