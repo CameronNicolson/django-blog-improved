@@ -3,6 +3,7 @@ from django.urls import path, reverse
 from django.views.generic import TemplateView
 from datetime import datetime, timezone
 from classytags.exceptions import TooManyArguments
+from classytags.exceptions import BreakpointExpected
 from pathlib import Path
 from django.test import TestCase, override_settings
 from bs4 import BeautifulSoup
@@ -127,7 +128,7 @@ class PostTagTestCase(TestCase):
 
     def test_post_tag_multiple_id_args(self):
         template_string = '{% load blog_tags %}{% post id="12" 22 hi %}'
-        with self.assertRaises(TooManyArguments):
+        with self.assertRaises(BreakpointExpected):
             template = Template(template_string)
  
     def test_post_tag_multiple_template_calls(self):

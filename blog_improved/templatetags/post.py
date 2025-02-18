@@ -25,6 +25,8 @@ class PostTag(Tag):
 
     options = Options(
                 KeywordArgument("post_id", resolve=False, required=False),    
+                "as",
+                Argument("varname", required=False, resolve=False)
             )
 
     def __init__(self, parser, tokens):
@@ -35,6 +37,7 @@ class PostTag(Tag):
         return self.post_model
 
     def render(self, context):
+        self.kwargs.setdefault("varname", TemplateConstant(False))
         post_context = context.get(BLOG_POST_CONTEXT_NAME, {})
         post = normalise_post_entry(post_context) 
         post = post if (post is not None) and (not isinstance(post, EmptyPost)) else post_context
@@ -72,7 +75,7 @@ class PostTag(Tag):
         self.kwargs["pre_fetched"] = IntegerValue(TemplateConstant(0))          # Explicitly mark as not pre-fetched
         return super().render(context)
 
-    def render_tag(self, context, lookup, pre_fetched, post_id, slug):
+    def render_tag(self, context, lookup, pre_fetched, post_id, slug, varname):
         markup = get_env().blog_factory
         post = None
 
@@ -102,6 +105,10 @@ class PostTag(Tag):
                 author_url = author_profile.url
             if author:
                 author_name = author.get_display_name(cloak_name)
+            
+            if varname:
+                context[varname] = post
+                return ""
 
             html = markup.create_article(
                 title=post.title,
