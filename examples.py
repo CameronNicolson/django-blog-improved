@@ -8,6 +8,20 @@ import json
 BASE_DIR = Path(__file__).resolve().parent 
 EXAMPLES_DIR = BASE_DIR / "examples"
 
+def get_component_data(file):
+    component_json_path = ""
+    component_details = None
+
+    if file.is_file():
+        component_json_path = file.parent.parent / "component.json"
+
+    if component_json_path.is_file():
+        with open(component_json_path, "r", encoding="utf-8") as json_file:
+            component_details = json.load(json_file)
+
+    return component_details
+
+
 def find_and_parse_entrypoints(path: Path, settings: dict):
     """
     Recursively look for files named 'entrypoint.example' in the given path,
@@ -25,6 +39,7 @@ def find_and_parse_entrypoints(path: Path, settings: dict):
     # Recursively search for 'entrypoint.example' files
     for file in path.rglob("entrypoint.example"):
         if file.is_file():
+            component = get_component_data(file)
             try:
                 # Parse the JSON content of the file
                 with file.open('r', encoding='utf-8') as f:
@@ -35,6 +50,7 @@ def find_and_parse_entrypoints(path: Path, settings: dict):
                         name = path[1]
                         ident = str(group + name).lower()
                         entries[ident] = data
+                        entries[ident]["component"] = component
                         try:
                             group_name = data["group"]
                             groups[group_name].append(data)
