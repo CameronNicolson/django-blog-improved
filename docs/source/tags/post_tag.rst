@@ -2,13 +2,20 @@
 Post Tag
 =========
 
-.. code-block:: html
+.. code-block:: django
 
    {% post id=911 %}
 
 
 Retreive a single post as html.
 
+When to use this tag?
+---------------------
+Use the post tag when you need to show a single post.
+
+When not to use this tag?
+-------------------------
+When needing a list of posts, numerous post tags on a single page may be better accommodated by the :doc:`postlist_tag`.
 
 Options for the ``{% post %}`` tag
 -----------------------------------
@@ -57,7 +64,7 @@ Passing context data in a Django view:
 
 Using the context in a Django template:
 
-.. code-block:: html
+.. code-block:: django
 
     <!-- templates/single_post.html -->
 
@@ -93,7 +100,7 @@ Here’s how they can prefetch and supply the relevant post data:
 
 Then in you template code:
 
-.. code-block:: html
+.. code-block:: django
 
   <!-- templates/single_post.html -->
 
@@ -138,19 +145,11 @@ Consider a scenario where a website needs to display a scheduled maintenance mes
        return render(request, "maintenance_post.html", context)
 
 
-.. code-block:: html
+.. code-block:: django
 
    # templates/maintenance_post.html
    {% post %}
 
-
-When to use this tag?
----------------------
-Use the post tag when you need to show a single post.
-
-When not to use this tag?
--------------------------
-Repeatedly using the post tag in order create a list of posts is usually better accommodated by the _postlist tag.
 
 Displaying Author Names in Posts
 ---------------------------------
@@ -173,3 +172,26 @@ For a post to display the author's full name, all of the following conditions mu
 - The **``first_name`` and ``last_name`` fields** in the User model are both correctly filled.
 
 If any of these conditions are not met, the author's posts will **default to displaying their username** instead of their full name.
+
+Using "as" for Saving a Post Model in Context Data
+---------------------------------------------------
+Using the as keyword with a post-related tag allows you to efficiently save a Post model instance to the template context. This makes it easier to reference the post multiple times within the same template without executing additional lookups.
+
+.. code-block:: django
+
+   <!-- example-template.html -->
+   {% post as latest_post %}
+
+   <article>
+      <header>
+        <h2>{{ latest_post.title }}</h2>
+      </header>
+      <section>
+          <p>{{ latest_post.content }}</p>
+      </section>
+      <footer>
+          <p>Author: {{ latest_post.author }}</p>
+          <p>Published on: {{ latest_post.created_at }}</p>
+      </footer>
+   </article>
+
