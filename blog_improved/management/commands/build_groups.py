@@ -1,5 +1,7 @@
 from django.core.management import BaseCommand
-from blog_improved.models import BlogGroup, Post, UserProfile
+from blog_improved.posts.models import Post
+from blog_improved.authors.models import UserProfile
+from blog_improved.models import BlogGroup
 from blog_improved.conf import AUTHOR_DEFAULT_GROUP
 from django.contrib.auth.models import Permission
 

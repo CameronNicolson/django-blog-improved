@@ -8,13 +8,8 @@ from blog_improved.vendor.classytags.arguments import CommaSeperatableMultiKeywo
 from blog_improved.vendor.classytags.values import DateTimeValue
 from blog_improved.posts.posts import PostListQueryRequest, PostListQueryService
 from blog_improved.posts.post_list_markup import PostListMarkup
-from blog_improved.helpers.html_generator import BlogHtmlFactory, HtmlGenerator, create_blog_html_factory
 from blog_improved.posts.post_list_markup_presets import create_post_list_markup, layout_presets
-
-# Access the AppConfig instance
-config = apps.get_app_config("blog_improved")
-
-HTML_FACTORY_INSTANCE = create_blog_html_factory()
+from blog_improved.formatters.env import get_env
 
 class PostlistTag(Tag):
     name = "postlist"
@@ -109,7 +104,7 @@ class PostlistTag(Tag):
             posts = []
         markup = create_post_list_markup(name, posts, 
                                          layout, 
-                                         HTML_FACTORY_INSTANCE)
+                                         get_env().blog_factory)
         markup.build_grid()
         markup.generate_html(layout_type=layout_format)
         html = markup.get_rendered()

@@ -2,6 +2,19 @@ from __future__ import annotations  # Enable forward references
 from typing import Any, Callable, Union, Dict, List, Optional
 from dataclasses import dataclass
 
+
+class SgmlComponent:
+    def __init__(self, 
+        tag:str = None,
+        attrs:Optional[SgmlAttributes] = None,
+        tag_omissions:str = None,
+        level_range: Optional[range] = None):       
+        
+        self.tag = tag
+        self.attrs = attrs
+        self.tag_omissions = tag_omissions
+        self.level_range = level_range
+
 class LiteralStringValue:
     def __init__(self, components=None):
         """

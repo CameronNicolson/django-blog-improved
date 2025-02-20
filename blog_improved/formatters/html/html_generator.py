@@ -1,6 +1,4 @@
 import copy
-from django.template.base import Node, NodeList, TextNode
-from django.template.context import Context
 from typing import Any, Callable, Union, Dict, List, Optional
 from abc import ABC, abstractmethod 
 from datetime import datetime as std_datetime
@@ -15,6 +13,9 @@ from blog_improved.utils.time import convert_to_iso8601
 from blog_improved.utils.urls import starts_with_uri    
 from blog_improved.utils.math import RangeClamper
 from blog_improved.presentation.presentation_strategy import PresentationStrategy, Rect
+from blog_improved.presentation.inline_presentation import InlinePresentation
+from ..markup import MarkupFactory, MarkupNode, CaseSensitivity
+from blog_improved.sgml.sgml import SgmlComponent
 
 
 @strip_whitespace
@@ -35,70 +36,59 @@ def uri_processor(value):
 def CDATA(value):
     return value
 
-class SgmlComponent:
-    def __init__(self, 
-        tag:str = None,
-        attrs:Optional[SgmlAttributes] = None,
-        tag_omissions:str = None,
-        level_range: Optional[range] = None):       
-        
-        self.tag = tag
-        self.attrs = attrs
-        self.tag_omissions = tag_omissions
-        self.level_range = level_range
+class TextNode(MarkupNode):
+    case_sensitivity = CaseSensitivity.INSENSITIVE
+    markup_format = "plaintext"
+    children = None
 
-class SgmlNode(Node, ABC):
-    def __init__(self, nodelist: NodeList=None):
-        self.nodelist = nodelist or NodeList()  # Initialize the nodelist
+    @property
+    def parent(self):
+        return None
+
+    @parent.setter
+    def parent(self, node):
+        return
+
+    def __init__(self, text):
+        self._text = text
     
-    @abstractmethod
-    def add_child(self, node):
-        raise NotImplemented()
+    def render(self) -> str:
+        return self._text
 
-class HtmlNode(SgmlNode):
+class HtmlNode(MarkupNode):
     node_counter = 0
+    markup_format = "html"
+    case_sensitivity = CaseSensitivity.INSENSITIVE
 
     def __init__(self, 
                  name: str,
                  component: SgmlComponent,
-                 attributes: Optional[SgmlAttributes] = None,
                  **kwargs):
         super().__init__()
         self.component = component
+        self._children:List[HtmlNode] = []
         self.child_counts = dict()
+        self._parent = None
    
     @property
     def attrs(self):
         return self.component.attrs
+   
+    @property
+    def children(self):
+        return self._children 
 
-    def add_child(self, node:Node):
-        # comply with the occurence policy
-        #occurrence_rule = self.component.definition.occurence or "*"
-       # current_count = self.child_counts.get(node.name, 0)
+    @property
+    def parent(self):
+        return self._child
 
-        #num_occurence = self.occurence.get(node.name, None)
-        # Enforce occurrence rules
-        #if occurrence_rule == "?" and current_count >= 1:
-        #    raise ValueError(f"Element '{node.name}' can only appear once.")
-        #elif occurrence_rule == "+" and current_count == 0:
-        #    pass  # Adding first occurrence is valid
-        #elif occurrence_rule == "+" and current_count >= 1:
-        #    pass  # Adding repeated occurrences is valid
-        #elif occurrence_rule == "*" and current_count >= 0:
-        #    pass  # Adding any number of occurrences is valid
-        #else:
-        #    raise ValueError(f"Invalid occurrence '{occurrence_rule}' for '{node.name}'.")
-
-        # self.child_counts[node.name] = current_count + 1
-        self.nodelist.append(node)
-    
-    def get_style_class(self) -> list[str]:
-        classes = []
-        if self.attributes:
-          classes = self.attributes.get("class", None)
-        if classes:
-            return classes.get_as_list()
-        return classes
+    @parent.setter
+    def parent(self, node):
+        self._parent = node
+  
+    def add_child(self, child):
+        self._children.append(child)
+        child.parent = self
 
     def open_tag(self):
         # clean spaces between chars
@@ -115,26 +105,33 @@ class HtmlNode(SgmlNode):
             return self.component.tag
         return None
 
-    def render(self, context: Context=Context(), open_tag=True, end_tag=True) -> str:
+    def render(self) -> str:
         """Render the HTML node and its children recursively"""
-        if open_tag:
-            open_tag = self.open_tag() 
-        else:
-            open_tag = ""
+        open_tag = self.open_tag() 
         if self.component.attrs:
             attributes = format_attributes(self.component.attrs)
         else:
             attributes = ""
-        if end_tag:
-            end_tag = self.end_tag()
-        else:
-            end_tag = ""
-        context = Context(dict_=None, autoescape=True, use_l10n=None, use_tz=None)
 
-        children = "".join(child.render(Context({})) for child in self.nodelist)
-        #children = self.nodelist.render(context)
+        end_tag = self.end_tag()
+        
+        children_strings = []  # List to store the rendered children as strings
+          
+        for child in self.children:           
+            rendered_child = child.render() # Get the rendered output (could be an object)
+            children_strings.append(str(rendered_child))  # Convert to string and add to list
 
+        children = "".join(children_strings)
+        
+        case_sensitive = lambda s: s 
+        if self.compare_case(self.component.tag):
+            case_sensitive = lambda s: s.lower()
+        open_tag = case_sensitive(open_tag)
+        end_tag = case_sensitive(open_tag)
+        attributes = case_sensitive(attributes)
+        
         return f"<{open_tag}{attributes}>{children}</{end_tag}>"
+            
 
 class SgmlGenerator(ABC):
 
@@ -142,7 +139,7 @@ class SgmlGenerator(ABC):
     def create_node(self, 
                    tag_type: str, 
                    attributes: Optional[Dict[str, Any]] = None,
-                   **kwargs) -> SgmlNode:
+                   **kwargs) -> MarkupNode:
         """Create a node with the appropriate component"""
         raise NotImplemented()
    
@@ -279,164 +276,12 @@ def format_attributes(attrs: Optional[Dict[str, Any]] = None) -> str:
     return " " + " ".join(f'{k}="{v}"'.replace("\'", "")  for k, v in attrs.items() if v is not None)
 
 
-class MarkupFactory(ABC):
-    @abstractmethod
-    def assign_identifier(self, ident:str):
-        """Applies an ID attribute to the SGML element."""
-        raise NotImplementedError("Subclasses must implement this method.")
- 
-    @abstractmethod
-    def assign_class(self, element: SgmlComponent, classname: str):
-        raise NotImplementedError("Subclasses must implement this method.")
-
-    @abstractmethod    
-    def create_list(self, items):
-        pass
-    
-    @abstractmethod
-    def create_article(self, title: str, headline: str, author: str, date: str, body_content: str) -> SgmlNode:
-        pass
-
-    @abstractmethod
-    def create_node(self, tag_type: str, attributes: Optional[Dict[str, Any]] = None, **kwargs) -> SgmlNode:
-        pass
-
-    @abstractmethod
-    def move_position(self, sgml_element, pos: Rect):
-        """Applies platform-specific presentation attributes to the SGML element."""
-        raise NotImplementedError("Subclasses must implement this method.")
- 
-
-class InlinePresentationStrategy(PresentationStrategy):
-    """
-    A strategy that applies basic inline styles directly.
-    """
-
-    def move_position(self, sgml_element, pos: Rect):
-        width = pos.width
-        if width:
-            current_style = sgml_element.attrs.get("style", "")
-            sgml_element.attrs["style"] = f"{current_style} width: {pos.width}%;"
-
-class CssPresentation(PresentationStrategy):
-    def move_position(self, sgml_element, pos: Rect) -> SgmlComponent:
-        return sgml_element
-
-class CssElementModifier(CssPresentation): 
-    def __init__(self, css_presentation):
-        self._presentation = css_presentation
-
-    def move_position(self, sgml_element, pos: Rect) -> SgmlComponent:
-        return self._presentation.move_position(sgml_element, pos)
-
-class WidthClassName(CssElementModifier):
-    """
-    A strategy that applies classname (based on numeric width)
-    """
-
-    def __init__(self, presentation, width_scale: dict[float, str]):
-        super().__init__(presentation)  # Call parent constructor
-        self.width_scale = width_scale
-
-    def move_position(self, sgml_element, pos: Rect) -> SgmlComponent:
-        element = self._presentation.move_position(sgml_element, pos)
-        # Possibly find the matching class if width is given:
-        chosen_class = element.attrs["class"] or ""
-        width = pos.width
-        for threshold, classname in self.width_scale.items():
-            # pick the nearest threshold or however your matching logic works
-            if width <= threshold:
-                chosen_class += classname
-                break
-
-        if bool(chosen_class):
-            element.attrs["class"] = f"{chosen_class}"
-        return element
-
-class GridClassName(CssElementModifier):
-    """
-    A strategy that applies classname (based on numeric width)
-    """
-
-    def __init__(self, presentation, grid_config, width_scale, clamp):
-        super().__init__(presentation)  # Call parent constructor
-        self._width_scale = width_scale
-        self._grid_config = grid_config
-        self._clamp = clamp
-
-    def _resolve_grid_class(self, role, size):
-        """
-        Resolve a grid class for a given role (e.g., row, column) and scale.
-
-        :param role: The grid role to resolve (e.g., "row" or "column").
-        :param scale: The scale to apply for roles that support it (e.g., column widths).
-        :return: A string representing the CSS class.
-        """
-        if role not in self._grid_config:
-            raise ValueError(f"Unknown grid role: {role}")
-
-        if size is None:  # Roles like 'row' may not require scale
-            return self._grid_config[role]
-
-        width_str = self._find_width(size)
-        if not width_str:
-            raise ValueError(f"Invalid size: {size}")
-        return f"{self._grid_config[role]}-{width_str}"
-
-    def _find_width(self, value):
-        """
-        Find the nearest width class for a given value, with negotiation
-        for out-of-range values.
-
-        :param value: The input size value.
-        :return: The matching width class or None.
-        """
-        if not isinstance(value, (int, float, complex)):
-            raise ValueError("Expected a number type")
-
-        # Adjust value if it's beyond the highest scale
-        min_value = min(self._width_scale.keys()) 
-        max_value = max(self._width_scale.keys())
-        negotiated_value = self._clamp.negotiate(value, min_value, max_value)
-
-        if negotiated_value is None:
-            return None
-
-        # Find the nearest width class for the negotiated value
-        prev = None
-        for i, width in enumerate(sorted(self._width_scale.keys())):
-            if i == 0:
-                prev = width
-            if negotiated_value == width:
-                return self._width_scale[width]
-            elif negotiated_value >= prev and negotiated_value < width:
-                return self._width_scale[prev]
-            prev = width
-        return self._width_scale[max_value]  # Fallback to the max class
- 
-
-    def _get_column_class(self, value):
-        column_str = self._grid_config.get("column", "")
-        width_str = self._find_width(value)
-        width_str = "-" + width_str if width_str else ""  
-        return column_str + width_str
-
-    def move_position(self, sgml_element, pos: Rect) -> SgmlComponent:
-        element = self._presentation.move_position(sgml_element, pos)
-        # Possibly find the matching class if width is given:
-        column_cls = self._resolve_grid_class("column", pos.width)
-        chosen_cls = element.attrs["class"] or ""
-        chosen_cls += f"{column_cls}"
-        element = sgml_element.attrs["class"] = chosen_cls
-        return element
-
-
 class BlogHtmlFactory(MarkupFactory):
     def __init__(self, 
                 markup_generator: HtmlGenerator,
                 presentation_strategy: PresentationStrategy = None):
         self._markup = markup_generator
-        self._presentation = presentation_strategy or InlinePresentationStrategy()
+        self._presentation = presentation_strategy or InlinePresentation()
 
     def assign_identifier(self, element: SgmlComponent, 
                           ident: str):
@@ -466,7 +311,7 @@ class BlogHtmlFactory(MarkupFactory):
             list_node.append(list_item)
         return list_node
 
-    def create_article(self, title: str, headline: str, author: str, author_homepage:str, date: std_datetime, body_content: str, category:str, featured:bool, article_url:str) -> HtmlNode:
+    def create_article(self, title: str, headline: str, author: str, author_homepage:str, date: std_datetime, body_content: str, category:str, featured:bool, article_url:str, content:str) -> HtmlNode:
         from blog_improved.utils.sgml import bool_wrapper
 
         article_node = self._markup.create_node("article", attributes={"class": "article"})
@@ -488,11 +333,12 @@ class BlogHtmlFactory(MarkupFactory):
         meta_node = self._markup.create_node("container", attributes={"class": "article__meta"})
 
         if author: 
-            author_node = self._markup.create_node("address", attributes={"class": "article__author"})
-            author_text_node = TextNode(f"{author}")
-            author_text_node = bool_wrapper(self._markup, author_homepage, "hyperlink", {"href": author_homepage}, author_text_node)
-
-            author_node.add_child(author_text_node)
+            author_node = self._markup.create_node("container", attributes={"class": "article__author"})
+            author_name_node = self._markup.create_node("inline_container", attributes={"class": "article__author-name"})
+            author_name_text_node = TextNode(f"{author}")
+            
+            author_name_node.add_child(author_name_text_node)
+            author_node.add_child(author_name_node)
             meta_node.add_child(author_node)
 
         if date:
@@ -512,15 +358,22 @@ class BlogHtmlFactory(MarkupFactory):
             except:
                 category_inline_container = self._markup.create_node("inline_container", {"class": "article__category"})
                 category_inline_container.add_child(category_text_node)
+                category_text_node = category_inline_container
+
             meta_node.add_child(divider_text_node)
             context_node = self._markup.create_node("inline_container", {"class": "visually-hidden"})
             context_node.add_child(TextNode("In the category:"))
             meta_node.add_child(context_node)
             meta_node.add_child(category_text_node)
 
-        if len(meta_node.nodelist) > 0:
+        if len(meta_node.children) > 0:
             article_node.add_child(meta_node)
 
+        if content:
+            content_node = self._markup.create_node("container", attributes={"class": "article__content"})
+            content_node.add_child(TextNode(content))
+            article_node.add_child(content_node)
+ 
         return article_node
 
     def create_node(self, tag_type: str, attributes: Optional[Dict[str, Any]] = None, **kwargs) -> HtmlNode:

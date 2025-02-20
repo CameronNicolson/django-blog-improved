@@ -1,5 +1,5 @@
 from typing import Callable, Optional
-from blog_improved.helpers.html_generator import SgmlComponent, make_standard_element
+from blog_improved.formatters.html.html_generator import SgmlComponent, make_standard_element
 from blog_improved.sgml import ElementDefinition 
 from blog_improved.sgml.sgml_attributes import SgmlAttributeEntry, SgmlAttributes
 from blog_improved.themes.settings import get_theme

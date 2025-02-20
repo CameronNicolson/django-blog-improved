@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.db.models.query import QuerySet
-from blog_improved.models import Post, Tag
+from blog_improved.posts.models import Post, Tag
 from blog_improved.query_request.query import QueryRequest, LimitQueryRequest, FilterQueryRequest
 
 class TestQueryRequest(TestCase):

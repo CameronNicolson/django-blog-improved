@@ -20,7 +20,7 @@ from blog_improved.sgml import (
     SgmlAttributes
 )
 
-from blog_improved.helpers.html_generator import id_processor, class_processor
+from blog_improved.formatters.html.html_generator import id_processor, class_processor
 
 def DATETIME(value):
     # Validate as ISO datetime

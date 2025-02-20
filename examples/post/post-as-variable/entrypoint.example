@@ -1,0 +1,6 @@
+{
+  "name": "Post As Variable",
+  "description": "Save a post to the template's context.",
+  "group": "post",
+  "path": "post/post-as-variable"
+}

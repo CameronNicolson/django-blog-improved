@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %} Examples Post {% endblock title %}
+{% load blog_tags %}
+
+{% block content %}
+<div class="container">
+<pre class="pre">
+<code class="code">
+  &#123;&#37; post 3 as foo &#37;&#125;
+
+  &lt;b&gt;
+    &#123;&#123; foo.category &#125;&#125;
+  &lt;/b&gt;
+  &lt;br&gt;
+  &#123;&#123; foo.title &#125;&#125;
+</code>
+</pre>
+<div id="preview-solitary-post" class="pt-4 pb-5 mb-3">
+{% post id=3 as foo %}
+<b>
+{{ foo.category }}
+</b>
+<br>
+{{ foo.title }}
+</div>
+{% endblock %}

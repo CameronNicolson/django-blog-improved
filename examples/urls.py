@@ -1,26 +1,82 @@
+from datetime import datetime
 from django.contrib import admin
+from blog_improved.authors.models import PostAuthor
+from taggit.models import Tag
 from django.urls import path, re_path
+from django.http import Http404
 from django.views.generic import RedirectView, TemplateView
 from django.http import HttpResponse, Http404
 from django.shortcuts import render
-from django.conf import settings 
+from django.conf import settings
+from blog_improved.constants import BLOG_POST_CONTEXT_NAME
 
 from django.http import Http404
 
 groups = getattr(settings, "EXAMPLE_GROUPS", [])
 examples = getattr(settings, "EXAMPLES", [])
 
+prefetch_post = {BLOG_POST_CONTEXT_NAME: {"id": 3, "title": "Jim E Brown's new album Shame", "headline": "Introducing Shame--the latest album from 19-year-old pop sensation Jim E Brown.", "author": PostAuthor(**{"id": 1, "username": "PaulMorley", }), "category": Tag(pk=1, name="music"), "published_on": datetime.fromisoformat("2025-01-14T15:06:06.209950") }}
+
+
+def inject_slug(append_to, slug_key):
+    index = 0
+    slugs = ["django-reinhardt", "sleep"]
+    slug_key = slug_key or "slug"
+    append_to = append_to or "slug"
+
+    def _func(request, context, *args, **kwargs):
+        # Ensure request starts with slug="post"
+        if not hasattr(request, "slug"):
+            request.slug = "post"
+
+        # Append or override slug with cycling values
+        nonlocal index
+        request.slug = slugs[index]
+        print(f"Injected slug: {request.slug}")  # Debugging output
+
+        # Cycle through slugs
+        index = (index + 1) % len(slugs)
+        context.update({f"{append_to}": {f"{slug_key}": request.slug}})
+        return (request, context)
+
+    return _func
+
+def inject_context(context):
+    new_data = context
+    def _func(request, context):
+        context.update(new_data)
+        return (request, context)
+    return _func
+
+MIXINS = {"postpost": (inject_slug(BLOG_POST_CONTEXT_NAME, "slug"),), "postpost-prefetched": (inject_context(prefetch_post),)}
+
+def apply_additional_mixins(ident, request, context, *args, **kwargs):
+    try:
+        mixins = MIXINS[ident]
+    except:
+        return request, context
+    for mixin in mixins:
+        request, context = mixin(request, context, *args, **kwargs)
+    return request, context
+
 def dynamic_template_view(request, *args, **kwargs):
     # Get the last part of the URL and construct the template name
     example_group = kwargs["group_name"]
     example_name = kwargs["example_name"]
     ident = str(example_group + example_name).lower()
-    example_data = examples[ident]
+    try:
+        example_data = examples[ident]
+    except KeyError:
+        raise Http404
     title = example_data["name"]
     template_name = f"{example_name}.html"
+    context = {}
+    request, context = apply_additional_mixins(ident, request, context)
     try:
-        return render(request, template_name, context={"title": title, **example_data, "breadcrumbs": (("Home", "/"), (f"{example_group}", f"/{example_group}/"),
-            (f"{title}", None))})
+        example_data = {"title": title, **example_data, "breadcrumbs": (("Home", "/"), (f"{example_group}", f"/{example_group}/"),
+            (f"{title}", None))}
+        context.update(example_data)
+        return render(request, template_name, context=context)
     except Exception as e:
         raise e
 

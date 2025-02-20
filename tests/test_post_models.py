@@ -1,14 +1,13 @@
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth import get_user_model
 from django.test import TestCase, Client, RequestFactory
-from blog_improved.models import Post, User, Tag
+from blog_improved.posts.models import Post, User, Tag
 from django.urls import reverse
 from django.db import IntegrityError
 from pathlib import Path
 import yaml
 
 DATA_DIR = Path.cwd() / "tests" / "fixtures"
-
 
 class TestPosts(TestCase):
     fixtures = ["groups.yaml", "users.yaml", "media.yaml", "tags.yaml", "posts.yaml"]
@@ -132,7 +131,7 @@ class TestPosts(TestCase):
             post.get_author_url(), 
             "/author/journalist" 
         )
-
+    
     def test_author_url_missing(self):
         post = Post.objects.get(slug="15-tips-for-mission-success")
         alice = get_user_model().objects.get(username="alice")

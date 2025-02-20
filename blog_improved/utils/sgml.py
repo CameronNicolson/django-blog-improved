@@ -1,13 +1,13 @@
-from django.template.base import Node
-from blog_improved.helpers.html_generator import SgmlGenerator
+from blog_improved.formatters.html.html_generator import SgmlGenerator
+from blog_improved.formatters.markup import MarkupNode
 
 def bool_wrapper(
     sgml: SgmlGenerator,
     condition: bool,
     wrapper_node_name: str,
     attributes: dict,
-    append_to: Node
-) -> Node:
+    append_to: MarkupNode
+) -> MarkupNode:
     """
     Wraps a given Node with another Node based on a boolean condition.
 

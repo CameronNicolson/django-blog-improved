@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %} Examples Post by Id {% endblock title %}
+{% load blog_tags %}
+
+{% block content %}
+<div class="container">
+<pre class="pre">
+<code class="code">
+  &#123;&#37; post id="12" &#37;&#125;
+</code>
+</pre>
+<div id="preview-solitary-post-by-id" class="pt-4">
+{% post id="12" %}
+</div>
+{% endblock %}

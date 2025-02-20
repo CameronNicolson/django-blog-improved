@@ -2,7 +2,7 @@ from django.contrib.syndication.views import Feed
 from django.template.defaultfilters import truncatewords
 from django.urls import reverse
 
-from .models import Post
+from blog_improved.posts.models import Post
 
 class LatestPostsFeed(Feed):
     title = "My blog"

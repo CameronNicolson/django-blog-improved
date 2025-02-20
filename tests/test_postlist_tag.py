@@ -73,7 +73,6 @@ class PostlistTagTestCase(TestCase):
         self.assertTrue(rendered_list is not None)
         # Count the number of <li> elements within the <ul>
         expected_post_count = PostlistTagTestCase.count_post_items(rendered_list)
-        print(rendered_list)
         self.assertEqual(expected_post_count, 9)
  
     def test_postlisttag_undefined_layout(self):
@@ -163,12 +162,9 @@ class PostlistTagTestCase(TestCase):
         # Check h1, h2, and address content
         self.assertEqual(rendered_article.find('h2').text, expected_article.find('h2').text)
         self.assertEqual(rendered_article.find('p').text, expected_article.find('p').text)
-        expected_author = expected_article.find('address').find('a')
-        rendered_author = rendered_article.find('address').find('a')
-        self.assertEqual(rendered_author.text, expected_author.text)
-        print(rendered_author)
-        print("author")
-        self.assertEqual(rendered_author["href"], expected_author["href"])
+        rendered_author = rendered_article.find(class_="article__author-name").text
+        expected_author = expected_article.find(class_='article__author-name').text
+        self.assertEqual(rendered_author, expected_author)
 
     def test_postlisttag_featured_and_ordinary_posts(self):
         expected_html = self.load_fixture("postlist_mix_feature_ordinary_posts.html")

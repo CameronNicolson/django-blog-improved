@@ -10,19 +10,26 @@
 			<section id="example-refs" class="pt-4"> 
 			<div class="row">
 				<div class="col-5">
-					<h3>Examples</h3>
-					<h4 class="h6 font-weight-light">All examples</h4>
+					<h3 class="mb-4">Examples</h3>
 				{% for group_name, examples in examples.items %}
-			<ul class="px-0 pt-2" style="list-style: none;">
+
+		  {% ifchanged examples.0.component.component_type %} 
+		  <h4 class="h5 mb-3 text-body-tertiary">{{ examples.0.component.component_type|capfirst }}</h4>
+    {% endifchanged %}
+	
+				<h5 class="h6 pb-0 mb-0">{{ group_name|capfirst }}</h5>
+	
+			<ul class="px-0 pt-2 mb-3" style="list-style: none;">
 				{% for example in examples %}
-				<li>
-					<a href="{{ example.path }}" />
+
+  		<li class="pb-1">
+					<a class="link-underline link-underline-opacity-0" href="{{ example.path }}" />
 					{{ example.name }}
 					</a>
 				</li>
 				{% endfor %}
-				{% endfor %}
 					</ul>
+				{% endfor %}
 				</div>
 			</div>
 		</div>

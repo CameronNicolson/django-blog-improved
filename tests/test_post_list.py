@@ -1,7 +1,7 @@
 from blog_improved.posts.posts import PostList 
 from blog_improved.posts.post_list_markup import PostListMarkup
-from blog_improved.helpers.html_generator import BlogHtmlFactory, HtmlGenerator, make_standard_element 
-from blog_improved.models import Post
+from blog_improved.formatters.html.html_generator import BlogHtmlFactory, HtmlGenerator, make_standard_element 
+from blog_improved.posts.models import Post
 from django.test import TestCase
 from bs4 import BeautifulSoup
 
