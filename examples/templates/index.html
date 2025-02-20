@@ -14,7 +14,7 @@
 				{% for group_name, examples in examples.items %}
 
 		  {% ifchanged examples.0.component.component_type %} 
-		  <h4 class="h5 mb-3 text-body-tertiary"> - {{ examples.0.component.component_type|capfirst }} -</h4>
+		  <h4 class="h5 mb-3 text-body-tertiary">{{ examples.0.component.component_type|capfirst }}</h4>
     {% endifchanged %}
 	
 				<h5 class="h6 pb-0 mb-0">{{ group_name|capfirst }}</h5>
