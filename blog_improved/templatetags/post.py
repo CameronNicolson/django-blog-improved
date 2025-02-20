@@ -18,6 +18,8 @@ from blog_improved.authors.models import cast_user_to_postauthor, PostAuthor
 from blog_improved.posts.posts import EmptyPost, Post
 from blog_improved.utils.normalise import normalise_post_entry
 from blog_improved.constants import BLOG_POST_CONTEXT_NAME
+from blog_improved.authors.helpers import get_author_details
+
 
 class PostTag(Tag):
     name = "post"
@@ -76,6 +78,8 @@ class PostTag(Tag):
         return super().render(context)
 
     def render_tag(self, context, lookup, pre_fetched, post_id, slug, varname):
+        """Render the post into HTML or update context if varname is provided."""
+
         markup = get_env().blog_factory
         post = None
 
@@ -92,20 +96,8 @@ class PostTag(Tag):
                     f"{sys.modules[__name__].__name__} {self.__class__.__name__}: No matching records found for {self.model} lookup '{lookup}'."
                  )
         try:
-            cloak_name = True
-            author = None
-            author_name = None
-            author_profile = False
-            author_url = None
-            if post.author:
-                author = cast_user_to_postauthor(post.author)
-                author_profile = getattr(post.author, "userprofile", None)
-            if author_profile:
-                cloak_name = True if author_profile.status == Status.PRIVATE.value else False
-                author_url = author_profile.url
-            if author:
-                author_name = author.get_display_name(cloak_name)
-            
+            author_name, author_url = get_author_details(post)
+
             if varname:
                 context[varname] = post
                 return ""
