@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Post Tag &#8212; Documentation Django Blog Improved 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Postlist tag" href="postlist_tag.html" />
+    <link rel="prev" title="Reference" href="../reference.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="post-tag">
+<h1>Post Tag<a class="headerlink" href="#post-tag" title="Link to this heading">¶</a></h1>
+<div class="highlight-django notranslate"><div class="highlight"><pre><span></span><span class="cp">{%</span> <span class="k">post</span> <span class="nv">id</span><span class="o">=</span><span class="m">911</span> <span class="cp">%}</span>
+</pre></div>
+</div>
+<p>Retreive a single post as html.</p>
+<section id="when-to-use-this-tag">
+<h2>When to use this tag?<a class="headerlink" href="#when-to-use-this-tag" title="Link to this heading">¶</a></h2>
+<p>Use the post tag when you need to show a single post.</p>
+</section>
+<section id="when-not-to-use-this-tag">
+<h2>When not to use this tag?<a class="headerlink" href="#when-not-to-use-this-tag" title="Link to this heading">¶</a></h2>
+<p>When needing a list of posts, numerous post tags on a single page may be better accommodated by the <a class="reference internal" href="postlist_tag.html"><span class="doc">Postlist tag</span></a>.</p>
+</section>
+<section id="options-for-the-post-tag">
+<h2>Options for the <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">post</span> <span class="pre">%}</span></code> tag<a class="headerlink" href="#options-for-the-post-tag" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p id="post-tag-id-option"><cite>id</cite> (default: “”): Specifies the id of a given post used by its associated Post model. The id in most traditional django environments is the database index key.</p>
+</li>
+</ul>
+</section>
+<section id="finding-posts-via-post-tag-s-context">
+<h2>Finding posts via <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">post</span> <span class="pre">%}</span></code> tag’s context<a class="headerlink" href="#finding-posts-via-post-tag-s-context" title="Link to this heading">¶</a></h2>
+<p>Each post is typically resolved using a unique identifier derived from its title, a process known as slugification (or slugging) in app development.</p>
+<p>Blog Improved leverages slugs to serve as a human-readable alternative to post IDs, making posts easier to recognise and use when writing database queries. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Post</span><span class="p">:</span>
+  <span class="nb">id</span>     <span class="o">=</span>      <span class="mf">57e311</span><span class="n">b7</span><span class="o">-</span><span class="mi">68</span><span class="n">ca</span><span class="o">-</span><span class="mi">44</span><span class="n">b7</span><span class="o">-</span><span class="n">b30e</span><span class="o">-</span><span class="mf">9959e344</span><span class="n">c9e1</span><span class="p">,</span>
+  <span class="n">title</span>  <span class="o">=</span>      <span class="n">Happy</span> <span class="n">Birthday</span> <span class="n">Claude</span><span class="p">,</span>
+  <span class="n">slug</span>   <span class="o">=</span>      <span class="n">happy</span><span class="o">-</span><span class="n">birthday</span><span class="o">-</span><span class="n">claude</span>
+</pre></div>
+</div>
+<p>Notice in the example above that Claude’s birthday post is easier to remember by its slug value rather than its ID.</p>
+</section>
+<section id="how-to-use-a-slug">
+<h2>How to use a slug<a class="headerlink" href="#how-to-use-a-slug" title="Link to this heading">¶</a></h2>
+<p>If the post tag’s <a class="reference internal" href="#post-tag-id-option"><span class="std std-ref">option id</span></a> is not provided, a <strong>slug value</strong> must be passed to the renderer via context data to locate the corresponding post.</p>
+<p>Passing context data in a Django view:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># &lt;your-app-name&gt;/views.py</span>
+
+<span class="kn">from</span> <span class="nn">blog_improved.constants</span> <span class="kn">import</span> <span class="n">BLOG_POST_CONTEXT_NAME</span>
+<span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span>
+
+<span class="k">def</span> <span class="nf">my_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">BLOG_POST_CONTEXT_NAME</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;slug&quot;</span><span class="p">:</span> <span class="s2">&quot;happy-birthday-claude&quot;</span><span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;single_post.html&quot;</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Using the context in a Django template:</p>
+<div class="highlight-django notranslate"><div class="highlight"><pre><span></span><span class="x">&lt;!-- templates/single_post.html --&gt;</span>
+
+<span class="cp">{%</span> <span class="k">post</span> <span class="cp">%}</span>
+</pre></div>
+</div>
+<p>If both a post’s ID and slug are passed to the context data, the ID value takes precedence over the slug.</p>
+</section>
+<section id="supplying-post-tag-with-prefetched-data">
+<h2>Supplying <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">post</span> <span class="pre">%}</span></code> Tag with Prefetched Data<a class="headerlink" href="#supplying-post-tag-with-prefetched-data" title="Link to this heading">¶</a></h2>
+<p>Prefetching is the process of providing post data before the template rendering step takes place, bypassing the need for a lookup during template execution.</p>
+<p>To supply a prefetched post, include a structured post object in Django’s context. By default, the entry is typically named “blog_improved_post”. However, to avoid potential name conflicts, we recommend using the constant setting BLOG_POST_CONTEXT_NAME.</p>
+<section id="example-prefetching-for-an-event-website">
+<h3>Example: Prefetching for an Event Website<a class="headerlink" href="#example-prefetching-for-an-event-website" title="Link to this heading">¶</a></h3>
+<p>Consider an eating competition that sponsors its events online. Their website features an upcoming event using a view that renders a post through the {% post %} template tag.</p>
+<p>Here’s how they can prefetch and supply the relevant post data:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># &lt;your-app-name&gt;/views.py</span>
+
+<span class="kn">from</span> <span class="nn">blog_improved.constants</span> <span class="kn">import</span> <span class="n">BLOG_POST_CONTEXT_NAME</span>
+<span class="kn">from</span> <span class="nn">blog_improved.posts.models</span> <span class="kn">import</span> <span class="n">Post</span>
+<span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span>
+
+<span class="k">def</span> <span class="nf">events_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+   <span class="n">next_event</span> <span class="o">=</span> <span class="n">Post</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">title__icontains</span><span class="o">=</span><span class="s2">&quot;hot dog&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;-published_on&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+   <span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="n">BLOG_POST_CONTEXT_NAME</span><span class="p">:</span> <span class="n">next_event</span><span class="p">}</span>
+   <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;single_post.html&quot;</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then in you template code:</p>
+<div class="highlight-django notranslate"><div class="highlight"><pre><span></span><span class="x">&lt;!-- templates/single_post.html --&gt;</span>
+
+<span class="cp">{%</span> <span class="k">post</span> <span class="cp">%}</span>
+</pre></div>
+</div>
+<p>In this example, prefetching allowed the event organisers to use a custom queryset sorted by recent dates. The {% post %} tag then processed the prefetched data, ensuring efficient rendering with the desired post content.</p>
+</section>
+<section id="example-prefetching-for-dynamic-posts">
+<h3>Example: Prefetching for dynamic posts<a class="headerlink" href="#example-prefetching-for-dynamic-posts" title="Link to this heading">¶</a></h3>
+<p>The {% post %} tag can also render a dynamically created <cite>Post</cite> object without retrieving it from the database. This can be useful for displaying temporary announcements, system messages, or content generated on the fly.</p>
+<p>Consider a scenario where a website needs to display a scheduled maintenance message:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># &lt;your-app-name&gt;/views.py</span>
+
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">blog_improved.posts.posts</span> <span class="kn">import</span> <span class="n">Post</span>
+<span class="kn">from</span> <span class="nn">blog_improved.constants</span> <span class="kn">import</span> <span class="n">BLOG_POST_CONTEXT_NAME</span>
+<span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span>
+
+<span class="k">def</span> <span class="nf">maintenance_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+     <span class="n">Post</span><span class="p">(</span>
+             <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Maintenance Underway&quot;</span><span class="p">,</span>
+             <span class="n">headline</span><span class="o">=</span><span class="s2">&quot;Maintenance is scheduled to end 7AM PST&quot;</span><span class="p">,</span>
+             <span class="n">content</span><span class="o">=</span><span class="s2">&quot;We apologise for any inconvenience.&quot;</span><span class="p">,</span>
+             <span class="n">published_on</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2025</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">),</span>
+             <span class="n">created_on</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2025</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">),</span>
+             <span class="n">updated_on</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2025</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">),</span>
+             <span class="n">slug</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">is_featured</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+             <span class="n">author</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">cover_art</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">tags</span><span class="o">=</span><span class="p">[],</span>
+             <span class="n">status</span><span class="o">=</span><span class="mi">1</span>
+    <span class="p">)</span>
+
+    <span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="n">BLOG_POST_CONTEXT_NAME</span><span class="p">:</span> <span class="n">maintenance_post</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;maintenance_post.html&quot;</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-django notranslate"><div class="highlight"><pre><span></span><span class="x"># templates/maintenance_post.html</span>
+<span class="cp">{%</span> <span class="k">post</span> <span class="cp">%}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="displaying-author-names-in-posts">
+<h2>Displaying Author Names in Posts<a class="headerlink" href="#displaying-author-names-in-posts" title="Link to this heading">¶</a></h2>
+<p>When retrieving a post, an author’s name can be displayed in two ways:</p>
+<ol class="arabic simple">
+<li><p><strong>Username</strong> – The user’s <code class="docutils literal notranslate"><span class="pre">username</span></code> field is shown.</p></li>
+<li><p><strong>Full Name</strong> – The user’s <code class="docutils literal notranslate"><span class="pre">first_name</span></code> and <code class="docutils literal notranslate"><span class="pre">last_name</span></code> fields are shown together.</p></li>
+</ol>
+<p>This system is designed to support privacy toggles for individual authors.</p>
+</section>
+<section id="how-full-name-display-works">
+<h2>How Full Name Display Works<a class="headerlink" href="#how-full-name-display-works" title="Link to this heading">¶</a></h2>
+<p>The display mode is determined by the author’s <strong>public profile settings</strong>.
+For a post to display the author’s full name, all of the following conditions must be met:</p>
+<ul class="simple">
+<li><p>The author <strong>has a user profile</strong> associated with their account.</p></li>
+<li><p>The <strong>public status</strong> is enabled in their user profile settings.</p></li>
+<li><p>The <strong>``first_name`` and ``last_name`` fields</strong> in the User model are both correctly filled.</p></li>
+</ul>
+<p>If any of these conditions are not met, the author’s posts will <strong>default to displaying their username</strong> instead of their full name.</p>
+</section>
+<section id="using-as-for-saving-a-post-model-in-context-data">
+<h2>Using “as” for Saving a Post Model in Context Data<a class="headerlink" href="#using-as-for-saving-a-post-model-in-context-data" title="Link to this heading">¶</a></h2>
+<p>Using the as keyword with a post-related tag allows you to efficiently save a Post model instance to the template context. This makes it easier to reference the post multiple times within the same template without executing additional lookups.</p>
+<div class="highlight-django notranslate"><div class="highlight"><pre><span></span><span class="x">&lt;!-- example-template.html --&gt;</span>
+<span class="cp">{%</span> <span class="k">post</span> <span class="k">as</span> <span class="nv">latest_post</span> <span class="cp">%}</span>
+
+<span class="x">&lt;article&gt;</span>
+<span class="x">   &lt;header&gt;</span>
+<span class="x">     &lt;h2&gt;</span><span class="cp">{{</span> <span class="nv">latest_post.title</span> <span class="cp">}}</span><span class="x">&lt;/h2&gt;</span>
+<span class="x">   &lt;/header&gt;</span>
+<span class="x">   &lt;section&gt;</span>
+<span class="x">       &lt;p&gt;</span><span class="cp">{{</span> <span class="nv">latest_post.content</span> <span class="cp">}}</span><span class="x">&lt;/p&gt;</span>
+<span class="x">   &lt;/section&gt;</span>
+<span class="x">   &lt;footer&gt;</span>
+<span class="x">       &lt;p&gt;Author: </span><span class="cp">{{</span> <span class="nv">latest_post.author</span> <span class="cp">}}</span><span class="x">&lt;/p&gt;</span>
+<span class="x">       &lt;p&gt;Published on: </span><span class="cp">{{</span> <span class="nv">latest_post.created_at</span> <span class="cp">}}</span><span class="x">&lt;/p&gt;</span>
+<span class="x">   &lt;/footer&gt;</span>
+<span class="x">&lt;/article&gt;</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Documentation Django Blog Improved</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../quick-start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html#tags">Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../reference.html">Reference</a><ul>
+      <li>Previous: <a href="../reference.html" title="previous chapter">Reference</a></li>
+      <li>Next: <a href="postlist_tag.html" title="next chapter">Postlist tag</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, Cameron Nicolson.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/tags/post_tag.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
