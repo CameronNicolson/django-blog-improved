@@ -15,7 +15,5 @@ class BlogConfig(AppConfig):
     
 
     def ready(self):
-        print("it not running")
         load_theme("fixme")
-        print("hi")
         #integrate_theme_with_generator(get_theme(), formatter.format)
