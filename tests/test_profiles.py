@@ -1,8 +1,10 @@
 from django.apps import apps
+from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
 from django.test import TestCase, Client
-from blog_improved.models import BlogGroup, User, UserProfile
+from blog_improved.models import BlogGroup
+from blog_improved.authors.models import UserProfile
 from django.urls import reverse
 from django.test.utils import override_settings
 from django.conf import settings
@@ -14,7 +16,7 @@ class TestProfiles(TestCase):
         pass
 
     def test_status_code_choice(self):
-        from blog_improved.models import user_profile_choice_code
+        from blog_improved.authors.models import user_profile_choice_code
         code = user_profile_choice_code(False)
         self.assertEqual(
                 code, 
@@ -39,10 +41,17 @@ class TestProfiles(TestCase):
         user.save()
         group = BlogGroup.objects.get(name="author")
         group.user_set.add(user)
+
+        # User was added to group
+        self.assertTrue(user.groups.filter(name="author").exists())
+
+        UserProfile.objects.create(user=user)
         profile = UserProfile.objects.get(user=user)
         # status code *1* represents public
         self.assertEqual(profile.status, 1)
         client = Client()
+        self.assertEqual(group.name, "author")
+        self.assertEqual(user.username, "snowden")
         response = client.get(reverse("user_profile", kwargs={"group": group.name, "name": user.username}))
         self.assertEqual(
             response.status_code,
@@ -134,6 +143,8 @@ class TestProfiles(TestCase):
         author_group, created = BlogGroup.objects.get_or_create(name="author")
         author_group.user_set.add(basic)
         author_group.user_set.add(journalist)
+        UserProfile.objects.create(user=basic)
+        UserProfile.objects.create(user=journalist)
         
         client = Client()
         response = client.get(reverse("user_profile", kwargs={"group": author_group.name, "name": f"{basic.username},{journalist.username}"}))
@@ -153,7 +164,7 @@ class TestProfiles(TestCase):
         author_group, created = BlogGroup.objects.get_or_create(name="author")
         author_group.user_set.add(basic)
         author_group.user_set.add(journalist)
-        journalist_profile = UserProfile.objects.get(user=journalist)
+        journalist_profile = UserProfile.objects.create(user=journalist)
         journalist_profile.status = 2
         journalist_profile.save()
         self.assertEqual(

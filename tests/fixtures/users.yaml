@@ -9,7 +9,7 @@
     email: alice@email.local
     is_active: true
     is_staff: true
-    is_superuser: True
+    is_superuser: true
     first_name: Alice
     last_name: Smith
     date_joined: 2023-01-01T08:16:59.844560+00:00
@@ -43,3 +43,19 @@
     first_name: Tom
     last_name: Petty
     date_joined: 2023-01-12T10:16:59.844560+00:00
+- name: bjarne-non-staff-user
+  description: A non staffer with a username hiding their name
+  model: auth.user
+  pk: 4
+  fields:
+    email: cppcreator@cpp.local
+    # password is "basic" for use in admin panel
+    password: "argon2$argon2id$v=19$m=102400,t=2,p=8$bEIyYk1sMjNLM0JTTld4ejI1cEFiYw$DitHRIMpiknE5bzusZEHT1ha1QPJva+fdkfxMh0Svdo" 
+    username: cppmaster
+    is_active: True 
+    first_name: Bjarne 
+    last_name: Stroustrup 
+    date_joined: 2018-07-19T12:28:01.222221+00:00
+    groups:
+      - 1
+    is_staff: False

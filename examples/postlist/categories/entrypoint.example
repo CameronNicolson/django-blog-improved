@@ -1,0 +1,6 @@
+{
+  "name": "Categories",
+  "description": "The postlist template filtering by specific categories.",
+  "group": "postlist",
+  "path": "postlist/categories"
+}

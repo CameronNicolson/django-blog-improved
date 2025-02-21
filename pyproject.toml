@@ -7,10 +7,10 @@ description="Blog app with breadcrumbs, categories, contact and profiles"
 license={ text="GPL-3.0" }
 requires-python = ">=3.6"
 authors = [
-  { name = "Spongycake", email = "spongycake@spongycake.org" },
+  { name = "Cameron Nicolson", email = "code.cameron@nicolson.scot" },
 ]
 maintainers = [
-  { name = "Spongycake", email = "spongycake@spongycake.org" },
+  { name = "Cameron Nicolson", email = "code.cameron@nicolson.scot" },
 ]
 keywords= ["blogging", "django", "web app",]
 classifiers = [
@@ -30,30 +30,27 @@ classifiers = [
   "License :: FSF Approved :: GPL-3.0 License",
 ]
 dependencies = [
-  "Django==5.0.7",
-  "django-crispy-forms==1.9.2",
-  "crispy-forms-gds==0.2.4",
+  "Django==5.1.6",
+  "django-classy-tags==4.1.0",
   "django-model-utils==4.5.1",
   "django-phonenumber-field==6.1.0",
   "django-polymorphic==3.1.0",
-  "django-taggit==3.0.0",
-  "django-inlinecss @ git+https://github.com/blocher/django-inlinecss@django4",
+  "django-taggit==6.1.0",
   "phonenumberslite==8.12.48",
   "pycodestyle==2.8.0",
   "sqlparse==0.4.2",
-  "toml==0.10.2",
-  "django-redirects==0.5.0",
+  "django-redirects==0.6.0",
 ]
 dynamic = ["version"]
 [project.optional-dependencies]
 tests = [
-  "python-lorem==1.1.2",
-  "PyYAML==6.0.1"
+  "PyYAML==6.0.2",
+  "beautifulsoup4==4.12.3"
 ]
 [project.urls]
-Documentation = "https://spongycake.codeberg.page/django-blog-improved/@master/docs/pages"
-Tracker = "https://codeberg.org/spongycake/django-blog-improved/issues"
-Source = "https://codeberg.org/spongycake/django-blog-improved"
+Documentation = "https://cameronnicolson.github.io/django-blog-improved/"
+Tracker = "https://github.com/cameronnicolson/django-blog-improved/issues/"
+Source = "https://github.com/cameronnicolson/django-blog-improved/"
 [tool.setuptools.packages.find]
 include = [
   "blog_improved*",

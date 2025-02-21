@@ -1,13 +1,14 @@
-import re
+from re import compile as re_compile 
+from re import match
 
 def prettify_url(url_name):
-    url_name = re.compile('[^a-zA-Z]').sub(" ", url_name)
+    url_name = re_compile('[^a-zA-Z]').sub(" ", url_name)
     url_name = url_name.capitalize()
     return url_name
 
 def starts_with_uri(text):
     pattern = r"^\w+://"
-    return re.match(pattern, text) is not None
+    return match(pattern, text) is not None
 
 class URLBuilder:
     """

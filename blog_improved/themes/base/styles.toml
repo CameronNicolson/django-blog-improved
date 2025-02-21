@@ -1,0 +1,11 @@
+# This is a Theme config document
+
+theme_name = "Base Theme"
+
+[elements.a]
+link = ["link-offset-3", "link-opacity-50-hover"]
+
+[styles.grid]
+row = "row"
+column = "col"
+

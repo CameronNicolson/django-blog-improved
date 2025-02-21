@@ -1,0 +1,6 @@
+{
+  "name": "Name",
+  "description": "Naming a postlist.",
+  "group": "postlist",
+  "path": "postlist/name"
+}

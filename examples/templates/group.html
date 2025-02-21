@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+<ul class="mx-0 my-0 px-0 py-0" style="list-style: none;">
+{% for example in group_items %} 
+<li>
+	<a href="/{{ example.path }}/" />
+          {{ example.name }}
+	</a>
+</li>
+{% endfor %}
+</ul>
+</div>
+{% endblock content %}

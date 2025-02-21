@@ -1,0 +1,25 @@
+[  
+  {
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+      "username": "sean.tuffelson",
+      "password": "ilovethenews",
+      "email": "sean@localnews.local",
+      "is_active": true,
+      "is_staff": true,
+      "is_superuser": true
+    }
+  },
+ {
+	"model": "blog_improved.userprofile",
+	"pk": 1, 
+	"fields": {
+	"location": "UK",
+	"url": "mywebsite.local",
+	"status": 1,
+	"bio": "bio",
+	"user": 1
+	}
+	}
+]

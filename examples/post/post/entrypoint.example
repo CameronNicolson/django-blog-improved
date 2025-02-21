@@ -1,0 +1,6 @@
+{
+  "name": "Post",
+  "description": "A single post.",
+  "group": "post",
+  "path": "post/post"
+}

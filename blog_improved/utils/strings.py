@@ -1,3 +1,5 @@
+from functools import wraps
+
 def split_string(input_string, delimiter=','):
     """
     Splits a string into a list of strings based on the specified delimiter, 
@@ -10,6 +12,10 @@ def split_string(input_string, delimiter=','):
     Returns:
     list: A list of trimmed strings.
     """
+    try:
+        input_string = str(input_string)
+    except ValueError:
+        return None
     return [element.strip() for element in input_string.split(delimiter) if element.strip()]
 
 def convert_str_kwargs_to_list(func):
@@ -50,8 +56,86 @@ def convert_str_kwargs_to_list(func):
     """
     def wrapper(*args, **kwargs):
         for key, item in kwargs.items():
-            if type(item) is str:
+            if isinstance(item, str):
                 kwargs[key] = split_string(item)
         return func(*args, **kwargs)
     return wrapper
 
+
+class StringAppender(str):
+    def __init__(self, value=None):
+        self._value = value    
+
+    def __add__(self, other):
+        other = " " + other
+        return StringAppender(super().__add__(other))
+
+    def __iadd__(self, other):
+        return self + other
+
+    def get_value(self):
+        return self._value
+    
+    def __iter__(self):
+        return iter(self._value.split(" "))
+
+    def get_value_list(self):
+        return self._value.split(" ")
+
+def to_string_appender(func):
+#    """Decorator that ensures the returned value from func is a StringAppender."""
+    def wrapper(value):
+        if not isinstance(value, str):
+            value = str(value)
+        # split multiple entries e.g "class1 class2"
+        value = iter(value.split(" "))
+        string = StringAppender(next(value))
+        for v in value:
+            string += v 
+        value = string
+        return func(value)
+    return wrapper
+
+def strip_whitespace(func_or_value):
+    # If the input is callable, treat it as a decorator
+    if callable(func_or_value):
+        @wraps(func_or_value)
+        def wrapper(value):
+            if not isinstance(value, str):
+                value = str(value)
+            value = value.strip()
+            return func_or_value(value)
+        return wrapper
+    # Otherwise, treat it as a normal function
+    else:
+        if not isinstance(func_or_value, str):
+            func_or_value = str(func_or_value)
+        return func_or_value.strip()
+
+def normalise_extra_whitespace(func):
+    def wrapper(value):
+        parts = value.split()
+        normalised = " ".join(parts)
+        return func(normalised)
+    return wrapper
+
+def validate_regex(pattern):
+    from re import match
+    def decorator(func):
+        def wrapper(value):
+            if not match(pattern, value):
+                raise ValueError(f"Value '{value}' does not match pattern {pattern}")
+            return func(value)
+        return wrapper
+    return decorator
+
+def string_bound(results=None):
+    default_results = {"message": "hi"}
+    results = results or default_results
+   
+    def find(number, value):
+        print(results["message"])
+        return value
+
+    find.default_results = default_results
+    return find
