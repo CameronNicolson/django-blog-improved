@@ -15,6 +15,7 @@ from django.db.models.base import ModelBase
 from django.db.models import Q, QuerySet
 from model_utils.managers import InheritanceManager, InheritanceManagerMixin
 from itertools import chain
+from blog_improved.constants import BLOG_POST_CONTEXT_NAME
 
 import operator
 
@@ -126,25 +127,23 @@ class AuthorPage(ListView):
         return context
 
 class PostView(DetailView, AccessStatusMixin, SingleObjectMixin):
-    template_name = "blog_improved/pages/posts/post_detail.html"
+    template_name = "blog_improved/single_post.html"
     model = Post
-    target_status = [Status.PUBLISH, Status.UNLISTED]
 
     def get_object(self, queryset=None):
         # Get the object using the manager and apply additional filtering
+        obj = None
         try:
-            obj = Post.public.include_unlisted().get(slug=self.kwargs['slug'])
+            lookup = self.kwargs.get("slug", None)
+            if lookup:
+                obj = Post.public.include_unlisted().get(slug=lookup)
         except Post.DoesNotExist:
-            obj = None
+            raise Http404
         return obj
     
     def get_context_data(self, **kwargs):
         context = super(PostView, self).get_context_data(**kwargs)
         post = self.get_object()
-        context["crumbs"] = [("Home", reverse("home"),),("Posts", reverse("post_list"),),(post.title, None,)]
-        
-        if operator.eq(post.collabaration_mode, Post.CollabrationMode.YES):    
-            post = get_object_or_404(post_ptr_id=post.pk)
-        context["post"] = post
+        context[BLOG_POST_CONTEXT_NAME] = post
         return context
 

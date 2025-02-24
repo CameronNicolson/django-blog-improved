@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.contrib.auth.models import User
 from django.db.models import (
     BooleanField,
@@ -26,6 +27,10 @@ from model_utils.managers import InheritanceManager
 from blog_improved.models import Media, Status
 from taggit.models import TaggedItemBase
 
+def get_default_category():
+    instance, _ = Tag.objects.get_or_create(name="uncategorised")
+    return instance.id
+
 class TaggedPost(TaggedItemBase):
     content_object = ForeignKey("Post", on_delete=CASCADE)
 
@@ -38,7 +43,7 @@ class Post(Model):
     )
 
     title = CharField(max_length=200, unique=True)
-    slug = SlugField(max_length=200, unique=True)
+    slug = SlugField(max_length=200, unique=True, blank=False)
     author = ForeignKey(
         User, on_delete=CASCADE, related_name="blog_posts"
     )
@@ -49,7 +54,7 @@ class Post(Model):
     cover_art = ForeignKey(
         Media, on_delete=SET_NULL, blank=True, null=True
     )
-    category = ForeignKey(Tag, db_column="category", related_name="categories", on_delete=CASCADE)
+    category = ForeignKey(Tag, db_column="category", related_name="categories", on_delete=CASCADE, default=get_default_category)
     created_on = DateTimeField(auto_now_add=True)
     tags = TaggableManager(through=TaggedPost)
     # Custom Managers 
@@ -63,12 +68,14 @@ class Post(Model):
         return self.title
    
     def save(self, *args, **kwargs):
+        self.slug = self.slug if self.slug else slugify(self.title) 
+ 
         if self.pk is None:  # This is a new post being created
-            if self.status == 1:  # Only set publication date if status is 1
+           if self.status == 1:  # Only set publication date if status is 1
                 self.publication_date = timezone.now()
         else:  # This is an existing post being updated
             post_before_save = Post.objects.get(pk=self.pk)
-            if original_post.status not in [1, self.status] and self.status == 1:
+            if post_before_save.status not in [Status.PUBLISH.value, self.status] and self.status == Status.PUBLISH.value: # post is being published so needs a publish date
                 self.publication_date = timezone.now()
         
         super().save(*args, **kwargs)
