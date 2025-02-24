@@ -36,19 +36,14 @@ def get_navigation_links(pages):
         return links
     return get_links
 
-def get_crumbs(request):
-    page_title = prettify_url(request.resolver_match.view_name)
-    return [("Home", reverse("home"),),(page_title, None,)]
-
 def get_pages():
     return []
 
 def navigation(request):
     request_url_name = request.resolver_match.url_name
-    crumbs = get_crumbs(request)
     with thread_lock:
         pages = get_pages()
         links = get_navigation_links(pages)
-        navigation = cache.get_or_set('navigation', get_navigation_links)
-    return {"navigation": navigation, "current_url": request_url_name, "crumbs": crumbs }
+        navigation = cache.get_or_set('navigation', links)
+    return {"navigation": navigation, "current_url": request_url_name}
 
