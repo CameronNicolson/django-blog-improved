@@ -129,7 +129,7 @@ class TestPosts(TestCase):
         
         self.assertEqual(
             post.get_author_url(), 
-            "/author/journalist" 
+            "/author/journalist/" 
         )
     
     def test_author_url_missing(self):
