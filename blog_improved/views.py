@@ -92,16 +92,26 @@ class HomePage(BaseUrlMixin, InheritanceManagerMixin, ListView):
 
 class AuthorPage(ListView):
     author_template_dir = "blog_improved/pages/authors/"
-    model = BlogGroup
+    model = UserProfile
 
     def get_queryset(self):
-        qs = super().get_queryset()
-        qs = get_object_or_404(qs, name__contains=self.kwargs["group"])
-        names_in_url = self.kwargs["name"].split(',')
-        qs = qs.user_set.all()
-        qs = qs.filter(username__in=names_in_url)
-        qs = get_list_or_404(UserProfile, user__in=qs, status=1)
-        return qs
+        group_name = self.kwargs["group"]
+        author_usernames = self.kwargs["name"].split(",")
+        authors = BlogGroup.objects.get(name=group_name).user_set.filter(username__in=author_usernames)
+
+        if len(authors) < len(author_usernames):
+            raise Http404
+
+        user_profiles = get_list_or_404(UserProfile, user__in=authors, status=1)
+
+        return user_profiles
+#        group.
+#        qs = get_object_or_404(qs, name__contains=self.kwargs["group"])
+#        names_in_url = self.kwargs["name"].split(',')
+#        qs = qs.user_set.all()
+#        qs = qs.filter(username__in=names_in_url)
+#        qs = get_list_or_404(UserProfile, user__in=qs, status=1)
+#        return qs
 
     def get_template_names(self):
         return [ self.author_template_dir + self.kwargs["name"] + ".html".lower(), 
@@ -110,19 +120,9 @@ class AuthorPage(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs) or {}
-        names_in_url = self.kwargs["name"].split(',')
+        user_profiles = self.get_queryset()
 
-        if len(self.get_queryset()) < len(names_in_url):
-            raise Http404
-
-        users = get_list_or_404(User, username__in=names_in_url)
-
-        def create_user_list(lista, listb):
-            for user, profile in zip(lista, listb):
-                user.username = user.username.capitalize()
-                yield from ((user, profile,),)
-
-        context["profile"] = list(create_user_list(users, self.get_queryset()))
+        context["profiles"] = user_profiles
         context["group"] = BlogGroup.objects.get(name=self.kwargs["group"])
         return context
 
