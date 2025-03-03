@@ -8,6 +8,7 @@ from blog_improved.authors.models import UserProfile
 from django.urls import reverse
 from django.test.utils import override_settings
 from django.conf import settings
+from blog_improved.models import Status
 
 class TestProfiles(TestCase):
     fixtures = ["groups.yaml", "users.yaml",]
@@ -141,11 +142,18 @@ class TestProfiles(TestCase):
         basic = get_user_model().objects.get(username="basic")
         journalist = get_user_model().objects.get(username="journalist")
         author_group, created = BlogGroup.objects.get_or_create(name="author")
+        author_group.status = Status.PUBLISH.value
+        author_group.save()
         author_group.user_set.add(basic)
         author_group.user_set.add(journalist)
-        UserProfile.objects.create(user=basic)
-        UserProfile.objects.create(user=journalist)
-        
+        UserProfile.objects.create(user=basic, status=1)
+        UserProfile.objects.create(user=journalist, status=1)
+        self.assertEqual(UserProfile.objects.get(user=basic).status, 
+                         Status.PUBLISH.value)
+
+        self.assertEqual(UserProfile.objects.get(user=journalist).status,
+                         Status.PUBLISH.value)
+
         client = Client()
         response = client.get(reverse("user_profile", kwargs={"group": author_group.name, "name": f"{basic.username},{journalist.username}"}))
         self.assertEqual(

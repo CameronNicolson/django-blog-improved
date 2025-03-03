@@ -15,6 +15,7 @@ from django.db.models.base import ModelBase
 from django.db.models import Q, QuerySet
 from model_utils.managers import InheritanceManager, InheritanceManagerMixin
 from itertools import chain
+from blog_improved.constants import BLOG_POST_CONTEXT_NAME
 
 import operator
 
@@ -91,16 +92,26 @@ class HomePage(BaseUrlMixin, InheritanceManagerMixin, ListView):
 
 class AuthorPage(ListView):
     author_template_dir = "blog_improved/pages/authors/"
-    model = BlogGroup
+    model = UserProfile
 
     def get_queryset(self):
-        qs = super().get_queryset()
-        qs = get_object_or_404(qs, name__contains=self.kwargs["group"])
-        names_in_url = self.kwargs["name"].split(',')
-        qs = qs.user_set.all()
-        qs = qs.filter(username__in=names_in_url)
-        qs = get_list_or_404(UserProfile, user__in=qs, status=1)
-        return qs
+        group_name = self.kwargs["group"]
+        author_usernames = self.kwargs["name"].split(",")
+        authors = BlogGroup.objects.get(name=group_name).user_set.filter(username__in=author_usernames)
+
+        if len(authors) < len(author_usernames):
+            raise Http404
+
+        user_profiles = get_list_or_404(UserProfile, user__in=authors, status=1)
+
+        return user_profiles
+#        group.
+#        qs = get_object_or_404(qs, name__contains=self.kwargs["group"])
+#        names_in_url = self.kwargs["name"].split(',')
+#        qs = qs.user_set.all()
+#        qs = qs.filter(username__in=names_in_url)
+#        qs = get_list_or_404(UserProfile, user__in=qs, status=1)
+#        return qs
 
     def get_template_names(self):
         return [ self.author_template_dir + self.kwargs["name"] + ".html".lower(), 
@@ -109,42 +120,30 @@ class AuthorPage(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs) or {}
-        names_in_url = self.kwargs["name"].split(',')
+        user_profiles = self.get_queryset()
 
-        if len(self.get_queryset()) < len(names_in_url):
-            raise Http404
-
-        users = get_list_or_404(User, username__in=names_in_url)
-
-        def create_user_list(lista, listb):
-            for user, profile in zip(lista, listb):
-                user.username = user.username.capitalize()
-                yield from ((user, profile,),)
-
-        context["profile"] = list(create_user_list(users, self.get_queryset()))
+        context["profiles"] = user_profiles
         context["group"] = BlogGroup.objects.get(name=self.kwargs["group"])
         return context
 
 class PostView(DetailView, AccessStatusMixin, SingleObjectMixin):
-    template_name = "blog_improved/pages/posts/post_detail.html"
+    template_name = "blog_improved/single_post.html"
     model = Post
-    target_status = [Status.PUBLISH, Status.UNLISTED]
 
     def get_object(self, queryset=None):
         # Get the object using the manager and apply additional filtering
+        obj = None
         try:
-            obj = Post.public.include_unlisted().get(slug=self.kwargs['slug'])
+            lookup = self.kwargs.get("slug", None)
+            if lookup:
+                obj = Post.public.include_unlisted().get(slug=lookup)
         except Post.DoesNotExist:
-            obj = None
+            raise Http404
         return obj
     
     def get_context_data(self, **kwargs):
         context = super(PostView, self).get_context_data(**kwargs)
         post = self.get_object()
-        context["crumbs"] = [("Home", reverse("home"),),("Posts", reverse("post_list"),),(post.title, None,)]
-        
-        if operator.eq(post.collabaration_mode, Post.CollabrationMode.YES):    
-            post = get_object_or_404(post_ptr_id=post.pk)
-        context["post"] = post
+        context[BLOG_POST_CONTEXT_NAME] = post
         return context
 

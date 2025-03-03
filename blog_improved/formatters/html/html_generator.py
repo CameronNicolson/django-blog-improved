@@ -336,7 +336,9 @@ class BlogHtmlFactory(MarkupFactory):
             author_node = self._markup.create_node("container", attributes={"class": "article__author"})
             author_name_node = self._markup.create_node("inline_container", attributes={"class": "article__author-name"})
             author_name_text_node = TextNode(f"{author}")
-            
+            context_node = self._markup.create_node("inline_container", {"class": "visually-hidden"})
+            context_node.add_child(TextNode("Written by: "))
+            author_node.add_child(context_node)
             author_name_node.add_child(author_name_text_node)
             author_node.add_child(author_name_node)
             meta_node.add_child(author_node)
@@ -345,7 +347,7 @@ class BlogHtmlFactory(MarkupFactory):
             datetime_node = self._markup.create_node("time", {"class": "article__time--published-date", "datetime": date})
             datetime_node.add_child(TextNode(date.strftime("%d %B %Y")))
             context_node = self._markup.create_node("inline_container", {"class": "visually-hidden"})
-            context_node.add_child(TextNode("Posted on:"))
+            context_node.add_child(TextNode("Posted on: "))
             meta_node.add_child(context_node)
             meta_node.add_child(datetime_node)
         
@@ -362,7 +364,7 @@ class BlogHtmlFactory(MarkupFactory):
 
             meta_node.add_child(divider_text_node)
             context_node = self._markup.create_node("inline_container", {"class": "visually-hidden"})
-            context_node.add_child(TextNode("In the category:"))
+            context_node.add_child(TextNode("In the category: "))
             meta_node.add_child(context_node)
             meta_node.add_child(category_text_node)
 

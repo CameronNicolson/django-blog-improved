@@ -78,8 +78,8 @@ class PostTagTestCase(TestCase):
         expected_datetime = datetime(day=4, month=8, year=2023, 
                                      hour=11, minute=22, second=33, microsecond=444555, tzinfo=timezone.utc)
         self.assertEqual(article_datetime, expected_datetime)
-        rendered_author = rendered.find(class_="article__author")
-        expected_author = rendered_expected.find(class_="article__author")
+        rendered_author = rendered.find(class_="article__author-name")
+        expected_author = rendered_expected.find(class_="article__author-name")
         try:
             article_author_text = rendered_author.text  
             expected_author_text = expected_author.text
@@ -182,7 +182,7 @@ class PostTagTestCase(TestCase):
         expected_heading = "Hot Dog Competition 2025"
         actual_heading = rendered.find(class_="article__title").text
         self.assertEqual(actual_heading, expected_heading)
-        actual_author = rendered.find(class_="article__author").text
+        actual_author = rendered.find(class_="article__author-name").text
         expected_author = "alice"
         self.assertEqual(actual_author, expected_author)
 
