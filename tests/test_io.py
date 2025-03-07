@@ -16,10 +16,10 @@ license = "BSD-1-Clause"
 version = "0.1.0"
 variant = "" 
 
-[licenses]
+[media_licenses]
 background.jpg = "CC-BY-NC-4.0"
 
-[attributions]
+[media_attributions]
 background.jpg = "Jo Doe - CC-BY-4.0 - https://example.local/art"
 """
 
