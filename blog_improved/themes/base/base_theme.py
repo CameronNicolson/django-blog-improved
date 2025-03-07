@@ -1,9 +1,21 @@
+import re
 from typing import Dict, Optional
+from tomli_w import dumps as toml_dumps
 from blog_improved.themes.base.theme import Theme
 
+class TOMLSerializer:
+    def serialize(self, data):
+        return toml_dumps(data)
+
 class BaseTheme(Theme):
-    def __init__(self, name=None, grid_config=None, width_scale=None):
-        self._name = name if name else "Base Theme"
+    def __init__(self, name=None, version=None, authors=None, source_license=None, variant=None, media=None, grid_config=None, width_scale=None, serializer=TOMLSerializer()):
+        self.name:str = name if name else "Base Theme"
+        self.version:str = version
+        self.authors:list[str] = authors
+        self.license:str = source_license
+        self.variant = variant
+        self.media:list[str] = []
+        self._serializer = serializer
         self._grid_properties = grid_config if grid_config else { "container": "container", "column": "col", "row": "row", } 
         self._width_scale = width_scale if width_scale else { 25: "3", 33: "4", 50: "6", 66: "8", 75: "9", 100: "12"}
         self._styles: Dict[str, str] = {}
@@ -18,13 +30,28 @@ class BaseTheme(Theme):
         """
         return self._elements.get(element_name, {})
 
-    def get_styles(self):
-        return self._styles
+    def save_to_file(self, filepath):
+        attributes = dict()
+        for attr_name in dir(self):
+            if (not re.match("^(_.|__.)", attr_name) and 
+                not callable(getattr(self, attr_name))):
+                value = getattr(self, attr_name)
+                if attr_name == "width_scale": 
+                    value = {str(k): v for k, v in value.items()}
+                attributes[attr_name] = value
+  
+        serialized_data = self._serializer.serialize(attributes)
 
-    def apply_theme(self, theme):
-        self._name = theme.get("name")
-        self._styles = theme.get("styles")
-        self._elements = theme.get("elements")
+        with open(filepath, "w") as f:
+            f.write(serialized_data)
+
+    def get_styles(self):
+        return self.styles
+
+    def apply_theme(self, theme, styles):
+        self.name = theme.get("name")
+        self.styles = styles.get("style_mappings")
+        self.elements = styles.get("elements")
    
     @property
     def width_scale(self):

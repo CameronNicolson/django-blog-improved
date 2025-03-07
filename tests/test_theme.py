@@ -1,6 +1,10 @@
+import tomllib
+import tempfile
+from .helpers import load_fixture
 from django.test import TestCase
 from blog_improved.utils.math import RangeClamper
 from blog_improved.themes.base.base_theme import BaseTheme
+from pathlib import Path
 
 class TestTheme(TestCase):
     def setUp(self):
@@ -32,6 +36,40 @@ class TestTheme(TestCase):
                 100: "full"
             },
         )
+    
+    def test_example_theme_valid(self):
+        example_theme = load_fixture("classic_theme_example.cfg")
+        self.assertIn('name = "classic"\n', example_theme)
+        self.assertIn('authors = ["Cameron Nicolson"]', example_theme)
+        self.assertIn('variant = ""', example_theme)
+        self.assertIn('version = "0.1.0"', example_theme)
+        self.assertIn('license = "BSD-1-Clause"', example_theme)
+
+    def test_serialize_classic_theme(self):
+        classic_theme = BaseTheme(name="classic", authors=["Cameron Nicolson"], variant="", version="0.1.0", source_license="BSD-1-Clause")
+        example_theme_file = load_fixture("classic_theme_example.cfg")
+        expected_theme_data = tomllib.loads(example_theme_file)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            filename = Path(tmpdir) / "theme.cfg"
+            classic_theme.save_to_file(filename)
+            # Now check the file was created successfully
+            self.assertTrue(filename.exists())
+            self.assertTrue(filename.is_file())
+            actual_theme_data = None
+            with open(filename, "rb") as f:
+                actual_theme_data = tomllib.load(f)
+            self.assertEqual(expected_theme_data["name"],
+                             actual_theme_data["name"])
+            self.assertEqual(expected_theme_data["authors"],
+                             actual_theme_data["authors"])
+            self.assertEqual(expected_theme_data["license"],
+                             actual_theme_data["license"])
+            self.assertEqual(expected_theme_data["version"],
+                             actual_theme_data["version"])
+            self.assertEqual(expected_theme_data["grid_properties"],
+                             actual_theme_data["grid_properties"])
+            self.assertEqual(expected_theme_data["width_scale"],
+                             actual_theme_data["width_scale"])
 
     def test_one_quarter(self):
         basetheme = BaseTheme()
