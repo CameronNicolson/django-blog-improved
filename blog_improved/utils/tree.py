@@ -1,4 +1,5 @@
 from __future__ import annotations
+from collections import deque
 from typing import Optional, Callable
 
 class Node:
@@ -34,26 +35,23 @@ class DfsIterator:
 
         current = self.stack.pop()
         self.stack.extend(reversed(current.children))  # Push children in reverse order
-
         return current.value  # Return the current node's string value
 
-class DFSIterator:
+class BfsIterator:
     def __init__(self, root):
-        self.stack = [root] if root else []  # Start with the root node
+        self.stack = deque( [root] if root else [])  # Use a queue for BFS
 
     def __iter__(self):
         return self
 
     def __next__(self):
         if not self.stack:
-            raise StopIteration  # End iteration when stack is empty
-        
-        # Last In, First Out ordering
-        # Get the next node 
-        current = self.stack.pop()
+            raise StopIteration
 
-        # Add children to stack in **reverse order** (to process leftmost first)
-        self.stack.extend(reversed(current.children))
+        current = self.stack.popleft()  # Get the next node (FIFO order)
+
+        # Enqueue all children (FIFO order)
+        self.stack.extend(current.children)
 
         return current.value  # Return the node's value
 

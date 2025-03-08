@@ -5,13 +5,19 @@ import os
 class DataDirectoryManager:
     """Handles detection and validation of the /data/ directory"""
 
+    NAME = "data"
+
     STANDARD_LOCATIONS = [
-        Path("./data/"),
-        Path("../data/"),
-        Path("../../data/"),
-        Path(__file__).resolve().parent / "data"
+        Path(f"./{NAME}/"),
+        Path(f"../{NAME}/"),
+        Path(f"../../{NAME}/"),
+        Path(__file__).resolve().parent / NAME
     ]
-    
+   
+    @staticmethod
+    def get_data_directory_name() -> str:
+        return DataDirectoryManager.NAME
+
     @staticmethod
     def discover_paths(search_dirnames:list[str]) -> list[Path]:
         subdirs:list[Path] = list() 
@@ -29,9 +35,9 @@ class DataDirectoryManager:
         """Finds the appropriate data directory"""
         env_path = os.environ.get("BLOG_DATADIR")
         if env_path:
-            return Path(env_path) / "data"
+            return Path(env_path)
 
-        for path in DataDirectoryManager.STANDARD_LOCATIONS:
+        for path in reversed(DataDirectoryManager.STANDARD_LOCATIONS):
             if path.exists():
                 return path
 
