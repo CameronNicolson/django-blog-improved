@@ -5,7 +5,7 @@ from abc import ABC
 from pathlib import Path
 from enum import Enum
 from dataclasses import dataclass
-from blog_improved.utils.tree import Tree, DfsIterator
+from blog_improved.utils.tree import Tree, BfsIterator, DfsIterator
 
 class FileValidator(ABC):
     def is_valid(self, path_to_file) -> bool:
@@ -80,6 +80,49 @@ class FileManager:
                 return None  # Stop if a directory in the path is missing
 
         return cwd
+    
+    def list_all_directories(self, starting_point, max_depth=1):
+        """Get directories up to a specified depth in a breadth-first manner."""
+        parent_directory = self._mappings.search(VirtualFSNode(
+            fs_type="dir",
+            virtual_path=starting_point,
+            system_path=""
+            ).is_same_virtual_path)
+
+        if not parent_directory.value.is_dir():
+            raise ValueError("The provided path \"{starting_point}\" is not a directory.")
+
+        bfs_iterator = iter(BfsIterator(parent_directory))
+        paths_list = []
+        current_depth = 0
+        transverse_count = 0
+        num_children_at_depth = len(parent_directory.children)
+
+        def _inner(next_node=next(bfs_iterator)):
+            nonlocal current_depth, transverse_count, num_children_at_depth
+
+            # Stop traversing if we've reached the max depth
+            if current_depth == max_depth:
+                return paths_list
+
+            # Append the current node's path
+            paths_list.append(next_node.virtual_path)
+
+            # Track how many nodes we've traversed at this depth
+            transverse_count += 1
+
+            # If we've visited all children of the current depth, move deeper
+            if transverse_count == num_children_at_depth:
+                transverse_count = 0
+                current_depth += 1
+                # **Correctly fetch the next depth's child count**
+                num_children_at_depth = sum(len(child.children) for child in parent_directory.children)
+
+            return _inner(next(bfs_iterator))  # Continue traversal recursively
+
+        paths_list = _inner(next(bfs_iterator))  # Start traversal
+ 
+        return paths_list
 
     def add_virtual_directory(self, virtual_path: str, real_path: Path):
         """Maps a virtual directory (e.g., 'data/music/') to a real location on the system's disk."""
@@ -88,7 +131,7 @@ class FileManager:
         if not real_path.is_dir():
             raise ValueError(f"Real path {real_path} is not a directory!")
 
-        parent_path = "/".join(self._split_path(virtual_path)[:-1]) or ""
+        parent_path = "/".join( path if path != "/" else "" for path in self._split_path(virtual_path)[:-1]) or ""
         parent_node = self._find_virtual_node(parent_path)
 
         if parent_node is None:
