@@ -1,9 +1,11 @@
 import tomllib
 import tempfile
-from .helpers import load_fixture
+from .helpers import get_fixture_path, load_fixture
 from django.test import TestCase
 from blog_improved.utils.math import RangeClamper
 from blog_improved.themes.base.base_theme import BaseTheme
+from blog_improved.themes.settings import find_theme, load_theme_config
+from blog_improved.themes.serializers import TOMLSerializer
 from pathlib import Path
 
 class TestTheme(TestCase):
@@ -70,6 +72,30 @@ class TestTheme(TestCase):
                              actual_theme_data["grid_properties"])
             self.assertEqual(expected_theme_data["width_scale"],
                              actual_theme_data["width_scale"])
+
+    def test_deserilize_theme(self):
+        serializer = TOMLSerializer()
+        theme_cfg = get_fixture_path("classic_theme_example.cfg")
+        as_python_dict = load_theme_config(theme_cfg, serializer)
+        self.assertEqual(as_python_dict["name"], "classic")
+        self.assertEqual(as_python_dict["version"],
+                             "0.1.0") 
+
+    def test_find_theme_error_file_not_found(self):
+        serializer = TOMLSerializer()
+        theme_cfg = get_fixture_path("classic_theme_example.cfg")
+        parent_dir = theme_cfg.parent
+        with self.assertRaises(FileNotFoundError):
+            find_theme("classic", "theme.cfg", [parent_dir], serializer) 
+
+    def test_find_theme_success(self):
+        serializer = TOMLSerializer()
+        theme_cfg = get_fixture_path("classic_theme_example.cfg")
+        parent_dir = theme_cfg.parent
+        config = find_theme("classic", "classic_theme_example.cfg", [parent_dir], serializer) 
+        self.assertEqual(config["name"], "classic")
+        self.assertEqual(config["version"],
+                             "0.1.0") 
 
     def test_one_quarter(self):
         basetheme = BaseTheme()
