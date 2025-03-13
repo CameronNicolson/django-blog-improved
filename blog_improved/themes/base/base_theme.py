@@ -1,11 +1,7 @@
 import re
 from typing import Dict, Optional
-from tomli_w import dumps as toml_dumps
+from ..serializers import TOMLSerializer
 from blog_improved.themes.base.theme import Theme
-
-class TOMLSerializer:
-    def serialize(self, data):
-        return toml_dumps(data)
 
 class BaseTheme(Theme):
     def __init__(self, name=None, version=None, authors=None, source_license=None, variant=None, media=None, grid_config=None, width_scale=None, serializer=TOMLSerializer()):
