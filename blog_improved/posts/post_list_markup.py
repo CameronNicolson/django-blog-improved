@@ -4,7 +4,6 @@ from blog_improved.utils.hetero_data_wrapper import HeteroDataWrapper
 from dataclasses import dataclass
 from blog_improved.formatters.markup import MarkupFactory
 from blog_improved.formatters.html.html_generator import SgmlGenerator
-from blog_improved.themes.settings import get_theme
 from blog_improved.posts.posts import PostList
 from blog_improved.utils.strings import string_bound
 from django.urls import reverse
