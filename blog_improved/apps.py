@@ -12,8 +12,7 @@ from blog_improved.presentation.css_presentation import CssElementModifier, Grid
 
 class BlogConfig(AppConfig):
     name = "blog_improved"
-    
-
+ 
     def ready(self):
-        load_theme("fixme")
-        #integrate_theme_with_generator(get_theme(), formatter.format)
+        from blog_improved.file_manager import get_data_file_manager, setup_file_manager
+        setup_file_manager()

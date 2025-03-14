@@ -33,17 +33,13 @@ class DataDirectoryManager:
     @staticmethod
     def find_data_directory() -> Path:
         """Finds the appropriate data directory"""
-        env_path = os.environ.get("BLOG_DATADIR")
-        if env_path:
-            return Path(env_path)
-
         for path in reversed(DataDirectoryManager.STANDARD_LOCATIONS):
             if path.exists():
                 return path
 
         print("Could not find the /data/ directory in standard locations.")
-        print("Set environment variable $BLOG_DATADIR to point to the directory.")
-        exit(1)  # Stop execution if no valid path is found
+        print("Set environment variable $BLOG_DATA_DIR to point to the directory.")
+        return None
 
     @staticmethod
     def validate_data_directory(path: Path, subdirs: list[str]):
